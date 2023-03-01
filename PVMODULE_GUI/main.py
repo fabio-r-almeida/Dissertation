@@ -78,16 +78,16 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
         splash = Splash(self)
-        Splash(self).current_loadings.append("")  #<<<<<<<<--------------------
-        Splash(self).bar()                             #<<<<<<<<--------------------
+        Splash(self).current_loadings.append("")        #<<<<<<<<--------------------
+        Splash(self).bar()                              #<<<<<<<<--------------------
 
 
         # configure window
         self.title("PV Module GUI")
         #self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}")
         self.geometry(f"{1100}x{600}")
-        Splash(self).current_loadings.append("Loading fonts")  #<<<<<<<<--------------------
-        Splash(self).bar()                             #<<<<<<<<--------------------
+        Splash(self).current_loadings.append("Loading fonts")   #<<<<<<<<--------------------
+        Splash(self).bar()                                      #<<<<<<<<--------------------
 
         # configure grid layout (4x4)
         self.grid_columnconfigure(1, weight=1)
@@ -96,25 +96,31 @@ class App(customtkinter.CTk):
 
         # create sidebar frame with widgets
         self.sidebar_frame = customtkinter.CTkFrame(self, width=140, corner_radius=0)
-        self.sidebar_frame.grid(row=0, column=0, rowspan=4, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(4, weight=1)
+        self.sidebar_frame.grid(row=0, column=0, rowspan=5, sticky="nsew")
+        self.sidebar_frame.grid_rowconfigure(5, weight=1)
         self.logo_label = customtkinter.CTkLabel(self.sidebar_frame, text="Solar Estimator", font=customtkinter.CTkFont(size=20, weight="bold"))
         
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
-        self.sidebar_button_1.grid(row=1, column=0, padx=20, pady=10)
+        self.sidebar_button_1.grid(row=1, column=0, padx=10, pady=10)
         self.sidebar_button_1.configure(state="enabled", text="Select on Map", text_color="white")
 
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame)
-        self.sidebar_button_2.grid(row=2, column=0, padx=20, pady=10)
+        self.sidebar_button_2.grid(row=2, column=0, padx=10, pady=10)
         self.Latitude_entry_var = tkinter.StringVar(value = "Longitude: 00.0000")   
         self.sidebar_button_2.configure(state="disabled", textvariable=self.Latitude_entry_var, text_color_disabled="black", fg_color="white")
 
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame)
-        self.sidebar_button_3.grid(row=3, column=0, padx=20, pady=10)
+        self.sidebar_button_3.grid(row=3, column=0, padx=10, pady=10)
         self.Longitude_entry_var = tkinter.StringVar(value = "Longitude: 00.0000")                                                
         self.sidebar_button_3.configure(state="disabled", textvariable=self.Longitude_entry_var, text_color_disabled="black", fg_color="white")
+
+        self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame)
+        self.sidebar_button_4.grid(row=4, column=0, padx=10, pady=10)
+        self.city_entry_var = tkinter.StringVar(value = "")                                                
+        self.sidebar_button_4.configure(state="disabled", textvariable=self.city_entry_var, text_color_disabled="black", fg_color="white")
+
         Splash(self).current_loadings.append("Loading sidebars")    #<<<<<<<<--------------------
         Splash(self).bar()                                  #<<<<<<<<--------------------
 
@@ -126,22 +132,22 @@ class App(customtkinter.CTk):
 
 
         self.appearance_mode_label = customtkinter.CTkLabel(self.sidebar_frame, text="Appearance Mode:", anchor="w")
-        self.appearance_mode_label.grid(row=5, column=0, padx=5, pady=(10, 0))
+        self.appearance_mode_label.grid(row=6, column=0, padx=5, pady=(10, 0))
         self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"],command=self.change_appearance_mode_event)
-        self.appearance_mode_optionemenu.grid(row=6, column=0, padx=5, pady=(10, 10))
+        self.appearance_mode_optionemenu.grid(row=7, column=0, padx=5, pady=(10, 10))
         Splash(self).current_loadings.append("Loading appearances")     #<<<<<<<<--------------------
         Splash(self).bar()                                      #<<<<<<<<--------------------
 
 
         self.scaling_label = customtkinter.CTkLabel(self.sidebar_frame, text="UI Scaling:", anchor="w")
-        self.scaling_label.grid(row=7, column=0, padx=5, pady=(10, 0))
+        self.scaling_label.grid(row=8, column=0, padx=5, pady=(10, 0))
         self.scaling_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["80%", "90%", "100%", "110%", "120%"],command=self.change_scaling_event)
-        self.scaling_optionemenu.grid(row=8, column=0, padx=5, pady=(10, 20))
+        self.scaling_optionemenu.grid(row=9, column=0, padx=5, pady=(10, 20))
         Splash(self).current_loadings.append("Scaling assets")    #<<<<<<<<--------------------
         Splash(self).bar()                                        #<<<<<<<<--------------------
 
         self.about_button = customtkinter.CTkButton(master=self.sidebar_frame, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), text="About", command=self.about_event)
-        self.about_button.grid(row=9, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.about_button.grid(row=10, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         # create main entry and button
         self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
@@ -467,6 +473,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         map_frame = tkinter.Label(top, text="Location Selection Map")                                           
         map_frame.grid(row = 99 , column = 0, padx = 0, pady = 10 )                                             
         map_widget = tkintermapview.TkinterMapView(map_frame, width=800, height=600, corner_radius=0, padx=10, pady=10)
+        map_widget.set_position(38.7557, -9.2803)  # Paris, France
+        map_widget.set_zoom(12)
         map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
         map_widget.grid(row=4, column=0)                                                                        
                                                                                                                 
@@ -480,7 +488,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             except:                                                                                             
                 address_display = "Street Address not found"                                                    
             city_name_marker = map_widget.set_marker(latitude, longitude, text=address_display)                 
-                                                                                                                
+
+            self.city_entry_var.set(str(adr.city))                                                                                                    
             self.Latitude_entry_var.set("Latitude: " + str(latitude))                                                                  
             self.Longitude_entry_var.set("Longitude: "+ str(longitude))                                                                  
             top.destroy()                                                                                       
