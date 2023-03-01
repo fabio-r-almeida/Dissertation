@@ -4,7 +4,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import tkintermapview
 import webbrowser
-
+import customtkinter
 
 
 
@@ -12,7 +12,7 @@ import webbrowser
 ########################### Creation of the notebook ################################################################
 #####################################################################################################################
 # root window                                                                                               #########
-root = tk.Tk()                                                                                              #########
+root = customtkinter.CTk()                                                                                              #########
 root.title('PV Module GUI')                                                                                 #########
                                                                                                             #########
 # create a notebook                                                                                         #########
@@ -143,7 +143,7 @@ Longitude_Entry = tkinter.Label(user_address_data, textvariable=Longitude_entry_
 Longitude_Entry.grid(row = 1 , column = 1)                                                                  #########
                                                                                                             #########
 ######Button that opens the map######                                                                       #########
-button = tkinter.Button(user_address_data, text = "Select From Map", command = map_window )                 #########
+button = customtkinter.CTkButton(user_address_data, text = "Select From Map", command = map_window )                 #########
 button.grid(row=3, columnspan=3, sticky="news", padx=10, pady=10 )                                          #########
                                                                                                             #########
                                                                                                             #########
