@@ -1,27 +1,48 @@
+import tkinter as tk
 import tkinter
 from tkinter import ttk
 from tkinter import messagebox
 import tkintermapview
 
-TITLE = "PV Module"
-window = tkinter.Tk()
-window.title(TITLE)
 
-frame = tkinter.Frame(window)
-frame.pack()
+
+# root window
+root = tk.Tk()
+root.title('Notebook Demo')
+
+# create a notebook
+notebook = ttk.Notebook(root)
+notebook.pack(pady=10, expand=True)
+
+
+# create frames
+tab1 = ttk.Frame(notebook)
+
+tab2 = ttk.Frame(notebook)
+
+tab1.pack()
+
+tab2.pack()
+
+# add frames to notebook
+
+notebook.add(tab1, text='General Information')
+notebook.add(tab2, text='Profile')
+
 
 
 
 def map_window():
-    map_frame = tkinter.Label(frame, text="Location Selection Map")
+    top= tk.Toplevel(root)
+    top.title("Map Window")
+    map_frame = tkinter.Label(top, text="Location Selection Map")
     map_frame.grid(row = 99 , column = 0, padx = 0, pady = 10 )
-    map_widget = tkintermapview.TkinterMapView(map_frame, width=400, height=300, corner_radius=0, padx=10, pady=10)
+    map_widget = tkintermapview.TkinterMapView(map_frame, width=800, height=600, corner_radius=0, padx=10, pady=10)
     map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
     map_widget.grid(row=4, column=0)  
 
     def left_click_event(coordinates_tuple):   
         map_widget.delete_all_marker()
-        
         latitude = round(coordinates_tuple[0],6)
         longitude = round(coordinates_tuple[1],6)
         adr = tkintermapview.convert_coordinates_to_address(latitude, longitude)
@@ -30,9 +51,10 @@ def map_window():
         except:
             address_display = "Street Address not found"
         city_name_marker = map_widget.set_marker(latitude, longitude, text=address_display)
-        
+
         Latitude_entry_var.set(latitude)
         Longitude_entry_var.set(longitude)
+        top.destroy()
         map_frame.destroy()
 
     map_widget.add_left_click_map_command(left_click_event)
@@ -41,7 +63,7 @@ def map_window():
     
 
 ######Location Entry######
-user_selection_frame = tkinter.Label(frame, text="User Selection")
+user_selection_frame = tkinter.Label(tab1, text="User Selection")
 user_selection_frame.grid(row = 0 , column = 0, padx = 0, pady = 10 )
 
 user_address_data = tkinter.LabelFrame(user_selection_frame, text="Location Data")
@@ -195,4 +217,5 @@ for widget in setup.winfo_children():
 
 
 
-window.mainloop()
+
+root.mainloop()
