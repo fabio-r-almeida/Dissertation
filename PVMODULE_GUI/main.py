@@ -6,15 +6,15 @@ from tkinter.ttk import Progressbar
 from tkinter import *
 import importlib.metadata
 import random
-from pvmodule import Inverters 
-from pvmodule import Modules 
-from pvmodule import Irradiance
+from pvmodule import Inverters , Modules, Irradiance, Location, PVGIS
+
 from tktooltip import ToolTip
 
 
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
+
 
 class Splash(tkinter.Toplevel):
     
@@ -67,7 +67,7 @@ class Splash(tkinter.Toplevel):
         l5.config(font=lst5)
         l5.place(x=52,y=130)
 
-        self.Loading_text = tkinter.StringVar(value = "Loading assets...")   
+        self.Loading_text = tkinter.StringVar(value = "Loading...")   
         l4=Label(self,textvariable=self.Loading_text,fg='white',bg=color)
         lst4=('Calibri (Body)',10)
         l4.config(font=lst4)
@@ -87,7 +87,6 @@ class Splash(tkinter.Toplevel):
         
 class Loading(tkinter.Toplevel):
     
-
     def __init__(self, parent):
 
         tkinter.Toplevel.__init__(self, parent)
@@ -134,7 +133,7 @@ class Loading(tkinter.Toplevel):
         l5.config(font=lst5)
         l5.place(x=52,y=130)
 
-        self.Loading_text = tkinter.StringVar(value = "Loading assets...")   
+        self.Loading_text = tkinter.StringVar(value = "Loading...")   
         l4=Label(self,textvariable=self.Loading_text,fg='white',bg=color)
         lst4=('Calibri (Body)',18)
         l4.config(font=lst4)
@@ -151,6 +150,15 @@ class App(customtkinter.CTk):
         #pvmodule variables:
         self.pvmodule_module = None
         self.pvmodule_inverter = None
+        self.pvmodule_location = None
+        self.pvmodule_irradiance = None
+        self.pvmodule_albedo = 0.2
+        self.pvmodule_panel_tilt = 35
+        self.pvmodule_azimuth = 0
+        self.pvmodule_elevation = 2
+        self.pvmodule_module_spacing = None
+
+
 
         super().__init__()
         splash = Splash(self)
@@ -161,7 +169,7 @@ class App(customtkinter.CTk):
         # configure window
         self.title("PV Module GUI")
         #self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}")
-        self.geometry(f"{1100}x{600}")
+        self.geometry(f"{1300}x{600}")
         Splash(self).current_loadings.append("Loading fonts")   #<<<<<<<<--------------------
         Splash(self).bar()                                      #<<<<<<<<--------------------
 
@@ -233,21 +241,29 @@ class App(customtkinter.CTk):
         
 
         # create main entry and button
-        self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
-        self.entry.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
-        Splash(self).current_loadings.append("Loading buttons")      #<<<<<<<<--------------------
-        Splash(self).bar()                                          #<<<<<<<<--------------------
+        #self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
+        #self.entry.grid(row=3, column=1, columnspan=2, padx=(20, 0), pady=(20, 20), sticky="nsew")
+        #Splash(self).current_loadings.append("Loading buttons")      #<<<<<<<<--------------------
+        #Splash(self).bar()                                          #<<<<<<<<--------------------
 
-        self.main_button_1 = customtkinter.CTkButton(master=self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"))
-        self.main_button_1.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
-        Splash(self).current_loadings.append("Loading buttons")    #<<<<<<<<--------------------
-        Splash(self).bar()                                       #<<<<<<<<--------------------
+        #self.main_button_1 = customtkinter.CTkButton(master=self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"))
+        #self.main_button_1.grid(row=3, column=3, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        #Splash(self).current_loadings.append("Loading buttons")    #<<<<<<<<--------------------
+        #Splash(self).bar()                                       #<<<<<<<<--------------------
 
         # create textbox
-        self.textbox = customtkinter.CTkTextbox(self, width=250)
-        self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        #self.textbox = customtkinter.CTkTextbox(self, width=250)
+        #self.textbox.grid(row=0, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
         Splash(self).current_loadings.append("Loading textboxes")  #<<<<<<<<--------------------
         Splash(self).bar()                                        #<<<<<<<<--------------------
+
+        self.tabview_PVGIS = customtkinter.CTkTabview(self, width=250)
+        self.tabview_PVGIS.grid(row=0, column=1, padx=(20, 5), pady=(10, 10), sticky="nsew")
+        self.tabview_PVGIS.add("PVGIS Selection")
+
+        self.tabview_PVGIS.tab("PVGIS Selection").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
+        Splash(self).current_loadings.append("Loading tabviews")     #<<<<<<<<--------------------
+        Splash(self).bar()                                           #<<<<<<<<--------------------
 
         # create tabview
         self.tabview = customtkinter.CTkTabview(self, width=250)
@@ -269,6 +285,44 @@ class App(customtkinter.CTk):
         self.tabview_information.tab("Inverters Info").grid_columnconfigure(0, weight=1)
         Splash(self).current_loadings.append("Loading tabviews")     #<<<<<<<<--------------------
         Splash(self).bar()                                           #<<<<<<<<--------------------
+
+
+        self.albedo_values  = Irradiance().list_albedo()
+        self.albedo_values  = self.albedo_values['Surface'] 
+        self.albedo_values  = list(dict.fromkeys(self.albedo_values .tolist())) 
+
+        self.PVGIS_Panel_Tilt = customtkinter.CTkLabel(self.tabview_PVGIS.tab("PVGIS Selection"), text="Module Tilt:")
+        self.PVGIS_Panel_Tilt.grid(row=0, column=0, padx=10, pady=(10, 0))
+        self.PVGIS_Panel_Tilt_input = customtkinter.CTkEntry(self.tabview_PVGIS.tab("PVGIS Selection"), placeholder_text="default: 35")
+        self.PVGIS_Panel_Tilt_input.grid(row=0, column=1, padx=10, pady=(10, 10))
+
+
+        self.PVGIS_Ground_Albedo = customtkinter.CTkLabel(self.tabview_PVGIS.tab("PVGIS Selection"), text="Albedo:")
+        self.PVGIS_Ground_Albedo.grid(row=1, column=0, padx=10, pady=(10, 0))
+        self.PVGIS_Ground_Albedo_menu = customtkinter.CTkOptionMenu(self.tabview_PVGIS.tab("PVGIS Selection"), dynamic_resizing=False,values=self.albedo_values)
+        self.PVGIS_Ground_Albedo_menu.grid(row=1, column=1, padx=10, pady=(10, 10))
+
+        self.PVGIS_Module_azimuth = customtkinter.CTkLabel(self.tabview_PVGIS.tab("PVGIS Selection"), text="Azimuth:")
+        self.PVGIS_Module_azimuth.grid(row=2, column=0, padx=10, pady=(10, 0))
+        self.Module_azimuth_array = customtkinter.CTkEntry(self.tabview_PVGIS.tab("PVGIS Selection"), placeholder_text="-180 to 180, default: 0")
+        self.Module_azimuth_array.grid(row=2, column=1, padx=10, pady=(10, 10))
+
+        self.PVGIS_Ground_Elevation = customtkinter.CTkLabel(self.tabview_PVGIS.tab("PVGIS Selection"), text="Ground Elevation:")
+        self.PVGIS_Ground_Elevation.grid(row=3, column=0, padx=10, pady=(10, 0))
+        self.PVGIS_Ground_Elevation_Input_array = customtkinter.CTkEntry(self.tabview_PVGIS.tab("PVGIS Selection"), placeholder_text="default: 2")
+        self.PVGIS_Ground_Elevation_Input_array.grid(row=3, column=1, padx=10, pady=(10, 10))
+
+        self.PVGIS_Panel_Spacing = customtkinter.CTkLabel(self.tabview_PVGIS.tab("PVGIS Selection"), text="Module Spacing:")
+        self.PVGIS_Panel_Spacing.grid(row=4, column=0, padx=10, pady=(10, 0))
+        self.PVGIS_Panel_Spacing_Input_array = customtkinter.CTkEntry(self.tabview_PVGIS.tab("PVGIS Selection"), placeholder_text="default: Automatic")
+        self.PVGIS_Panel_Spacing_Input_array.grid(row=4, column=1, padx=10, pady=(10, 10))
+
+
+
+  
+
+
+
 
 
 
@@ -303,12 +357,8 @@ class App(customtkinter.CTk):
             self.module_size.set("Size: " + str(selected_module['Short Side']) + ' x ' + str(selected_module['Long Side']))
             #self.module_n_cells.set("Nº Cells: " + str(selected_module['N_s']) )
 
-
-
-
             
 
-            
         modules = Modules().list_modules(print_data=False)  
         module_brand = modules['Manufacturer'] 
         module_brand = list(dict.fromkeys(module_brand.tolist())) 
@@ -482,24 +532,24 @@ class App(customtkinter.CTk):
         #Splash(self).bar()                                    #<<<<<<<<--------------------
 
         # create slider and progressbar frame
-        self.slider_progressbar_frame = customtkinter.CTkFrame(self, fg_color="transparent")
-        self.slider_progressbar_frame.grid(row=1, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
-        self.slider_progressbar_frame.grid_columnconfigure(0, weight=1)
-        self.slider_progressbar_frame.grid_rowconfigure(4, weight=1)
-        self.seg_button_1 = customtkinter.CTkSegmentedButton(self.slider_progressbar_frame)
-        self.seg_button_1.grid(row=0, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.progressbar_1 = customtkinter.CTkProgressBar(self.slider_progressbar_frame)
-        self.progressbar_1.grid(row=1, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.progressbar_2 = customtkinter.CTkProgressBar(self.slider_progressbar_frame)
-        self.progressbar_2.grid(row=2, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.slider_1 = customtkinter.CTkSlider(self.slider_progressbar_frame, from_=0, to=1, number_of_steps=4)
-        self.slider_1.grid(row=3, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
-        self.slider_2 = customtkinter.CTkSlider(self.slider_progressbar_frame, orientation="vertical")
-        self.slider_2.grid(row=0, column=1, rowspan=5, padx=(10, 10), pady=(10, 10), sticky="ns")
-        self.progressbar_3 = customtkinter.CTkProgressBar(self.slider_progressbar_frame, orientation="vertical")
-        self.progressbar_3.grid(row=0, column=2, rowspan=5, padx=(10, 20), pady=(10, 10), sticky="ns")
-        Splash(self).current_loadings.append("Loading progress bars")  #<<<<<<<<--------------------
-        Splash(self).bar()                                   #<<<<<<<<--------------------
+        #self.slider_progressbar_frame = customtkinter.CTkFrame(self, fg_color="transparent")
+        #self.slider_progressbar_frame.grid(row=1, column=1, padx=(20, 0), pady=(20, 0), sticky="nsew")
+        #self.slider_progressbar_frame.grid_columnconfigure(0, weight=1)
+        #self.slider_progressbar_frame.grid_rowconfigure(4, weight=1)
+        #self.seg_button_1 = customtkinter.CTkSegmentedButton(self.slider_progressbar_frame)
+        #self.seg_button_1.grid(row=0, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
+        #self.progressbar_1 = customtkinter.CTkProgressBar(self.slider_progressbar_frame)
+        #self.progressbar_1.grid(row=1, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
+        #self.progressbar_2 = customtkinter.CTkProgressBar(self.slider_progressbar_frame)
+        #self.progressbar_2.grid(row=2, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
+        #self.slider_1 = customtkinter.CTkSlider(self.slider_progressbar_frame, from_=0, to=1, number_of_steps=4)
+        #self.slider_1.grid(row=3, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
+        #self.slider_2 = customtkinter.CTkSlider(self.slider_progressbar_frame, orientation="vertical")
+        #self.slider_2.grid(row=0, column=1, rowspan=5, padx=(10, 10), pady=(10, 10), sticky="ns")
+        #self.progressbar_3 = customtkinter.CTkProgressBar(self.slider_progressbar_frame, orientation="vertical")
+        #self.progressbar_3.grid(row=0, column=2, rowspan=5, padx=(10, 20), pady=(10, 10), sticky="ns")
+        #Splash(self).current_loadings.append("Loading progress bars")  #<<<<<<<<--------------------
+        #Splash(self).bar()                                   #<<<<<<<<--------------------
 
         # create scrollable frame
         #self.scrollable_frame = customtkinter.CTkScrollableFrame(self, label_text="CTkScrollableFrame")
@@ -536,19 +586,88 @@ class App(customtkinter.CTk):
         self.Module_List_Model_menu.set("Module Model")
         self.Inverter_List_Brand_menu.set("Inverter Brand")
         self.Inverter_List_Model_menu.set("Inverter Model")
+        
 
-        self.slider_1.configure(command=self.progressbar_2.set)
-        self.slider_2.configure(command=self.progressbar_3.set)
+
+
+        self.simulate_button = customtkinter.CTkButton(master=self, border_width=1, fg_color='#66ff99', text_color="black",text_color_disabled='black', text="Simulate", command=self.check_if_can_simulate)
+
+        self.simulate_button.grid(row=3, column=1, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        Splash(self).current_loadings.append("Loading buttons")    #<<<<<<<<--------------------
+        Splash(self).bar()                                       #<<<<<<<<--------------------
+
+        self.progressbar_1 = customtkinter.CTkProgressBar(self.sidebar_frame)
+        self.progressbar_1.grid(row=99, column=0, padx=(20, 10), pady=(10, 10), sticky="ew")
         self.progressbar_1.configure(mode="indeterminnate")
         self.progressbar_1.start()
-        self.textbox.insert("0.0","")
-        self.seg_button_1.configure(values=["CTkSegmentedButton", "Value 2", "Value 3"])
-        self.seg_button_1.set("Value 2")
 
 
-        Splash(self).current_loadings.append("")  #<<<<<<<<--------------------
+        Splash(self).current_loadings.append("")               #<<<<<<<<--------------------
         Splash(self).bar()                                     #<<<<<<<<--------------------
         splash.destroy()
+
+    def check_if_can_simulate(self):
+        
+        if self.PVGIS_Panel_Tilt_input.get() != '':
+            self.pvmodule_panel_tilt = float(self.PVGIS_Panel_Tilt_input.get())
+
+        if self.PVGIS_Ground_Albedo_menu.get() != '':
+            list_of_albedos = Irradiance().list_albedo()
+            albedo = list_of_albedos.loc[list_of_albedos['Surface'] == self.PVGIS_Ground_Albedo_menu.get()]
+            self.pvmodule_albedo = float(albedo['Albedo Average'])
+
+        if self.Module_azimuth_array.get() != '':
+            self.pvmodule_azimuth = float(self.Module_azimuth_array.get())
+
+        if self.PVGIS_Ground_Elevation_Input_array.get() != '':
+            self.pvmodule_elevation = float(self.PVGIS_Ground_Elevation_Input_array.get())
+
+        if self.PVGIS_Panel_Spacing_Input_array.get() != '':
+            self.pvmodule_module_spacing = float(self.PVGIS_Panel_Spacing_Input_array.get())
+        
+        can_simulate = False
+        try:
+            if self.pvmodule_module != None:
+                can_simulate = True
+            else:
+                can_simulate = False
+                return tkinter.messagebox.showwarning(title="Error", message="No Module selected")
+            
+            if not self.pvmodule_inverter.empty and can_simulate:
+                pass
+            else:
+                return tkinter.messagebox.showwarning(title="Error", message="No Inverter selected")
+
+
+            if self.pvmodule_location != None and can_simulate:
+                loading = Loading(self)
+                try:
+                    self.pvmodule_irradiance = Irradiance().irradiance(module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+                except:
+                    return tkinter.messagebox.showwarning(title="Error", message="Bad Location\n Location over sea or not covered.\n Please, select another location")
+                    
+
+
+                loading.destroy()
+
+
+            else:
+                return tkinter.messagebox.showwarning(title="Error", message="No Location selected")
+
+        except:
+            return tkinter.messagebox.showwarning(title="Error", message="No Module, Inverter or Location selected")
+        
+            
+
+
+
+
+
+
+
+        
+
+        
 
     def fill_inverter_information(self,event):
             selected_inverter = self.inverters.loc[self.inverters['Model Number'] == event].squeeze()
@@ -558,18 +677,17 @@ class App(customtkinter.CTk):
             self.inverter_min_mppt.set("Min MPPT: "+ str(selected_inverter['Voltage Maximum (Vdc)']) + " V" )
             self.inverter_nominal_voc.set("Nominal Voltage : " + str(selected_inverter['Voltage Nominal (Vdc)']) + " V" )
             self.inverter_efficiency.set("Efficiency: " + str(selected_inverter['Weighted Efficiency (%)']) + " %" )
+            
+            self.pvmodule_inverter = Inverters().inverter(name=selected_inverter['Model Number'])
 
     def PVMODULE_auto_select_inverter(self):
         loading = Loading(self)
 
         if self.pvmodule_module == None:
             return tkinter.messagebox.showwarning(title="Error", message="No suitable inverter found.")
-
         else:
             self.pvmodule_inverter = Inverters().auto_select_inverter(module = self.pvmodule_module)
             inverter = self.pvmodule_inverter.squeeze()
-
-
 
             if inverter.empty:
                 tkinter.messagebox.showwarning(title="Error", message="No suitable inverter found.")
@@ -579,7 +697,6 @@ class App(customtkinter.CTk):
                 self.fill_inverter_information(inverter['Model Number'])
 
         loading.destroy()
-
         return self.pvmodule_inverter 
 
     def PVMODULE_define_module(self,Model_name, nr_per_string, nr_per_array, losses):
@@ -590,6 +707,7 @@ class App(customtkinter.CTk):
                                           number_of_strings = float(nr_per_array) , 
                                           losses = float(losses))
         loading.destroy()
+
         return return_module
         
 
@@ -654,7 +772,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
         map_widget.grid(row=4, column=0)                                                                        
                                                                                                                 
-        def left_click_event(coordinates_tuple):                                                                
+        def left_click_event(coordinates_tuple):
+
+            loading = Loading(self) 
+            
             map_widget.delete_all_marker()                                                                      
             latitude = round(coordinates_tuple[0],4)                                                            
             longitude = round(coordinates_tuple[1],4)                                                           
@@ -663,13 +784,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 address_display = adr.street + ", " + adr.city                                                  
             except:                                                                                             
                 address_display = "Street Address not found"                                                    
-            city_name_marker = map_widget.set_marker(latitude, longitude, text=address_display)                 
+            city_name_marker = map_widget.set_marker(latitude, longitude, text=address_display) 
+            self.pvmodule_location = Location().set_location(latitude=latitude, longitude=longitude)
+
+                       
 
             self.city_entry_var.set(str(adr.city))                                                                                                    
             self.Latitude_entry_var.set("Latitude: " + str(latitude))                                                                  
             self.Longitude_entry_var.set("Longitude: "+ str(longitude))                                                                  
             top.destroy()                                                                                       
-            map_frame.destroy()                                                                                 
+            map_frame.destroy()  
+            loading.destroy()                                                                      
                                                                                                                 
         map_widget.add_left_click_map_command(left_click_event)                                                 
 
