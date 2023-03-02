@@ -558,8 +558,11 @@ class App(customtkinter.CTk):
             self.inverter_efficiency.set("Efficiency: " + str(selected_inverter['Weighted Efficiency (%)']) + " %" )
 
     def PVMODULE_auto_select_inverter(self):
+        loading = Loading(self)
+
         if self.pvmodule_module == None:
-            pass
+            return tkinter.messagebox.showwarning(title="Error", message="No suitable inverter found.")
+
         else:
             self.pvmodule_inverter = Inverters().auto_select_inverter(module = self.pvmodule_module)
             inverter = self.pvmodule_inverter.squeeze()
@@ -573,9 +576,9 @@ class App(customtkinter.CTk):
                 self.Inverter_List_Model_menu.set(inverter['Model Number'])
                 self.fill_inverter_information(inverter['Model Number'])
 
+        loading.destroy()
 
-
-            return self.pvmodule_inverter 
+        return self.pvmodule_inverter 
 
     def PVMODULE_define_module(self,Model_name, nr_per_string, nr_per_array, losses):
         loading = Loading(self)
