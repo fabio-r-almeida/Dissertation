@@ -5,6 +5,11 @@ import tkintermapview
 from tkinter.ttk import Progressbar
 from tkinter import *
 import importlib.metadata
+import random
+from pvmodule import Inverters 
+from pvmodule import Modules 
+from tktooltip import ToolTip
+
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
@@ -13,8 +18,8 @@ class Splash(tkinter.Toplevel):
     
     current_loadings = []
     def __init__(self, parent):
+
         self.initial_loadings = ["Start","Title","Sidebar","Appearence","Scaling","Entry","Main Button","TextBox","Tabview","Modules","Inverters","RadioButtons","ProgressBar","CheckBox","Delete Splash"]
-        
         self.progress_status_value = 0
         tkinter.Toplevel.__init__(self, parent)
         self.title("Splash")
@@ -32,35 +37,41 @@ class Splash(tkinter.Toplevel):
         s.configure("red.Horizontal.TProgressbar", foreground='red', background='#4f4f4f')
         self.progress=Progressbar(self,style="red.Horizontal.TProgressbar",orient=HORIZONTAL,length=500,mode='determinate')
         
-
         self.progress.place(x=-10,y=235)
-
-        Frame(self,width=427,height=241,bg='#249794').place(x=0,y=0)  
+        color = random.choice(['#2596be','#3ba1c5','#51abcb','#66b6d2'])
+        Frame(self,width=427,height=241,bg=color).place(x=0,y=0)  
 
         
 
         ######## Label
 
-        l1=Label(self,text='PV',fg='white',bg='#249794')
+        l1=Label(self,text='PV',fg='white',bg=color)
         lst1=('Calibri (Body)',18,'bold')
         l1.config(font=lst1)
         l1.place(x=50,y=80)
 
-        l2=Label(self,text='Module',fg='white',bg='#249794')
+        l2=Label(self,text='Module',fg='white',bg=color)
         lst2=('Calibri (Body)',18)
         l2.config(font=lst2)
         l2.place(x=90,y=82)
 
-        l3=Label(self,text=f'Version {importlib.metadata.version("pvmodule")}',fg='white',bg='#249794')
+        l3=Label(self,text=f'Version {importlib.metadata.version("pvmodule")}',fg='white',bg=color)
         lst3=('Calibri (Body)',13)
         l3.config(font=lst3)
         l3.place(x=50,y=110)
 
+        l5=Label(self,text="Fábio Almeida",fg='white',bg=color)
+        lst5=('Calibri (Body)',8)
+        l5.config(font=lst5)
+        l5.place(x=52,y=130)
+
         self.Loading_text = tkinter.StringVar(value = "Loading assets...")   
-        l4=Label(self,textvariable=self.Loading_text,fg='white',bg='#249794')
+        l4=Label(self,textvariable=self.Loading_text,fg='white',bg=color)
         lst4=('Calibri (Body)',10)
         l4.config(font=lst4)
         l4.place(x=18,y=210)  
+ 
+
 
         self.update()
 
@@ -72,10 +83,73 @@ class Splash(tkinter.Toplevel):
         ## required to make window show before the program gets to the mainloop
         
         
+class Loading(tkinter.Toplevel):
+    
+
+    def __init__(self, parent):
+
+        tkinter.Toplevel.__init__(self, parent)
+        self.title("Loading")
+        width_of_window = 427
+        height_of_window = 250
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        x_coordinate = (screen_width/2)-(width_of_window/2)
+        y_coordinate = (screen_height/2)-(height_of_window/2)
+        self.geometry("%dx%d+%d+%d" %(width_of_window,height_of_window,x_coordinate,y_coordinate))
+        self.overrideredirect(1)
+
+        s = tkinter.ttk.Style() 
+        s.theme_use('clam')
+        s.configure("red.Horizontal.TProgressbar", foreground='red', background='#4f4f4f')
+        self.progress=Progressbar(self,style="red.Horizontal.TProgressbar",orient=HORIZONTAL,length=500,mode='determinate')
+    
+        self.progress.place(x=-10,y=235)
+        color = random.choice(['#2596be','#3ba1c5','#51abcb','#66b6d2'])
+        Frame(self,width=427,height=241,bg=color).place(x=0,y=0)  
+
+    
+
+        ######## Label
+
+        l1=Label(self,text='PV',fg='white',bg=color)
+        lst1=('Calibri (Body)',18,'bold')
+        l1.config(font=lst1)
+        l1.place(x=50,y=80)
+
+        l2=Label(self,text='Module',fg='white',bg=color)
+        lst2=('Calibri (Body)',18)
+        l2.config(font=lst2)
+        l2.place(x=90,y=82)
+
+        l3=Label(self,text=f'Version {importlib.metadata.version("pvmodule")}',fg='white',bg=color)
+        lst3=('Calibri (Body)',13)
+        l3.config(font=lst3)
+        l3.place(x=50,y=110)
+
+        l5=Label(self,text="Fábio Almeida",fg='white',bg=color)
+        lst5=('Calibri (Body)',8)
+        l5.config(font=lst5)
+        l5.place(x=52,y=130)
+
+        self.Loading_text = tkinter.StringVar(value = "Loading assets...")   
+        l4=Label(self,textvariable=self.Loading_text,fg='white',bg=color)
+        lst4=('Calibri (Body)',18)
+        l4.config(font=lst4)
+        l4.place(x=18,y=210)  
+ 
+        self.update()
+
+        ## required to make window show before the program gets to the mainloop
 
 
 class App(customtkinter.CTk):
     def __init__(self):
+        
+        #pvmodule variables:
+        self.pvmodule_module = None
+        self.pvmodule_inverter = None
+
         super().__init__()
         splash = Splash(self)
         Splash(self).current_loadings.append("")        #<<<<<<<<--------------------
@@ -105,21 +179,27 @@ class App(customtkinter.CTk):
         self.sidebar_button_1 = customtkinter.CTkButton(self.sidebar_frame, command=self.sidebar_button_event)
         self.sidebar_button_1.grid(row=1, column=0, padx=10, pady=10)
         self.sidebar_button_1.configure(state="enabled", text="Select on Map", text_color="white")
+        ToolTip(self.sidebar_button_1, msg="Opens a map widget where the user can click and it will automatically transfer the coordinates into the correct input.", delay=2.0)   # True by default
+
 
         self.sidebar_button_2 = customtkinter.CTkButton(self.sidebar_frame)
         self.sidebar_button_2.grid(row=2, column=0, padx=10, pady=10)
-        self.Latitude_entry_var = tkinter.StringVar(value = "Longitude: 00.0000")   
+        self.Latitude_entry_var = tkinter.StringVar(value = "Latitude: 00.0000")   
         self.sidebar_button_2.configure(state="disabled", textvariable=self.Latitude_entry_var, text_color_disabled="black", fg_color="white")
+        ToolTip(self.sidebar_button_2, msg="Latitude coordinates", delay=2.0)   # True by default
+
 
         self.sidebar_button_3 = customtkinter.CTkButton(self.sidebar_frame)
         self.sidebar_button_3.grid(row=3, column=0, padx=10, pady=10)
         self.Longitude_entry_var = tkinter.StringVar(value = "Longitude: 00.0000")                                                
         self.sidebar_button_3.configure(state="disabled", textvariable=self.Longitude_entry_var, text_color_disabled="black", fg_color="white")
+        ToolTip(self.sidebar_button_3, msg="Longitude coordinates", delay=2.0)   # True by default
 
         self.sidebar_button_4 = customtkinter.CTkButton(self.sidebar_frame)
         self.sidebar_button_4.grid(row=4, column=0, padx=10, pady=10)
         self.city_entry_var = tkinter.StringVar(value = "")                                                
         self.sidebar_button_4.configure(state="disabled", textvariable=self.city_entry_var, text_color_disabled="black", fg_color="white")
+        ToolTip(self.sidebar_button_4, msg="City name of the location, if not known, 'None' will be displayed. This does not affect the results.", delay=2.0) 
 
         Splash(self).current_loadings.append("Loading sidebars")    #<<<<<<<<--------------------
         Splash(self).bar()                                  #<<<<<<<<--------------------
@@ -148,6 +228,7 @@ class App(customtkinter.CTk):
 
         self.about_button = customtkinter.CTkButton(master=self.sidebar_frame, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), text="About", command=self.about_event)
         self.about_button.grid(row=10, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        
 
         # create main entry and button
         self.entry = customtkinter.CTkEntry(self, placeholder_text="CTkEntry")
@@ -189,13 +270,25 @@ class App(customtkinter.CTk):
 
 
 
-        from pvmodule import Modules                                                                                         
         def combofill_modules(event):                                                                               
             v = modules[ modules['Manufacturer'] == self.Module_List_Brand_menu.get()]['Model Number'].tolist()     
             self.Module_List_Model_menu.configure(values=v) 
 
         def fill_module_information(event):
+
             selected_module = modules.loc[modules['Model Number'] == event].squeeze()
+
+            self.pvmodule_module = self.PVMODULE_define_module(event, 
+                                                                ''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()),
+                                                                ''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()), 
+                                                                ''.join(c for c in str(self.module_losses.get()) if c.isdigit())
+                                                                )
+            self.Module_Amount_Input_string.configure(state="normal")
+            self.Module_Amount_Input_array.configure(state="normal")
+            self.Module_losses_Input_array.configure(state="normal")
+            self.Auto_Select_Inverter_Button.configure(state="normal")
+
+
             self.module_wattage.set("DC Wattage: " + str(selected_module['Pmax']) + " W" )
             self.module_technology.set("Technology: " + str(selected_module['Technology']) )
             if selected_module['BIPV'] == 'N':
@@ -209,7 +302,7 @@ class App(customtkinter.CTk):
             self.module_n_cells.set("Nº Cells: " + str(selected_module['N_s']) )
 
 
-     
+
 
             
 
@@ -228,8 +321,37 @@ class App(customtkinter.CTk):
         self.Module_List_Model_menu = customtkinter.CTkOptionMenu(self.tabview.tab("Modules"), dynamic_resizing=False,values=[], command= fill_module_information)
         self.Module_List_Model_menu.grid(row=1, column=1, padx=10, pady=(10, 10))
 
-        self.Module_Amount_Input = customtkinter.CTkButton(self.tabview.tab("Modules"), text="Amount of Modules",command=self.open_input_dialog_event)
-        self.Module_Amount_Input.grid(row=2, columnspan=2, padx=10, pady=(10, 10))
+        self.Module_Amount_Input_string = customtkinter.CTkButton(self.tabview.tab("Modules"), state="disabled" ,text="Nº / String",command=self.open_input_dialog_amount_string)
+        self.Module_Amount_Input_string.grid(row=2, column=0, padx=10, pady=(10, 10))
+        self.modules_amount_string = tkinter.StringVar(value = "Modules: 1") 
+        self.Module_Amount_Output_string = customtkinter.CTkLabel(self.tabview.tab("Modules"), textvariable=self.modules_amount_string)
+        self.Module_Amount_Output_string.grid(row=2, column=1, padx=10, pady=(10, 0))
+        ToolTip(self.Module_Amount_Input_string, msg="The value represents the amount of modules are mounted in series (modules per string).", delay=2.0)   # True by default
+
+
+        self.Module_Amount_Input_array = customtkinter.CTkButton(self.tabview.tab("Modules"), state="disabled", text="Nº / Array",command=self.open_input_dialog_amount_array)
+        self.Module_Amount_Input_array.grid(row=3, column=0, padx=10, pady=(10, 10))
+        self.modules_amount_array = tkinter.StringVar(value = "Modules: 1") 
+        self.Module_Amount_Output_array = customtkinter.CTkLabel(self.tabview.tab("Modules"), textvariable=self.modules_amount_array)
+        self.Module_Amount_Output_array.grid(row=3, column=1, padx=10, pady=(10, 0))
+        ToolTip(self.Module_Amount_Input_array, msg="The value represents the amount of modules/string are mounted in paralel.", delay=2.0)   # True by default
+
+        
+
+
+
+        self.module_losses = tkinter.StringVar(value = "Losses: 0%") 
+        self.Module_losses_Input_array = customtkinter.CTkLabel(self.tabview.tab("Modules"), textvariable=self.module_losses)
+        self.Module_losses_Input_array.grid(row=4, column=0, padx=10, pady=(10, 10))
+        self.Module_losses_Input_array = customtkinter.CTkSlider(self.tabview.tab("Modules"),state="disabled", from_=0, to=15, width=100 , command = self.slider_event)
+        self.Module_losses_Input_array.grid(row=4, column=1, padx=10, pady=(10, 10))
+        ToolTip(self.Module_losses_Input_array, msg="The percentage of losses the module has due to: \n-Dust\n-Damage\n-Partial Shading\n- ...", delay=2.0)   # True by default
+
+
+        
+
+
+
         
 
 
@@ -238,13 +360,14 @@ class App(customtkinter.CTk):
 
 
 
-        from pvmodule import Inverters                                                                                                  
+                                                                                                         
         def combofill_inverter(event):                                                                               
-            v = inverters[ inverters['Manufacturer'] == self.Inverter_List_Brand_menu.get()]['Model Number'].tolist()
+            v = self.inverters[ self.inverters['Manufacturer'] == self.Inverter_List_Brand_menu.get()]['Model Number'].tolist()
             self.Inverter_List_Model_menu.configure(values=v)
 
-        inverters = Inverters().list_inverters()   
-        inverter_brand = inverters['Manufacturer']                                                                  
+
+        self.inverters = Inverters().list_inverters()   
+        inverter_brand = self.inverters['Manufacturer']                                                                  
         inverter_brand = list(dict.fromkeys(inverter_brand.tolist()))
 
         self.Inverter_List_Brand_Label = customtkinter.CTkLabel(self.tabview.tab("Inverters"), text="Inverter Brand:")
@@ -254,12 +377,15 @@ class App(customtkinter.CTk):
 
         self.Inverter_List_Model_Label = customtkinter.CTkLabel(self.tabview.tab("Inverters"), text="Inverter Model:")
         self.Inverter_List_Model_Label.grid(row=1, column=0, padx=10, pady=(10, 0))
-        self.Inverter_List_Model_menu = customtkinter.CTkOptionMenu(self.tabview.tab("Inverters"), dynamic_resizing=False,values=[])
+        self.Inverter_List_Model_menu = customtkinter.CTkOptionMenu(self.tabview.tab("Inverters"), dynamic_resizing=False,values=[], command= self.fill_inverter_information)
         self.Inverter_List_Model_menu.grid(row=1, column=1, padx=10, pady=(10, 10))
 
-        self.Auto_Select_Inverter_Button = customtkinter.CTkButton(self.tabview.tab("Inverters"), command=print("AUTO SELECT"))
-        self.Auto_Select_Inverter_Button.grid(row=2, columnspan=2, padx=10, pady=10)
-        self.Auto_Select_Inverter_Button.configure(text="Auto-select Inverter", text_color="white")
+        self.Auto_Select_Inverter_Button = customtkinter.CTkButton(self.tabview.tab("Inverters"), state="disabled", command= self.PVMODULE_auto_select_inverter)
+        self.Auto_Select_Inverter_Button.grid(row=2, column=0, padx=10, pady=10)
+        self.Auto_Select_Inverter_Button.configure(text="Auto-select", text_color="white")
+        ToolTip(self.Auto_Select_Inverter_Button, msg="Auto-select chooses a suitable inverter (not necessarily the best option available).", delay=2.0)   # True by default
+        
+
         Splash(self).current_loadings.append("Importing Inverters")  #<<<<<<<<--------------------
         Splash(self).bar()                                 #<<<<<<<<--------------------
 
@@ -440,13 +566,81 @@ class App(customtkinter.CTk):
         Splash(self).current_loadings.append("")  #<<<<<<<<--------------------
         Splash(self).bar()                                     #<<<<<<<<--------------------
         splash.destroy()
-        
-        
+
+    def fill_inverter_information(self,event):
+            selected_inverter = self.inverters.loc[self.inverters['Model Number'] == event].squeeze()
+            self.inverter_wattage.set("AC Wattage: " + str(selected_inverter['Vac']) + " W" )
+            self.inverter_paco.set("Paco: " + str(selected_inverter['Paco']) )
+            self.inverter_max_mppt.set("Max MPPT: "+ str(selected_inverter['Mppt_high']) + " V" )
+            self.inverter_min_mppt.set("Min MPPT: "+ str(selected_inverter['Mppt_low']) + " V" )
+            self.inverter_max_isc.set("Max Short Circuit: " + str(selected_inverter['Idcmax']) + " A" )
+            self.inverter_max_voc.set("Max Short Circuit: " + str(selected_inverter['Vdcmax']) + " V" )
+
+    def PVMODULE_auto_select_inverter(self):
+        if self.pvmodule_module == None:
+            pass
+        else:
+            self.pvmodule_inverter = Inverters().auto_select_inverter(module = self.pvmodule_module)
+
+            inverter = self.pvmodule_inverter.squeeze()
+ 
+            
+            
+            if inverter.empty:
+                tkinter.messagebox.showwarning(title="Error", message="No suitable inverter found.")
+            else:
+                self.Inverter_List_Brand_menu.set(inverter['Manufacturer'])
+                self.Inverter_List_Model_menu.set(inverter['Model Number'])
+                self.fill_inverter_information(inverter['Model Number'])
 
 
-    def open_input_dialog_event(self):
-        dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="CTkInputDialog")
-        print("CTkInputDialog:", dialog.get_input())
+
+            return self.pvmodule_inverter 
+
+    def PVMODULE_define_module(self,Model_name, nr_per_string, nr_per_array, losses):
+        loading = Loading(self)
+
+        return_module =  Modules().module(model = Model_name , 
+                                          modules_per_string = float(nr_per_string) ,
+                                          number_of_strings = float(nr_per_array) , 
+                                          losses = float(losses))
+        loading.destroy()
+
+        return return_module
+        
+
+    def slider_event(self, value):
+        self.module_losses.set(f"Losses: {round(value,0)}%")
+        Model_name = self.pvmodule_module['name'].replace(str(self.Module_List_Brand_menu.get() + " "), "")
+
+        
+        self.pvmodule_module =  Modules().module(model = Model_name , 
+                                          modules_per_string = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit())) ,
+                                          number_of_strings = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit())) , 
+                                          losses = float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/10)
+ 
+
+    def open_input_dialog_amount_string(self):
+        dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="Amount of Modules per String")
+        self.modules_amount_string.set(value = "Modules: " + str(dialog.get_input())) 
+        Model_name = self.pvmodule_module['name'].replace(str(self.Module_List_Brand_menu.get() + " "), "")
+
+        
+        self.pvmodule_module =  Modules().module(model = Model_name , 
+                                          modules_per_string = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit())) ,
+                                          number_of_strings = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit())) , 
+                                          losses = float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/10)
+
+    def open_input_dialog_amount_array(self):
+        dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="Amount of Modules per Array")
+        self.modules_amount_array.set(value = "Modules: " + str(dialog.get_input())) 
+        Model_name = self.pvmodule_module['name'].replace(str(self.Module_List_Brand_menu.get() + " "), "")
+
+        
+        self.pvmodule_module =  Modules().module(model = Model_name , 
+                                          modules_per_string = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit())) ,
+                                          number_of_strings = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit())) , 
+                                          losses = float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/10)
 
     def about_event(self):
         top= tkinter.Toplevel(self) 
