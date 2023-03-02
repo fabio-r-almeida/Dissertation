@@ -581,11 +581,8 @@ class App(customtkinter.CTk):
             pass
         else:
             self.pvmodule_inverter = Inverters().auto_select_inverter(module = self.pvmodule_module)
-
             inverter = self.pvmodule_inverter.squeeze()
- 
-            
-            
+
             if inverter.empty:
                 tkinter.messagebox.showwarning(title="Error", message="No suitable inverter found.")
             else:
@@ -605,42 +602,30 @@ class App(customtkinter.CTk):
                                           number_of_strings = float(nr_per_array) , 
                                           losses = float(losses))
         loading.destroy()
-
         return return_module
         
 
     def slider_event(self, value):
-        self.module_losses.set(f"Losses: {round(value,0)}%")
-        Model_name = self.pvmodule_module['name'].replace(str(self.Module_List_Brand_menu.get() + " "), "")
+        self.module_losses.set(f"Losses: {round(int(value),0)}%")
 
-        
-        self.pvmodule_module =  Modules().module(model = Model_name , 
-                                          modules_per_string = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit())) ,
-                                          number_of_strings = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit())) , 
-                                          losses = float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/10)
+        self.pvmodule_module['losses'] = float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))
  
 
     def open_input_dialog_amount_string(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="Amount of Modules per String")
         self.modules_amount_string.set(value = "Modules: " + str(dialog.get_input())) 
-        Model_name = self.pvmodule_module['name'].replace(str(self.Module_List_Brand_menu.get() + " "), "")
 
-        
-        self.pvmodule_module =  Modules().module(model = Model_name , 
-                                          modules_per_string = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit())) ,
-                                          number_of_strings = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit())) , 
-                                          losses = float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/10)
+        self.pvmodule_module['modules_per_string'] = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))
+
 
     def open_input_dialog_amount_array(self):
         dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="Amount of Modules per Array")
         self.modules_amount_array.set(value = "Modules: " + str(dialog.get_input())) 
-        Model_name = self.pvmodule_module['name'].replace(str(self.Module_List_Brand_menu.get() + " "), "")
 
-        
-        self.pvmodule_module =  Modules().module(model = Model_name , 
-                                          modules_per_string = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit())) ,
-                                          number_of_strings = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit())) , 
-                                          losses = float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/10)
+        self.pvmodule_module['number_of_strings'] = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))
+
+        print( self.pvmodule_module)
+
 
     def about_event(self):
         top= tkinter.Toplevel(self) 
