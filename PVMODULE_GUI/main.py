@@ -1,4 +1,3 @@
-import tkinter
 import tkinter.messagebox
 import customtkinter
 import tkintermapview
@@ -6,18 +5,16 @@ from tkinter.ttk import Progressbar
 from tkinter import *
 import importlib.metadata
 import random
-from pvmodule import Inverters , Modules, Irradiance, Location, PVGIS
-
+from pvmodule import *
 from tktooltip import ToolTip
-
+import matplotlib.pyplot as plt
+import plot 
 
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
 customtkinter.set_default_color_theme("blue")  # Themes: "blue" (standard), "green", "dark-blue"
 
-
 class Splash(tkinter.Toplevel):
-    
     current_loadings = []
     def __init__(self, parent):
 
@@ -287,6 +284,7 @@ class App(customtkinter.CTk):
         self.tabview_information.tab("PVGIS Info").grid_columnconfigure(0, weight=1)
         Splash(self).current_loadings.append("Loading tabviews")     #<<<<<<<<--------------------
         Splash(self).bar()                                           #<<<<<<<<--------------------
+        
 
 
         self.albedo_values  = Irradiance().list_albedo()
@@ -394,9 +392,25 @@ class App(customtkinter.CTk):
         self.Module_losses_Input_array.grid(row=4, column=0, padx=10, pady=(10, 10))
         self.Module_losses_Input_array = customtkinter.CTkSlider(self.tabview.tab("Modules Selection"),state="disabled", from_=0, to=15, width=100 , command = self.slider_event)
         self.Module_losses_Input_array.grid(row=4, column=1, padx=10, pady=(10, 10))
+
         ToolTip(self.Module_losses_Input_array, msg="The percentage of losses the module has due to: \n-Dust\n-Damage\n-Partial Shading\n- ...", delay=2.0)   # True by default
         Splash(self).current_loadings.append("Importing Modules")  #<<<<<<<<--------------------
-        Splash(self).bar()                               #<<<<<<<<--------------------
+        Splash(self).bar()   
+
+
+        self.toplevel_window = None
+
+        def open_toplevel():
+            if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
+                self.toplevel_window = plot.ToplevelWindow(self)  # create window if its None or destroyed
+                self.toplevel_window.focus()
+            else:
+                self.toplevel_window.focus()  # if window exists focus it   
+
+        self.button_1 = customtkinter.CTkButton(self, text="open toplevel", command=open_toplevel)
+        self.button_1.grid(row=4, column=3, padx=10, pady=(10, 10))
+
+                       
 
 
 
@@ -589,6 +603,8 @@ class App(customtkinter.CTk):
         self.Module_List_Model_menu.set("Module Model")
         self.Inverter_List_Brand_menu.set("Inverter Brand")
         self.Inverter_List_Model_menu.set("Inverter Model")
+        self.map_window_frame = None
+        self.about_me_Toplevel = None
         
 
 
@@ -635,44 +651,31 @@ class App(customtkinter.CTk):
             else:
                 can_simulate = False
                 return tkinter.messagebox.showwarning(title="Error", message="No Module selected")
-            
             if not self.pvmodule_inverter.empty and can_simulate:
                 pass
             else:
                 return tkinter.messagebox.showwarning(title="Error", message="No Inverter selected")
-
-
             if self.pvmodule_location != None and can_simulate:
-                loading = Loading(self)
+                
                 try:
-                    self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-                    print(self.pvmodule_inputs)
-                    print(self.pvmodule_metadata)
+                    loading = Loading(self)
+                    self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)                
+                    self.pvmodule_irradiance.plot(x ='GHI', y='DOY', kind='line')
+                    loading.destroy()
+                    plt.show()
+
+
+
                 except:
                     return tkinter.messagebox.showwarning(title="Error", message="Bad Location\n Location over sea or not covered.\n Please, select another location")
-                    
-
-
-                loading.destroy()
-
-
+                
             else:
                 return tkinter.messagebox.showwarning(title="Error", message="No Location selected")
-
         except:
             return tkinter.messagebox.showwarning(title="Error", message="No Module, Inverter or Location selected")
         
             
 
-
-
-
-
-
-
-        
-
-        
 
     def fill_inverter_information(self,event):
             selected_inverter = self.inverters.loc[self.inverters['Model Number'] == event].squeeze()
@@ -702,6 +705,7 @@ class App(customtkinter.CTk):
                 self.fill_inverter_information(inverter['Model Number'])
 
         loading.destroy()
+        
         return self.pvmodule_inverter 
 
     def PVMODULE_define_module(self,Model_name, nr_per_string, nr_per_array, losses):
@@ -748,16 +752,21 @@ class App(customtkinter.CTk):
 
 
     def about_event(self):
-        top= tkinter.Toplevel(self) 
-        top.geometry(f"{400}x{350}") 
-        top.title("About")                                                                                  
-        map_frame = tkinter.Label(top, wraplength=350, text='''Copyright (c), 2023, Fabio Ramalho de Almeida
+        if self.about_me_Toplevel is None or not self.about_me_Toplevel.winfo_exists():
+            self.about_me_Toplevel= customtkinter.CTkToplevel(self) 
+            self.about_me_Toplevel.geometry(f"{400}x{350}") 
+            self.about_me_Toplevel.title("About")                                                                                  
+            map_frame = tkinter.Label(self.about_me_Toplevel, wraplength=350, text='''Copyright (c), 2023, Fábio Ramalho de Almeida
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.''')
-        map_frame.grid(row = 0 , column = 0, padx = 20, pady = 10 ) 
+            map_frame.grid(row = 0 , column = 0, padx = 20, pady = 10 ) 
+            self.about_me_Toplevel.focus()
+        else:
+            self.about_me_Toplevel.focus()
+
 
     def change_appearance_mode_event(self, new_appearance_mode: str):
         customtkinter.set_appearance_mode(new_appearance_mode)
@@ -765,43 +774,46 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     def change_scaling_event(self, new_scaling: str):
         new_scaling_float = int(new_scaling.replace("%", "")) / 100
         customtkinter.set_widget_scaling(new_scaling_float)
-
+    
     def sidebar_button_event(self):
-        top= tkinter.Toplevel(self)                                                                                  
-        top.title("Map Window")                                                                                 
-        map_frame = tkinter.Label(top, text="Location Selection Map")                                           
-        map_frame.grid(row = 99 , column = 0, padx = 0, pady = 10 )                                             
-        map_widget = tkintermapview.TkinterMapView(map_frame, width=800, height=600, corner_radius=0, padx=10, pady=10)
-        map_widget.set_position(38.7557, -9.2803)  # Paris, France
-        map_widget.set_zoom(12)
-        map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
-        map_widget.grid(row=4, column=0)                                                                        
-                                                                                                                
-        def left_click_event(coordinates_tuple):
+        if self.map_window_frame is None or not self.map_window_frame.winfo_exists():
+            self.map_window_frame= customtkinter.CTkToplevel(self)                                                                                  
+            self.map_window_frame.title("Map Window")                                                                                 
+            map_frame = customtkinter.CTkLabel(self.map_window_frame, text="")                                           
+            map_frame.grid(row = 0 , column = 0, padx = 0, pady = 0 )                                             
+            map_widget = tkintermapview.TkinterMapView(map_frame, width=800, height=600, corner_radius=0, padx=10, pady=10)
+            map_widget.set_position(38.7557, -9.2803)  # Paris, France
+            map_widget.set_zoom(12)
+            map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
+            map_widget.grid(row=4, column=0)                                                                        
 
-            loading = Loading(self) 
-            
-            map_widget.delete_all_marker()                                                                      
-            latitude = round(coordinates_tuple[0],4)                                                            
-            longitude = round(coordinates_tuple[1],4)                                                           
-            adr = tkintermapview.convert_coordinates_to_address(latitude, longitude)                            
-            try:                                                                                                
-                address_display = adr.street + ", " + adr.city                                                  
-            except:                                                                                             
-                address_display = "Street Address not found"                                                    
-            city_name_marker = map_widget.set_marker(latitude, longitude, text=address_display) 
-            self.pvmodule_location = Location().set_location(latitude=latitude, longitude=longitude)
+            def left_click_event(coordinates_tuple):
 
-                       
+                loading = Loading(self) 
 
-            self.city_entry_var.set(str(adr.city))                                                                                                    
-            self.Latitude_entry_var.set("Latitude: " + str(latitude))                                                                  
-            self.Longitude_entry_var.set("Longitude: "+ str(longitude))                                                                  
-            top.destroy()                                                                                       
-            map_frame.destroy()  
-            loading.destroy()                                                                      
-                                                                                                                
-        map_widget.add_left_click_map_command(left_click_event)                                                 
+                map_widget.delete_all_marker()                                                                      
+                latitude = round(coordinates_tuple[0],4)                                                            
+                longitude = round(coordinates_tuple[1],4)                                                           
+                adr = tkintermapview.convert_coordinates_to_address(latitude, longitude)                            
+                try:                                                                                                
+                    address_display = adr.street + ", " + adr.city                                                  
+                except:                                                                                             
+                    address_display = "Street Address not found"                                                    
+                city_name_marker = map_widget.set_marker(latitude, longitude, text=address_display) 
+                self.pvmodule_location = Location().set_location(latitude=latitude, longitude=longitude)
+
+
+
+                self.city_entry_var.set(str(adr.city))                                                                                                    
+                self.Latitude_entry_var.set("Latitude: " + str(latitude))                                                                  
+                self.Longitude_entry_var.set("Longitude: "+ str(longitude))                                                                  
+                self.map_window_frame.destroy()                                                                                       
+                map_frame.destroy()  
+                loading.destroy()                                                                      
+
+            map_widget.add_left_click_map_command(left_click_event) 
+        else:
+            self.map_window_frame.focus()                                                
 
 
 
