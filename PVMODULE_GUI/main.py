@@ -299,7 +299,7 @@ class App(customtkinter.CTk):
             self.module_voc.set("Open Circuit: " + str(selected_module['Voc']) + " V" )
             self.module_noct.set("NOCT: " + str(selected_module['NOCT']) )
             self.module_size.set("Size: " + str(selected_module['Short Side']) + ' x ' + str(selected_module['Long Side']))
-            self.module_n_cells.set("Nº Cells: " + str(selected_module['N_s']) )
+            #self.module_n_cells.set("Nº Cells: " + str(selected_module['N_s']) )
 
 
 
@@ -328,7 +328,6 @@ class App(customtkinter.CTk):
         self.Module_Amount_Output_string.grid(row=2, column=1, padx=10, pady=(10, 0))
         ToolTip(self.Module_Amount_Input_string, msg="The value represents the amount of modules are mounted in series (modules per string).", delay=2.0)   # True by default
 
-
         self.Module_Amount_Input_array = customtkinter.CTkButton(self.tabview.tab("Modules"), state="disabled", text="Nº / Array",command=self.open_input_dialog_amount_array)
         self.Module_Amount_Input_array.grid(row=3, column=0, padx=10, pady=(10, 10))
         self.modules_amount_array = tkinter.StringVar(value = "Modules: 1") 
@@ -336,25 +335,12 @@ class App(customtkinter.CTk):
         self.Module_Amount_Output_array.grid(row=3, column=1, padx=10, pady=(10, 0))
         ToolTip(self.Module_Amount_Input_array, msg="The value represents the amount of modules/string are mounted in paralel.", delay=2.0)   # True by default
 
-        
-
-
-
         self.module_losses = tkinter.StringVar(value = "Losses: 0%") 
         self.Module_losses_Input_array = customtkinter.CTkLabel(self.tabview.tab("Modules"), textvariable=self.module_losses)
         self.Module_losses_Input_array.grid(row=4, column=0, padx=10, pady=(10, 10))
         self.Module_losses_Input_array = customtkinter.CTkSlider(self.tabview.tab("Modules"),state="disabled", from_=0, to=15, width=100 , command = self.slider_event)
         self.Module_losses_Input_array.grid(row=4, column=1, padx=10, pady=(10, 10))
         ToolTip(self.Module_losses_Input_array, msg="The percentage of losses the module has due to: \n-Dust\n-Damage\n-Partial Shading\n- ...", delay=2.0)   # True by default
-
-
-        
-
-
-
-        
-
-
         Splash(self).current_loadings.append("Importing Modules")  #<<<<<<<<--------------------
         Splash(self).bar()                               #<<<<<<<<--------------------
 
@@ -384,18 +370,13 @@ class App(customtkinter.CTk):
         self.Auto_Select_Inverter_Button.grid(row=2, column=0, padx=10, pady=10)
         self.Auto_Select_Inverter_Button.configure(text="Auto-select", text_color="white")
         ToolTip(self.Auto_Select_Inverter_Button, msg="Auto-select chooses a suitable inverter (not necessarily the best option available).", delay=2.0)   # True by default
-        
-
         Splash(self).current_loadings.append("Importing Inverters")  #<<<<<<<<--------------------
         Splash(self).bar()                                 #<<<<<<<<--------------------
 
 
-
-   
-
-        self.scrollable_frame_modules = customtkinter.CTkScrollableFrame(self.tabview_information.tab("Modules"))
-        self.scrollable_frame_modules.grid(row=0, column=3, sticky="nsew")
-        self.scrollable_frame_modules.grid_columnconfigure(0, weight=1)
+        self.scrollable_frame_modules = self.tabview_information.tab("Modules") #customtkinter.CTkScrollableFrame(self.tabview_information.tab("Modules"))
+        #self.scrollable_frame_modules.grid(row=0, column=3,)
+        #self.scrollable_frame_modules.grid_columnconfigure(1, weight=1)
         
         self.module_wattage = tkinter.StringVar(value = "DC Wattage:") 
         Module_Wattage = customtkinter.CTkLabel(master=self.scrollable_frame_modules, textvariable=f"{self.module_wattage}")
@@ -425,23 +406,23 @@ class App(customtkinter.CTk):
         Module_NOCT = customtkinter.CTkLabel(master=self.scrollable_frame_modules, textvariable=f"{self.module_noct}")
         Module_NOCT.grid(row=8, column=0, padx=10, pady=(0, 5), sticky="w")
 
-        self.module_n_cells = tkinter.StringVar(value = "Nº Cells:") 
-        Module_N_Cells = customtkinter.CTkLabel(master=self.scrollable_frame_modules, textvariable=f"{self.module_n_cells}")
-        Module_N_Cells.grid(row=9, column=0, padx=10, pady=(0, 5), sticky="w")
+        #self.module_n_cells = tkinter.StringVar(value = "Nº Cells:") 
+        #Module_N_Cells = customtkinter.CTkLabel(master=self.scrollable_frame_modules, textvariable=f"{self.module_n_cells}")
+        #Module_N_Cells.grid(row=9, column=0, padx=10, pady=(0, 5), sticky="w")
         Splash(self).current_loadings.append("Adding Module Information")  #<<<<<<<<--------------------
         Splash(self).bar()                                 #<<<<<<<<--------------------
 
 
 
-        self.scrollable_frame_inverter = customtkinter.CTkScrollableFrame(self.tabview_information.tab("Inverters"))
-        self.scrollable_frame_inverter.grid(row=1, column=3, sticky="nsew")
-        self.scrollable_frame_inverter.grid_columnconfigure(0, weight=1)
+        self.scrollable_frame_inverter = self.tabview_information.tab("Inverters") # customtkinter.CTkScrollableFrame(self.tabview_information.tab("Inverters"))
+        #self.scrollable_frame_inverter.grid(row=1, column=3, sticky="nsew")
+        #self.scrollable_frame_inverter.grid_columnconfigure(0, weight=1)
         
-        self.inverter_wattage = tkinter.StringVar(value = "AC Wattage:") 
+        self.inverter_wattage = tkinter.StringVar(value = "AC Output: ") 
         Inverter_Wattage = customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_wattage}")
         Inverter_Wattage.grid(row=1, column=0, padx=10, pady=(0, 5), sticky="w")
 
-        self.inverter_paco = tkinter.StringVar(value = "Max DC Output:") 
+        self.inverter_paco = tkinter.StringVar(value = "Max Output Power:") 
         Inverter_max_dc_output= customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_paco}")
         Inverter_max_dc_output.grid(row=2, column=0, padx=10, pady=(0, 5), sticky="w")
 
@@ -453,13 +434,13 @@ class App(customtkinter.CTk):
         Inverter_min_mppt= customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_min_mppt}")
         Inverter_min_mppt.grid(row=4, column=0, padx=10, pady=(0, 5), sticky="w")
 
-        self.inverter_max_isc = tkinter.StringVar(value = "Max Short Circuit:") 
-        Inverter_max_isc= customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_max_isc}")
-        Inverter_max_isc.grid(row=5, column=0, padx=10, pady=(0, 5), sticky="w")
-
-        self.inverter_max_voc = tkinter.StringVar(value = "Max Open Circuit:") 
-        Inverter_max_voc= customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_max_voc}")
+        self.inverter_nominal_voc = tkinter.StringVar(value = "Nominal Voltage:") 
+        Inverter_max_voc= customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_nominal_voc}")
         Inverter_max_voc.grid(row=6, column=0, padx=10, pady=(0, 5), sticky="w")
+
+        self.inverter_efficiency = tkinter.StringVar(value = "Efficiency:") 
+        Inverter_efficiency= customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_efficiency}")
+        Inverter_efficiency.grid(row=5, column=0, padx=10, pady=(0, 5), sticky="w")
         Splash(self).current_loadings.append("Adding Module Information")  #<<<<<<<<--------------------
         Splash(self).bar()                                 #<<<<<<<<--------------------
 
@@ -569,12 +550,12 @@ class App(customtkinter.CTk):
 
     def fill_inverter_information(self,event):
             selected_inverter = self.inverters.loc[self.inverters['Model Number'] == event].squeeze()
-            self.inverter_wattage.set("AC Wattage: " + str(selected_inverter['Vac']) + " W" )
-            self.inverter_paco.set("Paco: " + str(selected_inverter['Paco']) )
-            self.inverter_max_mppt.set("Max MPPT: "+ str(selected_inverter['Mppt_high']) + " V" )
-            self.inverter_min_mppt.set("Min MPPT: "+ str(selected_inverter['Mppt_low']) + " V" )
-            self.inverter_max_isc.set("Max Short Circuit: " + str(selected_inverter['Idcmax']) + " A" )
-            self.inverter_max_voc.set("Max Short Circuit: " + str(selected_inverter['Vdcmax']) + " V" )
+            self.inverter_wattage.set("AC Output: " + str(selected_inverter['Nominal Voltage (Vac)']) + " V" )
+            self.inverter_paco.set("Max Output Power: " + str(selected_inverter['Maximum Continuous Output Power (kW)']) + " kW")
+            self.inverter_max_mppt.set("Max MPPT: "+ str(selected_inverter['Voltage Minimum (Vdc)']) + " V" )
+            self.inverter_min_mppt.set("Min MPPT: "+ str(selected_inverter['Voltage Maximum (Vdc)']) + " V" )
+            self.inverter_nominal_voc.set("Nominal Voltage : " + str(selected_inverter['Voltage Nominal (Vdc)']) + " V" )
+            self.inverter_efficiency.set("Efficiency: " + str(selected_inverter['Weighted Efficiency (%)']) + " %" )
 
     def PVMODULE_auto_select_inverter(self):
         if self.pvmodule_module == None:
@@ -582,6 +563,8 @@ class App(customtkinter.CTk):
         else:
             self.pvmodule_inverter = Inverters().auto_select_inverter(module = self.pvmodule_module)
             inverter = self.pvmodule_inverter.squeeze()
+
+
 
             if inverter.empty:
                 tkinter.messagebox.showwarning(title="Error", message="No suitable inverter found.")
@@ -624,7 +607,8 @@ class App(customtkinter.CTk):
 
         self.pvmodule_module['number_of_strings'] = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))
 
-        print( self.pvmodule_module)
+  
+  
 
 
     def about_event(self):
