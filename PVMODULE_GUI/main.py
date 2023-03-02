@@ -280,9 +280,11 @@ class App(customtkinter.CTk):
         self.tabview_information.grid(row=0, column=3, padx=(5, 10), pady=(10, 10), sticky="nsew")
         self.tabview_information.add("Modules Info")
         self.tabview_information.add("Inverters Info")
+        self.tabview_information.add("PVGIS Info")
 
         self.tabview_information.tab("Modules Info").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
         self.tabview_information.tab("Inverters Info").grid_columnconfigure(0, weight=1)
+        self.tabview_information.tab("PVGIS Info").grid_columnconfigure(0, weight=1)
         Splash(self).current_loadings.append("Loading tabviews")     #<<<<<<<<--------------------
         Splash(self).bar()                                           #<<<<<<<<--------------------
 
@@ -432,31 +434,31 @@ class App(customtkinter.CTk):
         
         self.module_wattage = tkinter.StringVar(value = "DC Wattage:") 
         Module_Wattage = customtkinter.CTkLabel(master=self.scrollable_frame_modules, textvariable=f"{self.module_wattage}")
-        Module_Wattage.grid(row=2, column=0, padx=10, pady=(0, 5), sticky="w")
+        Module_Wattage.grid(row=0, column=0, padx=10, pady=(0, 5), sticky="w")
 
         self.module_size = tkinter.StringVar(value = "Size:") 
         Module_Size = customtkinter.CTkLabel(master=self.scrollable_frame_modules, textvariable=f"{self.module_size}")
-        Module_Size.grid(row=3, column=0, padx=10, pady=(0, 5), sticky="w")
+        Module_Size.grid(row=1, column=0, padx=10, pady=(0, 5), sticky="w")
         
         self.module_bifaciality = tkinter.StringVar(value = "Bifaciality:") 
         Module_Bifaciality = customtkinter.CTkLabel(master=self.scrollable_frame_modules, textvariable=f"{self.module_bifaciality}")
-        Module_Bifaciality.grid(row=4, column=0, padx=10, pady=(0, 5), sticky="w")
+        Module_Bifaciality.grid(row=2, column=0, padx=10, pady=(0, 5), sticky="w")
         
         self.module_technology = tkinter.StringVar(value = "Technology:") 
         Module_Technology = customtkinter.CTkLabel(master=self.scrollable_frame_modules, textvariable=f"{self.module_technology}")
-        Module_Technology.grid(row=5, column=0, padx=10, pady=(0, 5), sticky="w")
+        Module_Technology.grid(row=3, column=0, padx=10, pady=(0, 5), sticky="w")
 
         self.module_isc = tkinter.StringVar(value = "Short Circuit:") 
         Module_ISC = customtkinter.CTkLabel(master=self.scrollable_frame_modules, textvariable=f"{self.module_isc}")
-        Module_ISC.grid(row=6, column=0, padx=10, pady=(0, 5), sticky="w")
+        Module_ISC.grid(row=4, column=0, padx=10, pady=(0, 5), sticky="w")
 
         self.module_voc = tkinter.StringVar(value = "Open Circuit:") 
         Module_VOC = customtkinter.CTkLabel(master=self.scrollable_frame_modules, textvariable=f"{self.module_voc}")
-        Module_VOC.grid(row=7, column=0, padx=10, pady=(0, 5), sticky="w")
+        Module_VOC.grid(row=5, column=0, padx=10, pady=(0, 5), sticky="w")
 
         self.module_noct = tkinter.StringVar(value = "NOCT:")  
         Module_NOCT = customtkinter.CTkLabel(master=self.scrollable_frame_modules, textvariable=f"{self.module_noct}")
-        Module_NOCT.grid(row=8, column=0, padx=10, pady=(0, 5), sticky="w")
+        Module_NOCT.grid(row=6, column=0, padx=10, pady=(0, 5), sticky="w")
 
         #self.module_n_cells = tkinter.StringVar(value = "Nº Cells:") 
         #Module_N_Cells = customtkinter.CTkLabel(master=self.scrollable_frame_modules, textvariable=f"{self.module_n_cells}")
@@ -472,27 +474,28 @@ class App(customtkinter.CTk):
         
         self.inverter_wattage = tkinter.StringVar(value = "AC Output: ") 
         Inverter_Wattage = customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_wattage}")
-        Inverter_Wattage.grid(row=1, column=0, padx=10, pady=(0, 5), sticky="w")
+        Inverter_Wattage.grid(row=0, column=0, padx=10, pady=(0, 5), sticky="w")
 
         self.inverter_paco = tkinter.StringVar(value = "Max Output Power:") 
         Inverter_max_dc_output= customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_paco}")
-        Inverter_max_dc_output.grid(row=2, column=0, padx=10, pady=(0, 5), sticky="w")
+        Inverter_max_dc_output.grid(row=1, column=0, padx=10, pady=(0, 5), sticky="w")
 
         self.inverter_max_mppt = tkinter.StringVar(value = "Max MPPT:") 
         Inverter_max_mppt= customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_max_mppt}")
-        Inverter_max_mppt.grid(row=3, column=0, padx=10, pady=(0, 5), sticky="w")
+        Inverter_max_mppt.grid(row=2, column=0, padx=10, pady=(0, 5), sticky="w")
 
         self.inverter_min_mppt = tkinter.StringVar(value = "Min MPPT:") 
         Inverter_min_mppt= customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_min_mppt}")
-        Inverter_min_mppt.grid(row=4, column=0, padx=10, pady=(0, 5), sticky="w")
+        Inverter_min_mppt.grid(row=3, column=0, padx=10, pady=(0, 5), sticky="w")
+        
+        self.inverter_efficiency = tkinter.StringVar(value = "Efficiency:") 
+        Inverter_efficiency= customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_efficiency}")
+        Inverter_efficiency.grid(row=4, column=0, padx=10, pady=(0, 5), sticky="w")
 
         self.inverter_nominal_voc = tkinter.StringVar(value = "Nominal Voltage:") 
         Inverter_max_voc= customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_nominal_voc}")
-        Inverter_max_voc.grid(row=6, column=0, padx=10, pady=(0, 5), sticky="w")
+        Inverter_max_voc.grid(row=5, column=0, padx=10, pady=(0, 5), sticky="w")
 
-        self.inverter_efficiency = tkinter.StringVar(value = "Efficiency:") 
-        Inverter_efficiency= customtkinter.CTkLabel(master=self.scrollable_frame_inverter, textvariable=f"{self.inverter_efficiency}")
-        Inverter_efficiency.grid(row=5, column=0, padx=10, pady=(0, 5), sticky="w")
         Splash(self).current_loadings.append("Adding Module Information")  #<<<<<<<<--------------------
         Splash(self).bar()                                 #<<<<<<<<--------------------
 
@@ -642,7 +645,9 @@ class App(customtkinter.CTk):
             if self.pvmodule_location != None and can_simulate:
                 loading = Loading(self)
                 try:
-                    self.pvmodule_irradiance = Irradiance().irradiance(module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+                    self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+                    print(self.pvmodule_inputs)
+                    print(self.pvmodule_metadata)
                 except:
                     return tkinter.messagebox.showwarning(title="Error", message="Bad Location\n Location over sea or not covered.\n Please, select another location")
                     
@@ -673,8 +678,8 @@ class App(customtkinter.CTk):
             selected_inverter = self.inverters.loc[self.inverters['Model Number'] == event].squeeze()
             self.inverter_wattage.set("AC Output: " + str(selected_inverter['Nominal Voltage (Vac)']) + " V" )
             self.inverter_paco.set("Max Output Power: " + str(selected_inverter['Maximum Continuous Output Power (kW)']) + " kW")
-            self.inverter_max_mppt.set("Max MPPT: "+ str(selected_inverter['Voltage Minimum (Vdc)']) + " V" )
-            self.inverter_min_mppt.set("Min MPPT: "+ str(selected_inverter['Voltage Maximum (Vdc)']) + " V" )
+            self.inverter_max_mppt.set("Max MPPT: "+ str(selected_inverter['Voltage Maximum (Vdc)']) + " V" )
+            self.inverter_min_mppt.set("Min MPPT: "+ str(selected_inverter['Voltage Minimum (Vdc)']) + " V" )
             self.inverter_nominal_voc.set("Nominal Voltage : " + str(selected_inverter['Voltage Nominal (Vdc)']) + " V" )
             self.inverter_efficiency.set("Efficiency: " + str(selected_inverter['Weighted Efficiency (%)']) + " %" )
             
