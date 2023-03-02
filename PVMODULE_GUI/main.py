@@ -8,7 +8,9 @@ import importlib.metadata
 import random
 from pvmodule import Inverters 
 from pvmodule import Modules 
+from pvmodule import Irradiance
 from tktooltip import ToolTip
+
 
 
 customtkinter.set_appearance_mode("System")  # Modes: "System" (standard), "Dark", "Light"
@@ -249,22 +251,22 @@ class App(customtkinter.CTk):
 
         # create tabview
         self.tabview = customtkinter.CTkTabview(self, width=250)
-        self.tabview.grid(row=0, column=2, padx=(20, 0), pady=(20, 0), sticky="nsew")
-        self.tabview.add("Modules")
-        self.tabview.add("Inverters")
+        self.tabview.grid(row=0, column=2, padx=(10, 5), pady=(10, 10), sticky="nsew")
+        self.tabview.add("Modules Selection")
+        self.tabview.add("Inverters Selection")
 
-        self.tabview.tab("Modules").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
-        self.tabview.tab("Inverters").grid_columnconfigure(0, weight=1)
+        self.tabview.tab("Modules Selection").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
+        self.tabview.tab("Inverters Selection").grid_columnconfigure(0, weight=1)
         Splash(self).current_loadings.append("Loading tabviews")     #<<<<<<<<--------------------
         Splash(self).bar()                                           #<<<<<<<<--------------------
         
         self.tabview_information = customtkinter.CTkTabview(self, width=250)
-        self.tabview_information.grid(row=0, column=3, padx=(20, 0), pady=(20, 0), sticky="nsew")
-        self.tabview_information.add("Modules")
-        self.tabview_information.add("Inverters")
+        self.tabview_information.grid(row=0, column=3, padx=(5, 10), pady=(10, 10), sticky="nsew")
+        self.tabview_information.add("Modules Info")
+        self.tabview_information.add("Inverters Info")
 
-        self.tabview_information.tab("Modules").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
-        self.tabview_information.tab("Inverters").grid_columnconfigure(0, weight=1)
+        self.tabview_information.tab("Modules Info").grid_columnconfigure(0, weight=1)  # configure grid of individual tabs
+        self.tabview_information.tab("Inverters Info").grid_columnconfigure(0, weight=1)
         Splash(self).current_loadings.append("Loading tabviews")     #<<<<<<<<--------------------
         Splash(self).bar()                                           #<<<<<<<<--------------------
 
@@ -311,34 +313,34 @@ class App(customtkinter.CTk):
         module_brand = modules['Manufacturer'] 
         module_brand = list(dict.fromkeys(module_brand.tolist())) 
         
-        self.Module_List_Brand_Label = customtkinter.CTkLabel(self.tabview.tab("Modules"), text="Module Brand:")
+        self.Module_List_Brand_Label = customtkinter.CTkLabel(self.tabview.tab("Modules Selection"), text="Module Brand:")
         self.Module_List_Brand_Label.grid(row=0, column=0, padx=10, pady=(10, 0))
-        self.Module_List_Brand_menu = customtkinter.CTkOptionMenu(self.tabview.tab("Modules"), dynamic_resizing=False,values=module_brand, command= combofill_modules)
+        self.Module_List_Brand_menu = customtkinter.CTkOptionMenu(self.tabview.tab("Modules Selection"), dynamic_resizing=False,values=module_brand, command= combofill_modules)
         self.Module_List_Brand_menu.grid(row=0, column=1, padx=10, pady=(10, 10))
         
-        self.Module_List_Model_Label = customtkinter.CTkLabel(self.tabview.tab("Modules"), text="Module Model:")
+        self.Module_List_Model_Label = customtkinter.CTkLabel(self.tabview.tab("Modules Selection"), text="Module Model:")
         self.Module_List_Model_Label.grid(row=1, column=0, padx=10, pady=(10, 0))
-        self.Module_List_Model_menu = customtkinter.CTkOptionMenu(self.tabview.tab("Modules"), dynamic_resizing=False,values=[], command= fill_module_information)
+        self.Module_List_Model_menu = customtkinter.CTkOptionMenu(self.tabview.tab("Modules Selection"), dynamic_resizing=False,values=[], command= fill_module_information)
         self.Module_List_Model_menu.grid(row=1, column=1, padx=10, pady=(10, 10))
 
-        self.Module_Amount_Input_string = customtkinter.CTkButton(self.tabview.tab("Modules"), state="disabled" ,text="Nº / String",command=self.open_input_dialog_amount_string)
+        self.Module_Amount_Input_string = customtkinter.CTkButton(self.tabview.tab("Modules Selection"), state="disabled" ,text="Nº / String",command=self.open_input_dialog_amount_string)
         self.Module_Amount_Input_string.grid(row=2, column=0, padx=10, pady=(10, 10))
         self.modules_amount_string = tkinter.StringVar(value = "Modules: 1") 
-        self.Module_Amount_Output_string = customtkinter.CTkLabel(self.tabview.tab("Modules"), textvariable=self.modules_amount_string)
+        self.Module_Amount_Output_string = customtkinter.CTkLabel(self.tabview.tab("Modules Selection"), textvariable=self.modules_amount_string)
         self.Module_Amount_Output_string.grid(row=2, column=1, padx=10, pady=(10, 0))
         ToolTip(self.Module_Amount_Input_string, msg="The value represents the amount of modules are mounted in series (modules per string).", delay=2.0)   # True by default
 
-        self.Module_Amount_Input_array = customtkinter.CTkButton(self.tabview.tab("Modules"), state="disabled", text="Nº / Array",command=self.open_input_dialog_amount_array)
+        self.Module_Amount_Input_array = customtkinter.CTkButton(self.tabview.tab("Modules Selection"), state="disabled", text="Nº / Array",command=self.open_input_dialog_amount_array)
         self.Module_Amount_Input_array.grid(row=3, column=0, padx=10, pady=(10, 10))
         self.modules_amount_array = tkinter.StringVar(value = "Modules: 1") 
-        self.Module_Amount_Output_array = customtkinter.CTkLabel(self.tabview.tab("Modules"), textvariable=self.modules_amount_array)
+        self.Module_Amount_Output_array = customtkinter.CTkLabel(self.tabview.tab("Modules Selection"), textvariable=self.modules_amount_array)
         self.Module_Amount_Output_array.grid(row=3, column=1, padx=10, pady=(10, 0))
         ToolTip(self.Module_Amount_Input_array, msg="The value represents the amount of modules/string are mounted in paralel.", delay=2.0)   # True by default
 
         self.module_losses = tkinter.StringVar(value = "Losses: 0%") 
-        self.Module_losses_Input_array = customtkinter.CTkLabel(self.tabview.tab("Modules"), textvariable=self.module_losses)
+        self.Module_losses_Input_array = customtkinter.CTkLabel(self.tabview.tab("Modules Selection"), textvariable=self.module_losses)
         self.Module_losses_Input_array.grid(row=4, column=0, padx=10, pady=(10, 10))
-        self.Module_losses_Input_array = customtkinter.CTkSlider(self.tabview.tab("Modules"),state="disabled", from_=0, to=15, width=100 , command = self.slider_event)
+        self.Module_losses_Input_array = customtkinter.CTkSlider(self.tabview.tab("Modules Selection"),state="disabled", from_=0, to=15, width=100 , command = self.slider_event)
         self.Module_losses_Input_array.grid(row=4, column=1, padx=10, pady=(10, 10))
         ToolTip(self.Module_losses_Input_array, msg="The percentage of losses the module has due to: \n-Dust\n-Damage\n-Partial Shading\n- ...", delay=2.0)   # True by default
         Splash(self).current_loadings.append("Importing Modules")  #<<<<<<<<--------------------
@@ -356,17 +358,17 @@ class App(customtkinter.CTk):
         inverter_brand = self.inverters['Manufacturer']                                                                  
         inverter_brand = list(dict.fromkeys(inverter_brand.tolist()))
 
-        self.Inverter_List_Brand_Label = customtkinter.CTkLabel(self.tabview.tab("Inverters"), text="Inverter Brand:")
+        self.Inverter_List_Brand_Label = customtkinter.CTkLabel(self.tabview.tab("Inverters Selection"), text="Inverter Brand:")
         self.Inverter_List_Brand_Label.grid(row=0, column=0, padx=10, pady=(10, 0))
-        self.Inverter_List_Brand_menu = customtkinter.CTkOptionMenu(self.tabview.tab("Inverters"), dynamic_resizing=False,values=inverter_brand, command= combofill_inverter)
+        self.Inverter_List_Brand_menu = customtkinter.CTkOptionMenu(self.tabview.tab("Inverters Selection"), dynamic_resizing=False,values=inverter_brand, command= combofill_inverter)
         self.Inverter_List_Brand_menu.grid(row=0, column=1, padx=10, pady=(10, 10))
 
-        self.Inverter_List_Model_Label = customtkinter.CTkLabel(self.tabview.tab("Inverters"), text="Inverter Model:")
+        self.Inverter_List_Model_Label = customtkinter.CTkLabel(self.tabview.tab("Inverters Selection"), text="Inverter Model:")
         self.Inverter_List_Model_Label.grid(row=1, column=0, padx=10, pady=(10, 0))
-        self.Inverter_List_Model_menu = customtkinter.CTkOptionMenu(self.tabview.tab("Inverters"), dynamic_resizing=False,values=[], command= self.fill_inverter_information)
+        self.Inverter_List_Model_menu = customtkinter.CTkOptionMenu(self.tabview.tab("Inverters Selection"), dynamic_resizing=False,values=[], command= self.fill_inverter_information)
         self.Inverter_List_Model_menu.grid(row=1, column=1, padx=10, pady=(10, 10))
 
-        self.Auto_Select_Inverter_Button = customtkinter.CTkButton(self.tabview.tab("Inverters"), state="disabled", command= self.PVMODULE_auto_select_inverter)
+        self.Auto_Select_Inverter_Button = customtkinter.CTkButton(self.tabview.tab("Inverters Selection"), state="disabled", command= self.PVMODULE_auto_select_inverter)
         self.Auto_Select_Inverter_Button.grid(row=2, column=0, padx=10, pady=10)
         self.Auto_Select_Inverter_Button.configure(text="Auto-select", text_color="white")
         ToolTip(self.Auto_Select_Inverter_Button, msg="Auto-select chooses a suitable inverter (not necessarily the best option available).", delay=2.0)   # True by default
@@ -374,7 +376,7 @@ class App(customtkinter.CTk):
         Splash(self).bar()                                 #<<<<<<<<--------------------
 
 
-        self.scrollable_frame_modules = self.tabview_information.tab("Modules") #customtkinter.CTkScrollableFrame(self.tabview_information.tab("Modules"))
+        self.scrollable_frame_modules = self.tabview_information.tab("Modules Info") #customtkinter.CTkScrollableFrame(self.tabview_information.tab("Modules"))
         #self.scrollable_frame_modules.grid(row=0, column=3,)
         #self.scrollable_frame_modules.grid_columnconfigure(1, weight=1)
         
@@ -414,7 +416,7 @@ class App(customtkinter.CTk):
 
 
 
-        self.scrollable_frame_inverter = self.tabview_information.tab("Inverters") # customtkinter.CTkScrollableFrame(self.tabview_information.tab("Inverters"))
+        self.scrollable_frame_inverter = self.tabview_information.tab("Inverters Info") # customtkinter.CTkScrollableFrame(self.tabview_information.tab("Inverters"))
         #self.scrollable_frame_inverter.grid(row=1, column=3, sticky="nsew")
         #self.scrollable_frame_inverter.grid_columnconfigure(0, weight=1)
         
@@ -598,17 +600,25 @@ class App(customtkinter.CTk):
  
 
     def open_input_dialog_amount_string(self):
-        dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="Amount of Modules per String")
+        dialog = customtkinter.CTkInputDialog(text="mount of Modules per String", title="Amount of Modules per String")
         self.modules_amount_string.set(value = "Modules: " + str(dialog.get_input())) 
 
-        self.pvmodule_module['modules_per_string'] = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))
+        if not ''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()).isdigit():
+            self.pvmodule_module['number_of_strings'] = 1 
+            self.modules_amount_string.set(value = "Modules: 1") 
+        else:
+            self.pvmodule_module['modules_per_string'] = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))
 
 
     def open_input_dialog_amount_array(self):
-        dialog = customtkinter.CTkInputDialog(text="Type in a number:", title="Amount of Modules per Array")
+        dialog = customtkinter.CTkInputDialog(text="Amount of Modules per Array (amount of string)", title="Amount of Modules per Array")
         self.modules_amount_array.set(value = "Modules: " + str(dialog.get_input())) 
 
-        self.pvmodule_module['number_of_strings'] = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))
+        if not ''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()).isdigit():
+            self.pvmodule_module['number_of_strings'] = 1 
+            self.modules_amount_array.set(value = "Modules: 1") 
+        else:
+            self.pvmodule_module['number_of_strings'] = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))
 
   
   
