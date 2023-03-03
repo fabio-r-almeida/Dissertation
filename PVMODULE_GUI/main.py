@@ -15,133 +15,115 @@ from tkinter.ttk import Progressbar
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 
 class Loading(tkinter.Toplevel):
-    
-    def __init__(self, parent):
 
-        tkinter.Toplevel.__init__(self, parent)
-        self.title("Loading")
-        width_of_window = 427
-        height_of_window = 250
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        x_coordinate = (screen_width/2)-(width_of_window/2)
-        y_coordinate = (screen_height/2)-(height_of_window/2)
-        self.geometry("%dx%d+%d+%d" %(width_of_window,height_of_window,x_coordinate,y_coordinate))
-        self.overrideredirect(1)
-
-        s = tkinter.ttk.Style() 
-        s.theme_use('clam')
-        s.configure("red.Horizontal.TProgressbar", foreground='red', background='#4f4f4f')
-        self.progress=Progressbar(self,style="red.Horizontal.TProgressbar",orient=HORIZONTAL,length=500,mode='determinate')
-    
-        self.progress.place(x=-10,y=235)
-        color = random.choice(['#2596be','#3ba1c5','#51abcb','#66b6d2'])
-        Frame(self,width=427,height=241,bg=color).place(x=0,y=0)  
-
-    
-
-        ######## Label
-
-        l1=Label(self,text='PV',fg='white',bg=color)
-        lst1=('Calibri (Body)',18,'bold')
-        l1.config(font=lst1)
-        l1.place(x=50,y=80)
-
-        l2=Label(self,text='Module',fg='white',bg=color)
-        lst2=('Calibri (Body)',18)
-        l2.config(font=lst2)
-        l2.place(x=90,y=82)
-
-        l3=Label(self,text=f'Version {importlib.metadata.version("pvmodule")}',fg='white',bg=color)
-        lst3=('Calibri (Body)',13)
-        l3.config(font=lst3)
-        l3.place(x=50,y=110)
-
-        l5=Label(self,text="Fábio Almeida",fg='white',bg=color)
-        lst5=('Calibri (Body)',8)
-        l5.config(font=lst5)
-        l5.place(x=52,y=130)
-
-        self.Loading_text = tkinter.StringVar(value = "Loading...")   
-        l4=Label(self,textvariable=self.Loading_text,fg='white',bg=color)
-        lst4=('Calibri (Body)',18)
-        l4.config(font=lst4)
-        l4.place(x=18,y=210)  
- 
-        self.update()
-
-        ## required to make window show before the program gets to the mainloop
-
-class Splash(tkinter.Toplevel):
     current_loadings = []
-    def __init__(self, parent):
+    width = 427
+    height = 250   
 
-        self.initial_loadings = ["","","","","","","",""]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.initial_loadings = ["","",""]
         self.progress_status_value = 0
-        tkinter.Toplevel.__init__(self, parent)
+
+        self.title("Loading")
+        self.geometry(f"{self.width}x{self.height}")
+        self.resizable(False, False)
+
+        # load and create background image
+        current_path = os.path.dirname(os.path.realpath(__file__))
+        self.splash_text = tkinter.StringVar(value = f'''\n\n\n\n\n\n\n\t           V.{importlib.metadata.version("pvmodule")}\n\n\n
         
-        self.title("Splash")
-        width_of_window = 427
-        height_of_window = 250
+        \nLoading ...''')  
+
+        self.bg_image = customtkinter.CTkImage(Image.open(current_path + "/test_images/bg_gradient.jpg"),
+                                               size=(self.width, self.height))
+        self.bg_image_label = customtkinter.CTkLabel(self, image=self.bg_image, textvariable=self.splash_text)
+
+        self.bg_image_label.grid(row=0, column=0, )
+
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
+        width_of_window = 427
+        height_of_window = 250
         x_coordinate = (screen_width/2)-(width_of_window/2)
         y_coordinate = (screen_height/2)-(height_of_window/2)
         self.geometry("%dx%d+%d+%d" %(width_of_window,height_of_window,x_coordinate,y_coordinate))
-        self.overrideredirect(1)
+        self.overrideredirect(True)  
 
-        s = tkinter.ttk.Style() 
-        s.theme_use('clam')
-        s.configure("red.Horizontal.TProgressbar", foreground='red', background='#4f4f4f')
+
+        
+
         self.progress=Progressbar(self,style="red.Horizontal.TProgressbar",orient=HORIZONTAL,length=500,mode='determinate')
-        
         self.progress.place(x=-10,y=235)
-        color = random.choice(['#2596be','#3ba1c5','#51abcb','#66b6d2'])
-        Frame(self,width=427,height=241,bg=color).place(x=0,y=0)  
-
-        
-
-        ######## Label
-
-        l1=Label(self,text='PV',fg='white',bg=color)
-        lst1=('Calibri (Body)',18,'bold')
-        l1.config(font=lst1)
-        l1.place(x=50,y=80)
-
-        l2=Label(self,text='Module',fg='white',bg=color)
-        lst2=('Calibri (Body)',18)
-        l2.config(font=lst2)
-        l2.place(x=90,y=82)
-
-        l3=Label(self,text=f'Version {importlib.metadata.version("pvmodule")}',fg='white',bg=color)
-        lst3=('Calibri (Body)',13)
-        l3.config(font=lst3)
-        l3.place(x=50,y=110)
-
-        l5=Label(self,text="Fábio Almeida",fg='white',bg=color)
-        lst5=('Calibri (Body)',8)
-        l5.config(font=lst5)
-        l5.place(x=52,y=130)
-
-        self.Loading_text = tkinter.StringVar(value = "Loading...")   
-        l4=Label(self,textvariable=self.Loading_text,fg='white',bg=color)
-        lst4=('Calibri (Body)',10)
-        l4.config(font=lst4)
-        l4.place(x=18,y=210)  
- 
-
 
         self.update()
-
+        ## required to make window show before the program gets to the mainloop
     def bar(self):
-        self.Loading_text.set(self.current_loadings[-1] + "...")
+        self.splash_text.set(f'''\n\n\n\n\n\n\n\t           V.{importlib.metadata.version("pvmodule")}\n\n\n
+        
+        \n{self.current_loadings[-1]}''' )
         self.progress['value'] = len(self.current_loadings)/len(self.initial_loadings)*100
         self.update_idletasks()
 
-        ## required to make window show before the program gets to the mainloop
+
+        
+class Splash(tkinter.Toplevel):
+    current_loadings = []
+    width = 427
+    height = 250
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+        self.initial_loadings = ["","","","","","","",""]
+
+        self.title("Splash screen")
+        self.geometry(f"{self.width}x{self.height}")
+        self.resizable(False, False)
+
+        # load and create background image
+        current_path = os.path.dirname(os.path.realpath(__file__))
+        self.splash_text = tkinter.StringVar(value = f'''\n\n\n\n\n\n\n\t           V.{importlib.metadata.version("pvmodule")}\n\n\n
+        
+        \nLoading ...''')   
+
+        self.bg_image = customtkinter.CTkImage(Image.open(current_path + "/test_images/bg_gradient.jpg"),
+                                               size=(self.width, self.height))
+        self.bg_image_label = customtkinter.CTkLabel(self, image=self.bg_image, textvariable=self.splash_text)
+
+        self.bg_image_label.grid(row=0, column=0, )
+
+        screen_width = self.winfo_screenwidth()
+        screen_height = self.winfo_screenheight()
+        width_of_window = 427
+        height_of_window = 250
+        x_coordinate = (screen_width/2)-(width_of_window/2)
+        y_coordinate = (screen_height/2)-(height_of_window/2)
+        self.geometry("%dx%d+%d+%d" %(width_of_window,height_of_window,x_coordinate,y_coordinate))
+        self.overrideredirect(True)  
+
+
+
+
+        self.progress=Progressbar(self,style="red.Horizontal.TProgressbar",orient=HORIZONTAL,length=500,mode='determinate')
+        self.progress.place(x=-10,y=235)
+
+        self.update()
+
+
+    def bar(self):
+        self.splash_text.set(f'''\n\n\n\n\n\n\n\t           V.{importlib.metadata.version("pvmodule")}\n\n\n
+        
+        \n{self.current_loadings[-1]}''' )
+        self.progress['value'] = len(self.current_loadings)/len(self.initial_loadings)*100
+        self.update_idletasks()
+
 
 class App(customtkinter.CTk):
-
+    
+    
 
     def __init__(self):
         #pvmodule variables:
@@ -158,9 +140,10 @@ class App(customtkinter.CTk):
 
 
         super().__init__()
-        splash = Splash(self)
-        Splash(self).current_loadings.append("")        #<<<<<<<<--------------------
-        Splash(self).bar()                              #<<<<<<<<--------------------
+        splash = Splash()
+
+        splash.current_loadings.append("")        #<<<<<<<<--------------------
+        splash.bar()                              #<<<<<<<<--------------------
 
         self.title("PV Module GUI")
         self.geometry(f"{1200}x{600}")
@@ -182,8 +165,10 @@ class App(customtkinter.CTk):
                                                  dark_image=Image.open(os.path.join(image_path, "chat_light.png")), size=(20, 20))
         self.add_user_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "add_user_dark.png")),
                                                      dark_image=Image.open(os.path.join(image_path, "add_user_light.png")), size=(20, 20))
-        Splash(self).current_loadings.append("Load Images")        #<<<<<<<<--------------------
-        Splash(self).bar()                              #<<<<<<<<--------------------
+        
+        
+        splash.current_loadings.append("Load Images")        #<<<<<<<<--------------------
+        splash.bar()                              #<<<<<<<<--------------------
 
         # create navigation frame
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
@@ -222,8 +207,9 @@ class App(customtkinter.CTk):
                                                                 command=self.change_appearance_mode_event)
         self.appearance_mode_menu.grid(row=6, column=0, padx=20, pady=20, sticky="s")
 
-        Splash(self).current_loadings.append("Loading Frames")        #<<<<<<<<--------------------
-        Splash(self).bar()                              #<<<<<<<<--------------------
+        
+        splash.current_loadings.append("Loading Frames")        #<<<<<<<<--------------------
+        splash.bar()                              #<<<<<<<<--------------------
 
 
 
@@ -233,8 +219,10 @@ class App(customtkinter.CTk):
         # create home frame
         self.home_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
         self.home_frame.grid_columnconfigure(0, weight=1)
-        Splash(self).current_loadings.append("Building Home")        #<<<<<<<<--------------------
-        Splash(self).bar()                              #<<<<<<<<--------------------
+        
+        
+        splash.current_loadings.append("Loading Assets")        #<<<<<<<<--------------------
+        splash.bar()                              #<<<<<<<<--------------------
 
 
        
@@ -316,9 +304,8 @@ class App(customtkinter.CTk):
 
 
 
-
-        Splash(self).current_loadings.append("Importing Modules")        #<<<<<<<<--------------------
-        Splash(self).bar()                                               #<<<<<<<<--------------------
+        splash.current_loadings.append("Importing Modules")        #<<<<<<<<--------------------
+        splash.bar()                                               #<<<<<<<<--------------------
      
 
         self.modules = Modules().list_modules(print_data=False)  
@@ -359,9 +346,8 @@ class App(customtkinter.CTk):
 
                                                                                                          
 
-
-        Splash(self).current_loadings.append("Importing Inverters")        #<<<<<<<<--------------------
-        Splash(self).bar()                              #<<<<<<<<--------------------
+        splash.current_loadings.append("Importing Inverters")        #<<<<<<<<--------------------
+        splash.bar()                              #<<<<<<<<--------------------
 
         self.inverters = Inverters().list_inverters()   
         inverter_brand = self.inverters['Manufacturer']                                                                  
@@ -472,9 +458,8 @@ class App(customtkinter.CTk):
 
 
 
-
-        Splash(self).current_loadings.append("Importing Assets")        #<<<<<<<<--------------------
-        Splash(self).bar()                              #<<<<<<<<--------------------
+        splash.current_loadings.append("Importing Assets")        #<<<<<<<<--------------------
+        splash.bar()                              #<<<<<<<<--------------------
 
         # create second frame
         self.second_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -487,9 +472,8 @@ class App(customtkinter.CTk):
 
 
         # select default frame
-        
-        Splash(self).current_loadings.append("Initializing Assets")        #<<<<<<<<--------------------
-        Splash(self).bar()                              #<<<<<<<<--------------------
+        splash.current_loadings.append("Initializing Assets")        #<<<<<<<<--------------------
+        splash.bar()                              #<<<<<<<<--------------------
         self.select_frame_by_name("home")
         #self.appearance_mode_optionemenu.set("System")
         #self.scaling_optionemenu.set("100%")
@@ -501,7 +485,10 @@ class App(customtkinter.CTk):
         self.map_window_frame = None
         self.about_me_Toplevel = None
         self.appearance_mode_menu.set("Dark")
+
         splash.destroy()
+        
+
 
     def about_event(self):
         if self.about_me_Toplevel is None or not self.about_me_Toplevel.winfo_exists():
@@ -593,7 +580,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             if self.pvmodule_location != None and can_simulate:
                 
                 try:
-                    loading = Loading(self)
+                    loading = Loading()
+                    loading.current_loadings.append("Calculating Irradiance from PVGIS")
+                    loading.bar()
                     self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)                
                     self.pvmodule_irradiance.plot(x ='GHI', y='DOY', kind='line')
                     loading.destroy()
@@ -629,7 +618,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.pvmodule_inverter = Inverters().inverter(name=selected_inverter['Model Number'])
 
     def PVMODULE_auto_select_inverter(self):
-        loading = Loading(self)
+        loading = Loading()
+        loading.current_loadings.append("Selecting the Inverter")
+        loading.bar()
+
 
         if self.pvmodule_module == None:
             return tkinter.messagebox.showwarning(title="Error", message="No suitable inverter found.")
@@ -653,12 +645,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         return self.pvmodule_inverter 
 
     def PVMODULE_define_module(self,Model_name, nr_per_string, nr_per_array, losses):
-        loading = Loading(self)
+        loading = Loading()
+        loading.current_loadings.append("Uploading the Module")
+        loading.bar()
 
         return_module =  Modules().module(model = Model_name , 
                                           modules_per_string = float(nr_per_string) ,
                                           number_of_strings = float(nr_per_array) , 
                                           losses = float(losses))
+        loading.current_loadings.append("Writing the Module")
+        loading.bar()
         loading.destroy()
 
         return return_module
@@ -839,32 +835,42 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.map_window_frame.title("Map Window")                                                                                 
             map_frame = customtkinter.CTkLabel(self.map_window_frame, text="")                                           
             map_frame.grid(row = 0 , column = 0, padx = 0, pady = 0 )                                             
-            map_widget = tkintermapview.TkinterMapView(map_frame, width=800, height=600, corner_radius=0, padx=10, pady=10)
-            map_widget.set_position(38.7557, -9.2803)  # Paris, France
+            map_widget = tkintermapview.TkinterMapView(map_frame, width=800, height=600, corner_radius=0, padx=0, pady=0)
+            map_widget.set_position(38.7557, -9.2803)  # Oeiras, Portugal
             map_widget.set_zoom(12)
             map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=s&hl=en&x={x}&y={y}&z={z}&s=Ga", max_zoom=22)
             map_widget.grid(row=4, column=0)
-            self.map_window_frame.focus()                                                                        
+            self.map_window_frame.focus() 
+            self.map_window_frame.overrideredirect(True)                                                                       
 
             def left_click_event(coordinates_tuple):
 
-                loading = Loading(self) 
+                loading = Loading() 
+                loading.current_loadings.append("Reading map coordinates")
+                loading.bar()
 
                 map_widget.delete_all_marker()                                                                      
                 latitude = round(coordinates_tuple[0],4)                                                            
                 longitude = round(coordinates_tuple[1],4)                                                           
-                adr = tkintermapview.convert_coordinates_to_address(latitude, longitude)                            
+                adr = tkintermapview.convert_coordinates_to_address(latitude, longitude)  
+                loading.current_loadings.append("Reading map coordinates")
+                loading.bar()
+
                 try:                                                                                                
                     address_display = adr.street + ", " + adr.city                                                  
                 except:                                                                                             
                     address_display = "Street Address not found"                                                    
-                city_name_marker = map_widget.set_marker(latitude, longitude, text=address_display) 
+                #city_name_marker = map_widget.set_marker(latitude, longitude, text=address_display) 
+                loading.current_loadings.append("Writing map coordinates")
+                loading.bar()
                 self.pvmodule_location = Location().set_location(latitude=latitude, longitude=longitude)
                 self.tabview_information_pvgis_info.grid(row=1, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew") 
 
 
 
-                #self.city_entry_var.set(str(adr.city))                                                                                                    
+                #self.city_entry_var.set(str(adr.city))
+                loading.current_loadings.append("Destroying map")
+                loading.bar()                                                                                                    
                 self.Latitude_entry_var.set("Latitude: " + str(latitude))                                                                  
                 self.Longitude_entry_var.set("Longitude: "+ str(longitude))                                                                  
                 self.map_window_frame.destroy()                                                                                       
