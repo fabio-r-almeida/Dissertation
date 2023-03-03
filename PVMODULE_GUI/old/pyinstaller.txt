@@ -1,1 +1,0 @@
-pyinstaller --noconfirm --onefile --windowed --add-data "C:\Users\Fabio\Desktop\Github\Dissertation\PVMODULE_GUI\thesis\Lib\site-packages\customtkinter;customtkinter/"  "C:\Users\Fabio\Desktop\Github\Dissertation\PVMODULE_GUI\main.py"
