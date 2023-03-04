@@ -140,6 +140,9 @@ class App(customtkinter.CTk):
         self.pvmodule_module_spacing = None
 
 
+        self.image_list_to_destroy = []
+
+
 
         super().__init__()
         splash = Splash()
@@ -442,8 +445,8 @@ class App(customtkinter.CTk):
         self.simulate_button = customtkinter.CTkButton(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), border_width=1, fg_color='#66ff99', text_color="black",text_color_disabled='black', text="Simulate", command=self.check_if_can_simulate)
         self.simulate_button.grid(row=4, column=0, padx=(50, 50), pady=(50, 5), sticky="nsew")
 
-        self.checkbox_1 = customtkinter.CTkCheckBox(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), onvalue=True, offvalue=False, text="I accept for this software to save \npictures or other graphics as a separate files.")
-        self.checkbox_1.grid(row=10, column=0, padx=(25, 25), pady=(50, 50), sticky="nsew")
+        self.checkbox_1 = customtkinter.CTkCheckBox(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), onvalue=True, offvalue=False, text="I accept for this software to save \npictures or other graphics as a\nseparate files.")
+        self.checkbox_1.grid(row=5, column=0, padx=(25, 25), pady=(25, 50), sticky="nsew")
         ToolTip(self.checkbox_1, msg="Other graphic files such as graph plots or temporary files", delay=0.5)   # True by default
 
 
@@ -495,13 +498,15 @@ class App(customtkinter.CTk):
 
 
         splash.destroy()
+
+        self.protocol("WM_DELETE_WINDOW",  self.on_close)
         
 
 
     def about_event(self):
         if self.about_me_Toplevel is None or not self.about_me_Toplevel.winfo_exists():
             self.about_me_Toplevel= customtkinter.CTkToplevel(self) 
-            self.about_me_Toplevel.geometry(f"{330}x{400}") 
+            self.about_me_Toplevel.geometry(f"{400}x{330}") 
             self.about_me_Toplevel.title("About")                                                                                  
             map_frame = customtkinter.CTkLabel(self.about_me_Toplevel, wraplength=350, text='''Copyright (c), 2023, Fábio Ramalho de Almeida
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -509,7 +514,7 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.''')
-            map_frame.grid(row = 0 , column = 0, padx = 10, pady = 10 ) 
+            map_frame.grid(row = 0 , column = 0, padx = 20, pady = 10 ) 
             self.about_me_Toplevel.focus()
         else:
             self.about_me_Toplevel.focus()
@@ -607,6 +612,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     plt.ylabel('GHI', fontsize=20)
                     fig.savefig("DOY_GHI_light.png", transparent=True)
 
+                    self.image_list_to_destroy.append('DOY_GHI_light.png')
+
                     axs.spines['bottom'].set_color('#ffffff')
                     axs.spines['top'].set_color('#ffffff') 
                     axs.spines['right'].set_color('#ffffff')
@@ -618,10 +625,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     axs.tick_params(axis='y', colors='#ffffff')
 
                     fig.savefig("DOY_GHI_dark.png", transparent=True)
+                    self.image_list_to_destroy.append('DOY_GHI_dark.png')
+                    self.DOY_GHI_light=Image.open("DOY_GHI_light.png")
+                    self.DOY_GHI_dark=Image.open("DOY_GHI_dark.png")
 
-                    self.plot = customtkinter.CTkImage(light_image=Image.open("DOY_GHI_light.png"),dark_image=Image.open("DOY_GHI_dark.png"), size=(500, 500))
+                    
+                    self.plot = customtkinter.CTkImage(light_image=self.DOY_GHI_light,dark_image=self.DOY_GHI_dark, size=(500, 500))
                     self.plot_frame1 = customtkinter.CTkLabel(self.second_frame, text="", image=self.plot)
                     self.plot_frame2 = customtkinter.CTkLabel(self.second_frame, text="", image=self.plot)
+
+                    self.DOY_GHI_dark.close()
+                    self.DOY_GHI_light.close()
                     self.plot_frame1.grid(row=0, column=0, padx=5, pady=5) 
                     self.plot_frame2.grid(row=0, column=1, padx=5, pady=5) 
                     plt.close(fig)
@@ -956,8 +970,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     def change_appearance_mode_event(self, new_appearance_mode):
         customtkinter.set_appearance_mode(new_appearance_mode)
 
+    def on_close(self):
+
+        #custom close options, here's one example:
+
+        close = tkinter.messagebox.askokcancel("Close", "Would you like to close the program?")
+        if close:
+            import os
+            for image in self.image_list_to_destroy:
+                if os.path.exists(image):
+                    try:
+                        os.remove(image)
+                    except:
+                        print("image could not be removed in method 'on_close'")
+
+            self.destroy()
+
 
 if __name__ == "__main__":
     app = App()
+
+
     app.mainloop()
 
