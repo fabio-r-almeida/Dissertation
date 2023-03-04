@@ -11,6 +11,8 @@ from tktooltip import ToolTip
 import matplotlib.pyplot as plt
 from PIL import Image
 from tkinter.ttk import Progressbar
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 
@@ -181,14 +183,14 @@ class App(customtkinter.CTk):
 
 
 
-        self.home_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Home",
+        self.home_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Setup",
                                                    fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                                    image=self.home_image, anchor="w", command=self.home_button_event)
         self.home_button.grid(row=1, column=0, sticky="ew")
 
 
 
-        self.frame_2_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Frame 2",
+        self.frame_2_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Graphs",
                                                       fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                                       image=self.chat_image, anchor="w", command=self.frame_2_button_event)
         self.frame_2_button.grid(row=2, column=0, sticky="ew")
@@ -440,6 +442,11 @@ class App(customtkinter.CTk):
         self.simulate_button = customtkinter.CTkButton(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), border_width=1, fg_color='#66ff99', text_color="black",text_color_disabled='black', text="Simulate", command=self.check_if_can_simulate)
         self.simulate_button.grid(row=4, column=0, padx=(50, 50), pady=(50, 5), sticky="nsew")
 
+        self.checkbox_1 = customtkinter.CTkCheckBox(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), onvalue=True, offvalue=False, text="I accept for this software to save \npictures or other graphics as a separate files.")
+        self.checkbox_1.grid(row=10, column=0, padx=(25, 25), pady=(50, 50), sticky="nsew")
+        ToolTip(self.checkbox_1, msg="Other graphic files such as graph plots or temporary files", delay=0.5)   # True by default
+
+
 
 
 
@@ -474,7 +481,7 @@ class App(customtkinter.CTk):
         # select default frame
         splash.current_loadings.append("Initializing Assets")        #<<<<<<<<--------------------
         splash.bar()                              #<<<<<<<<--------------------
-        self.select_frame_by_name("home")
+        self.select_frame_by_name("Setup")
         #self.appearance_mode_optionemenu.set("System")
         #self.scaling_optionemenu.set("100%")
 
@@ -486,6 +493,7 @@ class App(customtkinter.CTk):
         self.about_me_Toplevel = None
         self.appearance_mode_menu.set("Dark")
 
+
         splash.destroy()
         
 
@@ -493,15 +501,15 @@ class App(customtkinter.CTk):
     def about_event(self):
         if self.about_me_Toplevel is None or not self.about_me_Toplevel.winfo_exists():
             self.about_me_Toplevel= customtkinter.CTkToplevel(self) 
-            self.about_me_Toplevel.geometry(f"{400}x{350}") 
+            self.about_me_Toplevel.geometry(f"{330}x{400}") 
             self.about_me_Toplevel.title("About")                                                                                  
-            map_frame = customtkinter.CTkLabel(self.about_me_Toplevel, bg_color="transparent", wraplength=350, text='''Copyright (c), 2023, Fábio Ramalho de Almeida
+            map_frame = customtkinter.CTkLabel(self.about_me_Toplevel, wraplength=350, text='''Copyright (c), 2023, Fábio Ramalho de Almeida
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.''')
-            map_frame.grid(row = 0 , column = 0, padx = 20, pady = 10 ) 
+            map_frame.grid(row = 0 , column = 0, padx = 10, pady = 10 ) 
             self.about_me_Toplevel.focus()
         else:
             self.about_me_Toplevel.focus()
@@ -568,6 +576,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         
         can_simulate = False
         try:
+
+            if self.checkbox_1.get():
+                can_simulate = True
+            else:
+                can_simulate = False
+                return tkinter.messagebox.showwarning(title="Error", message="The terms and conditions of the software are not met")
             if self.pvmodule_module != None:
                 can_simulate = True
             else:
@@ -578,15 +592,43 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             else:
                 return tkinter.messagebox.showwarning(title="Error", message="No Inverter selected")
             if self.pvmodule_location != None and can_simulate:
-                
+            
                 try:
                     loading = Loading()
                     loading.current_loadings.append("Calculating Irradiance from PVGIS")
                     loading.bar()
                     self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)                
-                    self.pvmodule_irradiance.plot(x ='GHI', y='DOY', kind='line')
+                    self.select_frame_by_name("Graph")
+
+                    fig, axs = plt.subplots(figsize=(12, 12))        
+                    self.pvmodule_irradiance.plot(x ='DOY', y='GHI', kind='line',ax=axs,fontsize=20)
+                    plt.setp(axs.get_xticklabels(), rotation = 45) 
+                    plt.xlabel('DOY', fontsize=20)
+                    plt.ylabel('GHI', fontsize=20)
+                    fig.savefig("DOY_GHI_light.png", transparent=True)
+
+                    axs.spines['bottom'].set_color('#ffffff')
+                    axs.spines['top'].set_color('#ffffff') 
+                    axs.spines['right'].set_color('#ffffff')
+                    axs.spines['left'].set_color('#ffffff')
+                    axs.title.set_color('#ffffff')
+                    axs.yaxis.label.set_color('#ffffff')
+                    axs.xaxis.label.set_color('#ffffff')
+                    axs.tick_params(axis='x', colors='#ffffff')
+                    axs.tick_params(axis='y', colors='#ffffff')
+
+                    fig.savefig("DOY_GHI_dark.png", transparent=True)
+
+                    self.plot = customtkinter.CTkImage(light_image=Image.open("DOY_GHI_light.png"),dark_image=Image.open("DOY_GHI_dark.png"), size=(500, 500))
+                    self.plot_frame1 = customtkinter.CTkLabel(self.second_frame, text="", image=self.plot)
+                    self.plot_frame2 = customtkinter.CTkLabel(self.second_frame, text="", image=self.plot)
+                    self.plot_frame1.grid(row=0, column=0, padx=5, pady=5) 
+                    self.plot_frame2.grid(row=0, column=1, padx=5, pady=5) 
+                    plt.close(fig)
+
                     loading.destroy()
-                    plt.show()
+
+                    
 
 
 
@@ -884,16 +926,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     def select_frame_by_name(self, name):
         # set button color for selected button
-        self.home_button.configure(fg_color=("gray75", "gray25") if name == "home" else "transparent")
-        self.frame_2_button.configure(fg_color=("gray75", "gray25") if name == "frame_2" else "transparent")
+        self.home_button.configure(fg_color=("gray75", "gray25") if name == "Setup" else "transparent")
+        self.frame_2_button.configure(fg_color=("gray75", "gray25") if name == "Graph" else "transparent")
         self.frame_3_button.configure(fg_color=("gray75", "gray25") if name == "frame_3" else "transparent")
 
         # show selected frame
-        if name == "home":
+        if name == "Setup":
             self.home_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.home_frame.grid_forget()
-        if name == "frame_2":
+        if name == "Graph":
             self.second_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.second_frame.grid_forget()
@@ -903,10 +945,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.third_frame.grid_forget()
 
     def home_button_event(self):
-        self.select_frame_by_name("home")
+        self.select_frame_by_name("Setup")
 
     def frame_2_button_event(self):
-        self.select_frame_by_name("frame_2")
+        self.select_frame_by_name("Graph")
 
     def frame_3_button_event(self):
         self.select_frame_by_name("frame_3")
