@@ -611,7 +611,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     plt.xlabel('DOY', fontsize=20)
                     plt.ylabel('GHI', fontsize=20)
                     fig.savefig("DOY_GHI_light.png", transparent=True)
-
                     self.image_list_to_destroy.append('DOY_GHI_light.png')
 
                     axs.spines['bottom'].set_color('#ffffff')
@@ -630,7 +629,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     self.DOY_GHI_dark=Image.open("DOY_GHI_dark.png")
 
                     
-                    self.plot = customtkinter.CTkImage(light_image=self.DOY_GHI_light,dark_image=self.DOY_GHI_dark, size=(500, 500))
+                    self.plot = customtkinter.CTkImage(light_image=self.DOY_GHI_light , dark_image=self.DOY_GHI_dark, size=(500, 500))
                     self.plot_frame1 = customtkinter.CTkLabel(self.second_frame, text="", image=self.plot)
                     self.plot_frame2 = customtkinter.CTkLabel(self.second_frame, text="", image=self.plot)
 
