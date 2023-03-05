@@ -4,12 +4,9 @@ import tkinter.messagebox
 import customtkinter
 import tkintermapview
 from tkinter import *
-import importlib.metadata
 from pvmodule import *
 from tktooltip import ToolTip
-import matplotlib.pyplot as plt
 from PIL import Image
-from tkinter.ttk import Progressbar
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.dates as mdates
@@ -17,9 +14,7 @@ from numpy import trapz as calculate_area_under_curve
 from Loading import *
 from Splash import *
 
-
-customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
-
+customtkinter.set_appearance_mode("Dark")
 class App(customtkinter.CTk):
     
     def __init__(self):
@@ -506,7 +501,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.line.set_ydata(data['Total_G'])
         self.ax.set_xlim(data.index[0],data.index[-1])
         self.ax.set_ylim(data['Total_G'].min(),data['Total_G'].max())
-        total_irradiance = calculate_area_under_curve(data['Total_G'])
+
+        
+        total_irradiance = calculate_area_under_curve(y=data['Total_G'],dx=24/len(data.index))
+        print(data['Total_G'].sum())
         print(f"Find print 1: Total Irradiance: {total_irradiance}")
         self.canvas.draw()
 
