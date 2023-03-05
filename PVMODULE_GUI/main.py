@@ -561,6 +561,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
     def check_if_can_simulate(self):
+
+
         
         if self.PVGIS_Panel_Tilt_input.get() != '':
             self.pvmodule_panel_tilt = float(self.PVGIS_Panel_Tilt_input.get())
@@ -604,41 +606,64 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     loading.bar()
                     self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)                
                     self.select_frame_by_name("Graph")
+#
+                    #fig, axs = plt.subplots(figsize=(12, 12))        
+                    #self.pvmodule_irradiance.plot(x ='DOY', y='GHI', kind='line',ax=axs,fontsize=20)
+                    #plt.setp(axs.get_xticklabels(), rotation = 45) 
+                    #plt.xlabel('DOY', fontsize=20)
+                    #plt.ylabel('GHI', fontsize=20)
+                    #fig.savefig("DOY_GHI_light.png", transparent=True)
+                    #self.image_list_to_destroy.append('DOY_GHI_light.png')
+#
+                    #axs.spines['bottom'].set_color('#ffffff')
+                    #axs.spines['top'].set_color('#ffffff') 
+                    #axs.spines['right'].set_color('#ffffff')
+                    #axs.spines['left'].set_color('#ffffff')
+                    #axs.title.set_color('#ffffff')
+                    #axs.yaxis.label.set_color('#ffffff')
+                    #axs.xaxis.label.set_color('#ffffff')
+                    #axs.tick_params(axis='x', colors='#ffffff')
+                    #axs.tick_params(axis='y', colors='#ffffff')
+#
+                    #fig.savefig("DOY_GHI_dark.png", transparent=True)
+                    #self.image_list_to_destroy.append('DOY_GHI_dark.png')
+                    #self.DOY_GHI_light=Image.open("DOY_GHI_light.png")
+                    #self.DOY_GHI_dark=Image.open("DOY_GHI_dark.png")
+#
+                    #
+                    #self.plot = customtkinter.CTkImage(light_image=self.DOY_GHI_light , dark_image=self.DOY_GHI_dark, size=(500, 500))
+                    #self.plot_frame1 = customtkinter.CTkLabel(self.second_frame, text="", image=self.plot)
+                    #self.plot_frame2 = customtkinter.CTkLabel(self.second_frame, text="", image=self.plot)
+#
+                    #self.DOY_GHI_dark.close()
+                    #self.DOY_GHI_light.close()
+                    #self.plot_frame1.grid(row=0, column=0, padx=5, pady=5) 
+                    #self.plot_frame2.grid(row=0, column=1, padx=5, pady=5) 
+                    #plt.close(fig)
+                    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
+                    self.months_convert = dict(January=1, February=2, March=3, April=4, May=5, June=6, July=7, August=8, September=9, October=10, November=11,December=12)
+                    self.monthly_data = ""
+                    self.change_month = customtkinter.CTkOptionMenu(self.second_frame, dynamic_resizing=False,values=months, command= self.change_plotting_month)
+                    self.change_month.grid(row=0, column=2, padx=10, pady=(10, 10))
+                    self.change_month.set('January')
 
-                    fig, axs = plt.subplots(figsize=(12, 12))        
-                    self.pvmodule_irradiance.plot(x ='DOY', y='GHI', kind='line',ax=axs,fontsize=20)
-                    plt.setp(axs.get_xticklabels(), rotation = 45) 
-                    plt.xlabel('DOY', fontsize=20)
-                    plt.ylabel('GHI', fontsize=20)
-                    fig.savefig("DOY_GHI_light.png", transparent=True)
-                    self.image_list_to_destroy.append('DOY_GHI_light.png')
 
-                    axs.spines['bottom'].set_color('#ffffff')
-                    axs.spines['top'].set_color('#ffffff') 
-                    axs.spines['right'].set_color('#ffffff')
-                    axs.spines['left'].set_color('#ffffff')
-                    axs.title.set_color('#ffffff')
-                    axs.yaxis.label.set_color('#ffffff')
-                    axs.xaxis.label.set_color('#ffffff')
-                    axs.tick_params(axis='x', colors='#ffffff')
-                    axs.tick_params(axis='y', colors='#ffffff')
 
-                    fig.savefig("DOY_GHI_dark.png", transparent=True)
-                    self.image_list_to_destroy.append('DOY_GHI_dark.png')
-                    self.DOY_GHI_light=Image.open("DOY_GHI_light.png")
-                    self.DOY_GHI_dark=Image.open("DOY_GHI_dark.png")
+                    self.change_day = customtkinter.CTkSlider(self.second_frame, from_=1, to=31, width=100 , command = self.change_plotting_day)
+                    self.change_day.grid(row=1, column=2, padx=10, pady=(10, 10))
 
-                    
-                    self.plot = customtkinter.CTkImage(light_image=self.DOY_GHI_light , dark_image=self.DOY_GHI_dark, size=(500, 500))
-                    self.plot_frame1 = customtkinter.CTkLabel(self.second_frame, text="", image=self.plot)
-                    self.plot_frame2 = customtkinter.CTkLabel(self.second_frame, text="", image=self.plot)
 
-                    self.DOY_GHI_dark.close()
-                    self.DOY_GHI_light.close()
-                    self.plot_frame1.grid(row=0, column=0, padx=5, pady=5) 
-                    self.plot_frame2.grid(row=0, column=1, padx=5, pady=5) 
-                    plt.close(fig)
-
+                    fig = Figure()
+                    self.ax = fig.add_subplot(111)
+                    self.line, = self.ax.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['GHI'])
+                    # Create 2 buttons
+                    #self.button_left = customtkinter.CTkButton(self.second_frame,text="< Decrease Slope",command=self.decrease)
+                    #self.button_left.grid(row=1, column=2, padx=5, pady=5)
+                    #self.button_right = customtkinter.CTkButton(self.second_frame,text="Increase Slope >",command=self.increase)
+                    #self.button_right.grid(row=2, column=2, padx=5, pady=5)
+                    self.canvas = FigureCanvasTkAgg(fig,master=self.second_frame)
+                    self.canvas.get_tk_widget().grid(row=0, column=1, padx=5, pady=5)
+                    self.second_frame.grid(row=0, column=1, padx=5, pady=5)
                     loading.destroy()
 
                     
@@ -652,7 +677,49 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 return tkinter.messagebox.showwarning(title="Error", message="No Location selected")
         except:
             return tkinter.messagebox.showwarning(title="Error", message="No Module, Inverter or Location selected")
+
+    def change_plotting_day(self, event):
+
+        days_convert = dict(January=31, February=28, March=31, April=30, May=31, June=30, July=31, August=31, September=30, October=31, November=30,December=31)
+        if int(round(self.change_day.get(),0)) > days_convert[self.change_month.get()]:
+            day_number = days_convert[self.change_month.get()]
+        else:
+            day_number = int(round(self.change_day.get(),0))
+
+        data = self.monthly_data[(self.monthly_data['Month'] == self.months_convert [self.change_month.get()]) & (self.monthly_data['Day'] == day_number)]
+        self.line.axes.set_title(self.change_month.get())
         
+
+        self.line.set_xdata(data.index)
+        self.line.set_ydata(data['Total_G'])
+
+        self.ax.set_xlim(data.index[0],data.index[-1])
+        self.ax.set_ylim(data['Total_G'].min(),data['Total_G'].max())
+
+
+        self.canvas.draw()
+
+
+    def change_plotting_month(self, event):
+        data = self.pvmodule_irradiance[self.pvmodule_irradiance['Month'] == self.months_convert[self.change_month.get()]]
+        self.monthly_data = data
+
+        data.to_csv('PVGIS_Monthly_Data.csv')
+
+
+        self.line.axes.set_title(self.change_month.get())
+        
+        self.line.set_xdata(data.index)
+        self.line.set_ydata(data['Total_G'])
+
+        self.ax.set_xlim(data.index[0],data.index[-1])
+        self.ax.set_ylim(data['Total_G'].min(),data['Total_G'].max())
+
+
+        self.canvas.draw()
+
+
+
     def combofill_inverter(self, event):                                                                               
             v = self.inverters[ self.inverters['Manufacturer'] == self.Inverter_List_Brand_menu.get()]['Model Number'].tolist()
             self.Inverter_List_Model_menu.configure(values=v)
@@ -907,14 +974,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 map_widget.delete_all_marker()                                                                      
                 latitude = round(coordinates_tuple[0],4)                                                            
                 longitude = round(coordinates_tuple[1],4)                                                           
-                adr = tkintermapview.convert_coordinates_to_address(latitude, longitude)  
+                #adr = tkintermapview.convert_coordinates_to_address(latitude, longitude)  
                 loading.current_loadings.append("Reading map coordinates")
                 loading.bar()
 
-                try:                                                                                                
-                    address_display = adr.street + ", " + adr.city                                                  
-                except:                                                                                             
-                    address_display = "Street Address not found"                                                    
+                                                    
                 #city_name_marker = map_widget.set_marker(latitude, longitude, text=address_display) 
                 loading.current_loadings.append("Writing map coordinates")
                 loading.bar()
