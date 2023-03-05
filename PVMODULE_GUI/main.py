@@ -5,128 +5,23 @@ import customtkinter
 import tkintermapview
 from tkinter import *
 import importlib.metadata
-import random
 from pvmodule import *
 from tktooltip import ToolTip
 import matplotlib.pyplot as plt
 from PIL import Image
 from tkinter.ttk import Progressbar
 from matplotlib.figure import Figure
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import matplotlib.dates as mdates
+from numpy import trapz as calculate_area_under_curve
+from Loading import *
+from Splash import *
+
 
 customtkinter.set_appearance_mode("Dark")  # Modes: "System" (standard), "Dark", "Light"
 
-class Loading(tkinter.Toplevel):
-
-    current_loadings = []
-    width = 427
-    height = 250   
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.initial_loadings = ["","",""]
-        self.progress_status_value = 0
-
-        self.title("Loading")
-        self.geometry(f"{self.width}x{self.height}")
-        self.resizable(False, False)
-
-        # load and create background image
-        current_path = os.path.dirname(os.path.realpath(__file__))
-        self.splash_text = tkinter.StringVar(value = f'''\n\n\n\n\n\n\n\t           V.{importlib.metadata.version("pvmodule")}\n\n\n
-        
-        \nLoading ...''')  
-
-        self.bg_image = customtkinter.CTkImage(Image.open(current_path + "/test_images/bg_gradient.jpg"),
-                                               size=(self.width, self.height))
-        self.bg_image_label = customtkinter.CTkLabel(self, image=self.bg_image, textvariable=self.splash_text)
-
-        self.bg_image_label.grid(row=0, column=0, )
-
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        width_of_window = 427
-        height_of_window = 250
-        x_coordinate = (screen_width/2)-(width_of_window/2)
-        y_coordinate = (screen_height/2)-(height_of_window/2)
-        self.geometry("%dx%d+%d+%d" %(width_of_window,height_of_window,x_coordinate,y_coordinate))
-        self.overrideredirect(True)  
-
-
-        
-
-        self.progress=Progressbar(self,style="red.Horizontal.TProgressbar",orient=HORIZONTAL,length=500,mode='determinate')
-        self.progress.place(x=-10,y=235)
-
-        self.update()
-        ## required to make window show before the program gets to the mainloop
-    def bar(self):
-        self.splash_text.set(f'''\n\n\n\n\n\n\n\t           V.{importlib.metadata.version("pvmodule")}\n\n\n
-        
-        \n{self.current_loadings[-1]}''' )
-        self.progress['value'] = len(self.current_loadings)/len(self.initial_loadings)*100
-        self.update_idletasks()
-
-
-        
-class Splash(tkinter.Toplevel):
-    current_loadings = []
-    width = 427
-    height = 250
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-
-        self.initial_loadings = ["","","","","","","",""]
-
-        self.title("Splash screen")
-        self.geometry(f"{self.width}x{self.height}")
-        self.resizable(False, False)
-
-        # load and create background image
-        current_path = os.path.dirname(os.path.realpath(__file__))
-        self.splash_text = tkinter.StringVar(value = f'''\n\n\n\n\n\n\n\t           V.{importlib.metadata.version("pvmodule")}\n\n\n
-        
-        \nLoading ...''')   
-
-        self.bg_image = customtkinter.CTkImage(Image.open(current_path + "/test_images/bg_gradient.jpg"),
-                                               size=(self.width, self.height))
-        self.bg_image_label = customtkinter.CTkLabel(self, image=self.bg_image, textvariable=self.splash_text)
-
-        self.bg_image_label.grid(row=0, column=0, )
-
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        width_of_window = 427
-        height_of_window = 250
-        x_coordinate = (screen_width/2)-(width_of_window/2)
-        y_coordinate = (screen_height/2)-(height_of_window/2)
-        self.geometry("%dx%d+%d+%d" %(width_of_window,height_of_window,x_coordinate,y_coordinate))
-        self.overrideredirect(True)  
-
-
-
-
-        self.progress=Progressbar(self,style="red.Horizontal.TProgressbar",orient=HORIZONTAL,length=500,mode='determinate')
-        self.progress.place(x=-10,y=235)
-
-        self.update()
-
-
-    def bar(self):
-        self.splash_text.set(f'''\n\n\n\n\n\n\n\t           V.{importlib.metadata.version("pvmodule")}\n\n\n
-        
-        \n{self.current_loadings[-1]}''' )
-        self.progress['value'] = len(self.current_loadings)/len(self.initial_loadings)*100
-        self.update_idletasks()
-
-
 class App(customtkinter.CTk):
     
-    
-
     def __init__(self):
         #pvmodule variables:
         self.pvmodule_module = None
@@ -138,11 +33,7 @@ class App(customtkinter.CTk):
         self.pvmodule_azimuth = 0
         self.pvmodule_elevation = 2
         self.pvmodule_module_spacing = None
-
-
         self.image_list_to_destroy = []
-
-
 
         super().__init__()
         splash = Splash()
@@ -208,11 +99,9 @@ class App(customtkinter.CTk):
 
 
 
-        self.appearance_mode_menu = customtkinter.CTkOptionMenu(self.navigation_frame, values=["Dark", "Light", "System"],
-                                                                command=self.change_appearance_mode_event)
+        self.appearance_mode_menu = customtkinter.CTkOptionMenu(self.navigation_frame, values=["Dark", "Light"],command=self.change_appearance_mode_event)
         self.appearance_mode_menu.grid(row=6, column=0, padx=20, pady=20, sticky="s")
 
-        
         splash.current_loadings.append("Loading Frames")        #<<<<<<<<--------------------
         splash.bar()                              #<<<<<<<<--------------------
 
@@ -289,11 +178,6 @@ class App(customtkinter.CTk):
         self.PVGIS_Module_azimuth.grid(row=2, column=0, padx=10, pady=(10, 0))
         self.Module_azimuth_array = customtkinter.CTkEntry(self.tabview_PVGIS.tab("PVGIS Selection"), placeholder_text="-180 to 180, default: 0")
         self.Module_azimuth_array.grid(row=2, column=1, padx=10, pady=(10, 10))
-
-        #self.PVGIS_Ground_Elevation = customtkinter.CTkLabel(self.tabview_PVGIS.tab("PVGIS Selection"), text="Ground Elevation:")
-        #self.PVGIS_Ground_Elevation.grid(row=3, column=0, padx=10, pady=(10, 0))
-        #self.PVGIS_Ground_Elevation_Input_array = customtkinter.CTkEntry(self.tabview_PVGIS.tab("PVGIS Selection"), placeholder_text="default: 2")
-        #self.PVGIS_Ground_Elevation_Input_array.grid(row=3, column=1, padx=10, pady=(10, 10))
 
         self.PVGIS_Panel_Spacing = customtkinter.CTkLabel(self.tabview_PVGIS.tab("PVGIS Selection"), text="Module Spacing:")
         self.PVGIS_Panel_Spacing.grid(row=3, column=0, padx=10, pady=(10, 0))
@@ -444,32 +328,8 @@ class App(customtkinter.CTk):
         
         self.simulate_button = customtkinter.CTkButton(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), border_width=1, fg_color='#66ff99', text_color="black",text_color_disabled='black', text="Simulate", command=self.check_if_can_simulate)
         self.simulate_button.grid(row=4, column=0, padx=(50, 50), pady=(50, 5), sticky="nsew")
-
-        self.checkbox_1 = customtkinter.CTkCheckBox(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), onvalue=True, offvalue=False, text="I accept for this software to save \npictures or other graphics as a\nseparate files.")
-        self.checkbox_1.grid(row=5, column=0, padx=(25, 25), pady=(25, 50), sticky="nsew")
-        ToolTip(self.checkbox_1, msg="Other graphic files such as graph plots or temporary files", delay=0.5)   # True by default
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        splash.current_loadings.append("Importing Assets")        #<<<<<<<<--------------------
-        splash.bar()                              #<<<<<<<<--------------------
+        splash.current_loadings.append("Importing Assets")          #<<<<<<<<--------------------
+        splash.bar()                                                #<<<<<<<<--------------------
 
         # create second frame
         self.second_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -485,9 +345,6 @@ class App(customtkinter.CTk):
         splash.current_loadings.append("Initializing Assets")        #<<<<<<<<--------------------
         splash.bar()                              #<<<<<<<<--------------------
         self.select_frame_by_name("Setup")
-        #self.appearance_mode_optionemenu.set("System")
-        #self.scaling_optionemenu.set("100%")
-
         self.Module_List_Brand_menu.set("Module Brand")
         self.Module_List_Model_menu.set("Module Model")
         self.Inverter_List_Brand_menu.set("Inverter Brand")
@@ -495,10 +352,7 @@ class App(customtkinter.CTk):
         self.map_window_frame = None
         self.about_me_Toplevel = None
         self.appearance_mode_menu.set("Dark")
-
-
         splash.destroy()
-
         self.protocol("WM_DELETE_WINDOW",  self.on_close)
         
 
@@ -510,9 +364,7 @@ class App(customtkinter.CTk):
             self.about_me_Toplevel.title("About")                                                                                  
             map_frame = customtkinter.CTkLabel(self.about_me_Toplevel, wraplength=350, text='''Copyright (c), 2023, Fábio Ramalho de Almeida
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.''')
             map_frame.grid(row = 0 , column = 0, padx = 20, pady = 10 ) 
             self.about_me_Toplevel.focus()
@@ -544,7 +396,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.Module_losses_Input_array.configure(state="normal")
             self.Auto_Select_Inverter_Button.configure(state="normal")
 
-
             self.module_wattage.set("DC Wattage: " + str(selected_module['Pmax']) + " W" )
             self.module_technology.set("Technology: " + str(selected_module['Technology']) )
             if selected_module['BIPV'] == 'N':
@@ -555,15 +406,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.module_voc.set("Open Circuit: " + str(selected_module['Voc']) + " V" )
             self.module_noct.set("NOCT: " + str(selected_module['NOCT']) )
             self.module_size.set("Size: " + str(selected_module['Short Side']) + ' x ' + str(selected_module['Long Side']))
-
             self.tabview_information_module_info.grid(row=1, column=0, padx=(10, 10), pady=(10, 10), sticky="nsew")
 
 
 
     def check_if_can_simulate(self):
 
-
-        
         if self.PVGIS_Panel_Tilt_input.get() != '':
             self.pvmodule_panel_tilt = float(self.PVGIS_Panel_Tilt_input.get())
 
@@ -575,20 +423,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         if self.Module_azimuth_array.get() != '':
             self.pvmodule_azimuth = float(self.Module_azimuth_array.get())
 
-        #if self.PVGIS_Ground_Elevation_Input_array.get() != '':
-        #    self.pvmodule_elevation = float(self.PVGIS_Ground_Elevation_Input_array.get())
-
         if self.PVGIS_Panel_Spacing_Input_array.get() != '':
             self.pvmodule_module_spacing = float(self.PVGIS_Panel_Spacing_Input_array.get())
         
         can_simulate = False
         try:
 
-            if self.checkbox_1.get():
-                can_simulate = True
-            else:
-                can_simulate = False
-                return tkinter.messagebox.showwarning(title="Error", message="The terms and conditions of the software are not met")
             if self.pvmodule_module != None:
                 can_simulate = True
             else:
@@ -606,40 +446,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     loading.bar()
                     self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)                
                     self.select_frame_by_name("Graph")
-#
-                    #fig, axs = plt.subplots(figsize=(12, 12))        
-                    #self.pvmodule_irradiance.plot(x ='DOY', y='GHI', kind='line',ax=axs,fontsize=20)
-                    #plt.setp(axs.get_xticklabels(), rotation = 45) 
-                    #plt.xlabel('DOY', fontsize=20)
-                    #plt.ylabel('GHI', fontsize=20)
-                    #fig.savefig("DOY_GHI_light.png", transparent=True)
-                    #self.image_list_to_destroy.append('DOY_GHI_light.png')
-#
-                    #axs.spines['bottom'].set_color('#ffffff')
-                    #axs.spines['top'].set_color('#ffffff') 
-                    #axs.spines['right'].set_color('#ffffff')
-                    #axs.spines['left'].set_color('#ffffff')
-                    #axs.title.set_color('#ffffff')
-                    #axs.yaxis.label.set_color('#ffffff')
-                    #axs.xaxis.label.set_color('#ffffff')
-                    #axs.tick_params(axis='x', colors='#ffffff')
-                    #axs.tick_params(axis='y', colors='#ffffff')
-#
-                    #fig.savefig("DOY_GHI_dark.png", transparent=True)
-                    #self.image_list_to_destroy.append('DOY_GHI_dark.png')
-                    #self.DOY_GHI_light=Image.open("DOY_GHI_light.png")
-                    #self.DOY_GHI_dark=Image.open("DOY_GHI_dark.png")
-#
-                    #
-                    #self.plot = customtkinter.CTkImage(light_image=self.DOY_GHI_light , dark_image=self.DOY_GHI_dark, size=(500, 500))
-                    #self.plot_frame1 = customtkinter.CTkLabel(self.second_frame, text="", image=self.plot)
-                    #self.plot_frame2 = customtkinter.CTkLabel(self.second_frame, text="", image=self.plot)
-#
-                    #self.DOY_GHI_dark.close()
-                    #self.DOY_GHI_light.close()
-                    #self.plot_frame1.grid(row=0, column=0, padx=5, pady=5) 
-                    #self.plot_frame2.grid(row=0, column=1, padx=5, pady=5) 
-                    #plt.close(fig)
                     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
                     self.months_convert = dict(January=1, February=2, March=3, April=4, May=5, June=6, July=7, August=8, September=9, October=10, November=11,December=12)
                     self.monthly_data = ""
@@ -647,32 +453,38 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     self.change_month.grid(row=0, column=2, padx=10, pady=(10, 10))
                     self.change_month.set('January')
 
+                    self.fig = Figure(facecolor='#242424')
+                    self.ax = self.fig.add_subplot(111)
+                    self.ax.spines['bottom'].set_color('#144870')
+                    self.ax.spines['top'].set_color('#144870') 
+                    self.ax.spines['right'].set_color('#144870')
+                    self.ax.spines['left'].set_color('#144870')
+                    self.ax.title.set_color('#3b8ed0')
+                    self.ax.yaxis.label.set_color('#3b8ed0')
+                    self.ax.xaxis.label.set_color('#3b8ed0')
+                    self.ax.tick_params(axis='x', colors='#3b8ed0')
+                    self.ax.tick_params(axis='y', colors='#3b8ed0')
+                    self.ax.set_facecolor("#2b2b2b")
 
-
-                    self.change_day = customtkinter.CTkSlider(self.second_frame, from_=1, to=31, width=100 , command = self.change_plotting_day)
-                    self.change_day.grid(row=1, column=2, padx=10, pady=(10, 10))
-
-
-                    fig = Figure()
-                    self.ax = fig.add_subplot(111)
-                    self.line, = self.ax.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['GHI'])
-                    # Create 2 buttons
-                    #self.button_left = customtkinter.CTkButton(self.second_frame,text="< Decrease Slope",command=self.decrease)
-                    #self.button_left.grid(row=1, column=2, padx=5, pady=5)
+                    if customtkinter.get_appearance_mode() == "Dark":
+                        self.ax.set_facecolor("#2b2b2b")
+                        self.fig.set_facecolor("#242424")
+                    else:
+                        self.ax.set_facecolor("#dbdbdb")
+                        self.fig.set_facecolor("#ebebeb")
+                    
+                    self.line, = self.ax.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['GHI'], color='#3b8ed0')
+                    self.line.axes.set_title(f"Yearly Irradiance")
+                    
                     #self.button_right = customtkinter.CTkButton(self.second_frame,text="Increase Slope >",command=self.increase)
                     #self.button_right.grid(row=2, column=2, padx=5, pady=5)
-                    self.canvas = FigureCanvasTkAgg(fig,master=self.second_frame)
+                    self.canvas = FigureCanvasTkAgg(self.fig,master=self.second_frame)
                     self.canvas.get_tk_widget().grid(row=0, column=1, padx=5, pady=5)
                     self.second_frame.grid(row=0, column=1, padx=5, pady=5)
                     loading.destroy()
-
                     
-
-
-
                 except:
                     return tkinter.messagebox.showwarning(title="Error", message="Bad Location\n Location over sea or not covered.\n Please, select another location")
-                
             else:
                 return tkinter.messagebox.showwarning(title="Error", message="No Location selected")
         except:
@@ -687,35 +499,31 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             day_number = int(round(self.change_day.get(),0))
 
         data = self.monthly_data[(self.monthly_data['Month'] == self.months_convert [self.change_month.get()]) & (self.monthly_data['Day'] == day_number)]
-        self.line.axes.set_title(self.change_month.get())
-        
-
+        self.line.axes.set_title(f"{self.change_month.get()} - {day_number}")
+        xformatter = mdates.DateFormatter('%H:%M')
         self.line.set_xdata(data.index)
+        self.ax.xaxis.set_major_formatter(xformatter)
         self.line.set_ydata(data['Total_G'])
-
         self.ax.set_xlim(data.index[0],data.index[-1])
         self.ax.set_ylim(data['Total_G'].min(),data['Total_G'].max())
-
-
+        total_irradiance = calculate_area_under_curve(data['Total_G'])
+        print(f"Find print 1: Total Irradiance: {total_irradiance}")
         self.canvas.draw()
 
 
     def change_plotting_month(self, event):
+
+        self_slider_label = customtkinter.CTkLabel(self.second_frame, text="Day of the Month: ")                                           
+        self_slider_label.grid(row = 2 , columnspan=2,padx=10, pady=(10, 10))
+        self.change_day = customtkinter.CTkSlider(self.second_frame, from_=1, to=31, width=500, number_of_steps=31 , command = self.change_plotting_day)
+        self.change_day.grid(row=3, columnspan=2, padx=10, pady=(10, 10))
         data = self.pvmodule_irradiance[self.pvmodule_irradiance['Month'] == self.months_convert[self.change_month.get()]]
         self.monthly_data = data
-
-        data.to_csv('PVGIS_Monthly_Data.csv')
-
-
         self.line.axes.set_title(self.change_month.get())
-        
         self.line.set_xdata(data.index)
         self.line.set_ydata(data['Total_G'])
-
         self.ax.set_xlim(data.index[0],data.index[-1])
         self.ax.set_ylim(data['Total_G'].min(),data['Total_G'].max())
-
-
         self.canvas.draw()
 
 
@@ -736,14 +544,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.inverter_min_mppt.set("Min MPPT: "+ str(selected_inverter['Voltage Minimum (Vdc)']) + " V" )
             self.inverter_nominal_voc.set("Nominal Voltage : " + str(selected_inverter['Voltage Nominal (Vdc)']) + " V" )
             self.inverter_efficiency.set("Efficiency: " + str(selected_inverter['Weighted Efficiency (%)']) + " %" )
-            
             self.pvmodule_inverter = Inverters().inverter(name=selected_inverter['Model Number'])
 
     def PVMODULE_auto_select_inverter(self):
         loading = Loading()
-        loading.current_loadings.append("Selecting the Inverter")
+        loading.current_loadings.append("Selecting best the Inverter")
         loading.bar()
-
 
         if self.pvmodule_module == None:
             return tkinter.messagebox.showwarning(title="Error", message="No suitable inverter found.")
@@ -770,15 +576,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         loading = Loading()
         loading.current_loadings.append("Uploading the Module")
         loading.bar()
-
-        return_module =  Modules().module(model = Model_name , 
-                                          modules_per_string = float(nr_per_string) ,
-                                          number_of_strings = float(nr_per_array) , 
-                                          losses = float(losses))
-        loading.current_loadings.append("Writing the Module")
-        loading.bar()
+        return_module =  Modules().module(model = Model_name , modules_per_string = float(nr_per_string) ,number_of_strings = float(nr_per_array) , losses = float(losses))
         loading.destroy()
-
         return return_module
         
 
@@ -786,7 +585,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.module_losses.set(f"Losses: {round(int(value),0)}%")
         self.pvmodule_module['losses'] = float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))
         selected_module = self.modules.loc[self.modules['Model Number'] == self.Module_List_Model_menu.get()].squeeze()
-        
         num = float(selected_module['Isc'])*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))
         count = 0
         while num != 0:
@@ -797,7 +595,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         else:
             self.module_isc.set("Short Circuit: "+ str(round(float(selected_module['Isc'])*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit())),2)) + " A" )
         
-
         num = selected_module['Voc']*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))
         count = 0
         while num != 0:
@@ -807,7 +604,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.module_voc.set("Open Circuit: " + str(round(selected_module['Voc']*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))/1000,2)) + " kV" )
         else:
             self.module_voc.set("Open Circuit: " + str(round(selected_module['Voc']*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit())),2)) + " V" )
-        
         
         num = selected_module['Pmax']*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))*(1-float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/100)
         count = 0
@@ -830,7 +626,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.modules_amount_string.set(value = "Modules: " + str(dialog.get_input())) 
         selected_module = self.modules.loc[self.modules['Model Number'] == self.Module_List_Model_menu.get()].squeeze()
 
-
         if not ''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()).isdigit():
             self.pvmodule_module['number_of_strings'] = 1 
             self.modules_amount_string.set(value = "Modules: 1") 
@@ -845,8 +640,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 self.module_isc.set("Short Circuit: "+ str(round(float(selected_module['Isc'])*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))/1000,2)) + " kA" )
             else:
                 self.module_isc.set("Short Circuit: "+ str(round(float(selected_module['Isc'])*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit())),2)) + " A" )
-            
-
+        
             num = selected_module['Voc']*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))
             count = 0
             while num != 0:
@@ -856,8 +650,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 self.module_voc.set("Open Circuit: " + str(round(selected_module['Voc']*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))/1000,2)) + " kV" )
             else:
                 self.module_voc.set("Open Circuit: " + str(round(selected_module['Voc']*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit())),2)) + " V" )
-            
-            
+             
             num = selected_module['Pmax']*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))*(1-float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/100)
             count = 0
             while num != 0:
@@ -884,9 +677,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.modules_amount_array.set(value = "Modules: 1") 
         else:
             self.pvmodule_module['number_of_strings'] = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))
-
             selected_module = self.modules.loc[self.modules['Model Number'] == self.Module_List_Model_menu.get()].squeeze()
-            
             num = float(selected_module['Isc'])*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))
             count = 0
             while num != 0:
@@ -897,7 +688,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             else:
                 self.module_isc.set("Short Circuit: "+ str(round(float(selected_module['Isc'])*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit())),2)) + " A" )
             
-
             num = selected_module['Voc']*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))
             count = 0
             while num != 0:
@@ -907,7 +697,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 self.module_voc.set("Open Circuit: " + str(round(selected_module['Voc']*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))/1000,2)) + " kV" )
             else:
                 self.module_voc.set("Open Circuit: " + str(round(selected_module['Voc']*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit())),2)) + " V" )
-            
             
             num = selected_module['Pmax']*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))*(1-float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/100)
             count = 0
@@ -921,31 +710,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             else:
                 self.module_wattage.set("DC Wattage: " + str(round(selected_module['Pmax']*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))*(1-float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/100),2)) + " W" )
     
-
             self.pvmodule_module['modules_per_string'] = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))
-  
-  
-
-
-    def about_event(self):
-        if self.about_me_Toplevel is None or not self.about_me_Toplevel.winfo_exists():
-            self.about_me_Toplevel= customtkinter.CTkToplevel(self) 
-            self.about_me_Toplevel.geometry(f"{400}x{350}") 
-            self.about_me_Toplevel.title("About")                                                                                  
-            map_frame = tkinter.Label(self.about_me_Toplevel, wraplength=350, text='''Copyright (c), 2023, Fábio Ramalho de Almeida
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.''')
-            map_frame.grid(row = 0 , column = 0, padx = 20, pady = 10 ) 
-            self.about_me_Toplevel.focus()
-        else:
-            self.about_me_Toplevel.focus()
-
-
-    def change_appearance_mode_event(self, new_appearance_mode: str):
-        customtkinter.set_appearance_mode(new_appearance_mode)
 
     def change_scaling_event(self, new_scaling: str):
         new_scaling_float = int(new_scaling.replace("%", "")) / 100
@@ -953,6 +718,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     
     def sidebar_button_event(self):
         if self.map_window_frame is None or not self.map_window_frame.winfo_exists():
+
             self.map_window_frame= customtkinter.CTkToplevel(self)                                                                                  
             self.map_window_frame.title("Map Window")                                                                                 
             map_frame = customtkinter.CTkLabel(self.map_window_frame, text="")                                           
@@ -974,26 +740,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                 map_widget.delete_all_marker()                                                                      
                 latitude = round(coordinates_tuple[0],4)                                                            
                 longitude = round(coordinates_tuple[1],4)                                                           
-                #adr = tkintermapview.convert_coordinates_to_address(latitude, longitude)  
-                loading.current_loadings.append("Reading map coordinates")
-                loading.bar()
 
-                                                    
-                #city_name_marker = map_widget.set_marker(latitude, longitude, text=address_display) 
-                loading.current_loadings.append("Writing map coordinates")
-                loading.bar()
                 self.pvmodule_location = Location().set_location(latitude=latitude, longitude=longitude)
                 self.tabview_information_pvgis_info.grid(row=1, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew") 
-
-
-
-                #self.city_entry_var.set(str(adr.city))
-                loading.current_loadings.append("Destroying map")
-                loading.bar()                                                                                                    
+                                                                                                 
                 self.Latitude_entry_var.set("Latitude: " + str(latitude))                                                                  
                 self.Longitude_entry_var.set("Longitude: "+ str(longitude))                                                                  
                 self.map_window_frame.destroy()                                                                                       
-                #map_frame.destroy()  
                 loading.destroy()                                                                      
 
             map_widget.add_left_click_map_command(left_click_event) 
@@ -1006,7 +759,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.home_button.configure(fg_color=("gray75", "gray25") if name == "Setup" else "transparent")
         self.frame_2_button.configure(fg_color=("gray75", "gray25") if name == "Graph" else "transparent")
         self.frame_3_button.configure(fg_color=("gray75", "gray25") if name == "frame_3" else "transparent")
-
         # show selected frame
         if name == "Setup":
             self.home_frame.grid(row=0, column=1, sticky="nsew")
@@ -1021,6 +773,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         else:
             self.third_frame.grid_forget()
 
+
+
     def home_button_event(self):
         self.select_frame_by_name("Setup")
 
@@ -1031,12 +785,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.select_frame_by_name("frame_3")
 
     def change_appearance_mode_event(self, new_appearance_mode):
+        try:
+            if new_appearance_mode == "Dark":
+                        self.ax.set_facecolor("#2b2b2b")
+                        self.fig.set_facecolor("#242424")
+            else:
+                        self.ax.set_facecolor("#dbdbdb")
+                        self.fig.set_facecolor("#ebebeb")
+        except:
+            pass
         customtkinter.set_appearance_mode(new_appearance_mode)
 
+
     def on_close(self):
-
         #custom close options, here's one example:
-
         close = tkinter.messagebox.askokcancel("Close", "Would you like to close the program?")
         if close:
             import os
@@ -1046,13 +808,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         os.remove(image)
                     except:
                         print("image could not be removed in method 'on_close'")
-
             self.destroy()
+
+
+
+
 
 
 if __name__ == "__main__":
     app = App()
-
-
     app.mainloop()
 
