@@ -193,6 +193,7 @@ class App(customtkinter.CTk):
      
 
         self.modules = Modules().list_modules(print_data=False)  
+        self.modules = self.modules.sort_values(by=['Manufacturer'])
         self.module_brand = self.modules['Manufacturer'] 
         self.module_brand = list(dict.fromkeys(self.module_brand.tolist())) 
         
@@ -332,7 +333,7 @@ class App(customtkinter.CTk):
 
 
         # create third frame
-        self.third_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        #self.third_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
 
 
 
@@ -393,7 +394,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             self.module_wattage.set("DC Wattage: " + str(selected_module['Pmax']) + " W" )
             self.module_technology.set("Technology: " + str(selected_module['Technology']) )
-            if selected_module['BIPV'] == 'N':
+            if str(selected_module['BIPV']) == 'N':
                 self.module_bifaciality.set("Bifaciality: No")
             else:
                 self.module_bifaciality.set("Bifaciality: Yes")
@@ -440,16 +441,28 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     loading.current_loadings.append("Calculating Irradiance from PVGIS")
                     loading.bar()
                     self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)                
+                    print("done")
+                    #print(self.pvmodule_inputs)
+                    #print(self.pvmodule_metadata)
                     self.select_frame_by_name("Graph")
                     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
                     self.months_convert = dict(January=1, February=2, March=3, April=4, May=5, June=6, July=7, August=8, September=9, October=10, November=11,December=12)
                     self.monthly_data = ""
+
+                    self.change_month_label = customtkinter.CTkLabel(self.second_frame, text="Month:")                                           
+                    self.change_month_label.grid(row = 2 , column=1, padx=10, pady=(10, 10))
+
                     self.change_month = customtkinter.CTkOptionMenu(self.second_frame, dynamic_resizing=False,values=months, command= self.change_plotting_month)
-                    self.change_month.grid(row=0, column=2, padx=10, pady=(10, 10))
+                    self.change_month.grid(row=3, column=1, padx=10, pady=(10, 10))
                     self.change_month.set('January')
 
                     self.fig = Figure(facecolor='#242424')
-                    self.ax = self.fig.add_subplot(111)
+                    
+                    self.ax = self.fig.add_subplot(212)
+                    self.bx = self.fig.add_subplot(211)
+                    self.fig.tight_layout()
+
+
                     self.ax.spines['bottom'].set_color('#144870')
                     self.ax.spines['top'].set_color('#144870') 
                     self.ax.spines['right'].set_color('#144870')
@@ -461,33 +474,61 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     self.ax.tick_params(axis='y', colors='#3b8ed0')
                     self.ax.set_facecolor("#2b2b2b")
 
+                    self.bx.spines['bottom'].set_color('#144870')
+                    self.bx.spines['top'].set_color('#144870') 
+                    self.bx.spines['right'].set_color('#144870')
+                    self.bx.spines['left'].set_color('#144870')
+                    self.bx.title.set_color('#3b8ed0')
+                    self.bx.yaxis.label.set_color('#3b8ed0')
+                    self.bx.xaxis.label.set_color('#3b8ed0')
+                    self.bx.tick_params(axis='x', colors='#3b8ed0')
+                    self.bx.tick_params(axis='y', colors='#3b8ed0')
+                    self.bx.set_facecolor("#2b2b2b")
+
                     if customtkinter.get_appearance_mode() == "Dark":
                         self.ax.set_facecolor("#2b2b2b")
+                        self.bx.set_facecolor("#2b2b2b")
                         self.fig.set_facecolor("#242424")
                     else:
                         self.ax.set_facecolor("#dbdbdb")
+                        self.bx.set_facecolor("#dbdbdb")
                         self.fig.set_facecolor("#ebebeb")
+
+
+                    #self.bx.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['Total_G'], color='#3b8ed0', marker ='x')
+                    #self.cx.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['Total_G'], color='#3b8ed0', marker ='x')
+                    #self.dx.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['Total_G'], color='#3b8ed0', marker ='x')
                     
-                    self.line, = self.ax.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['GHI'], color='#3b8ed0')
+                    self.line, = self.ax.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['Day'], color='#3b8ed0')
+                    self.line1, = self.ax.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['Month'], color='white')
+
                     self.line.axes.set_title(f"Yearly Irradiance")
+
+
+                    self.lineb, = self.bx.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['Total_G'], color='#3b8ed0')
+                    
                     
                     #self.button_right = customtkinter.CTkButton(self.second_frame,text="Increase Slope >",command=self.increase)
                     #self.button_right.grid(row=2, column=2, padx=5, pady=5)
+
                     self.canvas = FigureCanvasTkAgg(self.fig,master=self.second_frame)
-                    self.canvas.get_tk_widget().grid(row=0, column=1, padx=5, pady=5)
+                    self.canvas.get_tk_widget().grid(row=0, columnspan=5, padx=5, pady=5)
                     self.second_frame.grid(row=0, column=1, padx=5, pady=5)
+
+                    self.change_plotting_month('January')
                     loading.destroy()
                     
-                except:
+                except KeyError:
                     return tkinter.messagebox.showwarning(title="Error", message="Bad Location\n Location over sea or not covered.\n Please, select another location")
             else:
-                return tkinter.messagebox.showwarning(title="Error", message="No Location selected")
-        except:
+                print("")
+                #return tkinter.messagebox.showwarning(title="Error", message="No Location selected")
+        except KeyError:
             return tkinter.messagebox.showwarning(title="Error", message="No Module, Inverter or Location selected")
 
     def change_plotting_day(self, event):
-
         days_convert = dict(January=31, February=28, March=31, April=30, May=31, June=30, July=31, August=31, September=30, October=31, November=30,December=31)
+        
         if int(round(self.change_day.get(),0)) > days_convert[self.change_month.get()]:
             day_number = days_convert[self.change_month.get()]
         else:
@@ -495,16 +536,33 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         data = self.monthly_data[(self.monthly_data['Month'] == self.months_convert [self.change_month.get()]) & (self.monthly_data['Day'] == day_number)]
         self.line.axes.set_title(f"{self.change_month.get()} - {day_number}")
+
         xformatter = mdates.DateFormatter('%H:%M')
         self.line.set_xdata(data.index)
         self.ax.xaxis.set_major_formatter(xformatter)
         self.line.set_ydata(data['Total_G'])
+
+
+        self.line1.axes.set_title(f"{self.change_month.get()} - {day_number}")
+        self.line1.set_xdata(data.index)
+        self.ax.xaxis.set_major_formatter(xformatter)
+        self.line1.set_ydata(data['G_Rear'])
+
         self.ax.set_xlim(data.index[0],data.index[-1])
         self.ax.set_ylim(data['Total_G'].min(),data['Total_G'].max())
+        self.ax.legend(['Irradiance W/m2'])
 
-        
+        self.lineb.set_xdata(data.index)
+        self.bx.xaxis.set_major_formatter(xformatter)
+        self.lineb.set_ydata(data['Total_G'])
+        self.bx.set_xlim(data.index[0],data.index[-1])
+        self.bx.set_ylim(data['Total_G'].min(),data['Total_G'].max())
+
+
+
         total_irradiance = calculate_area_under_curve(y=data['Total_G'],dx=24/len(data.index))
-        print(data['Total_G'].sum())
+        
+        
         print(f"Find print 1: Total Irradiance: {total_irradiance}")
         self.canvas.draw()
 
@@ -512,9 +570,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     def change_plotting_month(self, event):
 
         self_slider_label = customtkinter.CTkLabel(self.second_frame, text="Day of the Month: ")                                           
-        self_slider_label.grid(row = 2 , columnspan=2,padx=10, pady=(10, 10))
+        self_slider_label.grid(row = 2 , column=2, columnspan=2,padx=10, pady=(10, 10))
         self.change_day = customtkinter.CTkSlider(self.second_frame, from_=1, to=31, width=500, number_of_steps=31 , command = self.change_plotting_day)
-        self.change_day.grid(row=3, columnspan=2, padx=10, pady=(10, 10))
+        self.change_day.grid(row=3, column=2,columnspan=2, padx=10, pady=(10, 10))
         data = self.pvmodule_irradiance[self.pvmodule_irradiance['Month'] == self.months_convert[self.change_month.get()]]
         self.monthly_data = data
         self.line.axes.set_title(self.change_month.get())
@@ -766,10 +824,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.second_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.second_frame.grid_forget()
-        if name == "frame_3":
-            self.third_frame.grid(row=0, column=1, sticky="nsew")
-        else:
-            self.third_frame.grid_forget()
+        #if name == "frame_3":
+        #    self.third_frame.grid(row=0, column=1, sticky="nsew")
+        #else:
+        #    self.third_frame.grid_forget()
 
 
 
@@ -786,9 +844,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         try:
             if new_appearance_mode == "Dark":
                         self.ax.set_facecolor("#2b2b2b")
+                        self.bx.set_facecolor("#2b2b2b")
                         self.fig.set_facecolor("#242424")
             else:
                         self.ax.set_facecolor("#dbdbdb")
+                        self.bx.set_facecolor("#dbdbdb")
                         self.fig.set_facecolor("#ebebeb")
         except:
             pass
