@@ -406,9 +406,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.tabview_information_module_info.grid(row=1, column=0, padx=(10, 10), pady=(10, 10), sticky="nsew")
 
     def PVMODULE_GET_DATA_THREAD_jan(self):
-        data = pd.DataFrame()
-        self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(_month=1,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-        data =  pd.concat([self.pvmodule_irradiance, data])
+        _, data, _ = Irradiance().irradiance(_month=1,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+        self.pvmodule_dc_output_jan = System().dc_production(self.pvmodule_module, data)
         self.thread_progressbar_January.stop()
         self.thread_progressbar_January.set(1)
         self.thread_progressbar_January.grid_forget()
@@ -418,9 +417,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.thread_counter = self.thread_counter - 1
 
     def PVMODULE_GET_DATA_THREAD_feb(self):
-        data = pd.DataFrame()
-        self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(_month=2,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-        data =  pd.concat([self.pvmodule_irradiance, data])
+        _, data, _ = Irradiance().irradiance(_month=2,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+        self.pvmodule_dc_output_feb = System().dc_production(self.pvmodule_module, data)
         self.thread_progressbar_February.stop()
         self.thread_progressbar_February.set(1)
         self.thread_progressbar_February.grid_forget()
@@ -430,9 +428,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.thread_counter = self.thread_counter - 1
 
     def PVMODULE_GET_DATA_THREAD_mar(self):
-        data = pd.DataFrame()
-        self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(_month=3,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-        data =  pd.concat([self.pvmodule_irradiance, data])
+        _, data, _ = Irradiance().irradiance(_month=3,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+        self.pvmodule_dc_output_mar = System().dc_production(self.pvmodule_module, data)
         self.thread_progressbar_March.stop()
         self.thread_progressbar_March.set(1)
         self.thread_progressbar_March.grid_forget()
@@ -442,9 +439,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.thread_counter = self.thread_counter - 1
 
     def PVMODULE_GET_DATA_THREAD_apr(self):
-        data = pd.DataFrame()
-        self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(_month=4,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-        data =  pd.concat([self.pvmodule_irradiance, data])
+        _, data, _ = Irradiance().irradiance(_month=4,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+        self.pvmodule_dc_output_apr = System().dc_production(self.pvmodule_module, data)
         self.thread_progressbar_April.stop()
         self.thread_progressbar_April.set(1)
         self.thread_progressbar_April.grid_forget()
@@ -454,9 +450,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.thread_counter = self.thread_counter - 1
 
     def PVMODULE_GET_DATA_THREAD_may(self):
-        data = pd.DataFrame()
-        self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(_month=5,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-        data =  pd.concat([self.pvmodule_irradiance, data])
+        _, data, _ = Irradiance().irradiance(_month=5,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+        self.pvmodule_dc_output_may = System().dc_production(self.pvmodule_module, data)
         self.thread_progressbar_May.stop()
         self.thread_progressbar_May.set(1)
         self.thread_progressbar_May.grid_forget()
@@ -466,9 +461,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.thread_counter = self.thread_counter - 1
 
     def PVMODULE_GET_DATA_THREAD_jun(self):
-        data = pd.DataFrame()
-        self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(_month=6,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-        data =  pd.concat([self.pvmodule_irradiance, data])
+        _, data, _ = Irradiance().irradiance(_month=6,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+        self.pvmodule_dc_output_jun = System().dc_production(self.pvmodule_module, data)
         self.thread_progressbar_June.stop()
         self.thread_progressbar_June.set(1)
         self.thread_progressbar_June.grid_forget()
@@ -478,9 +472,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.thread_counter = self.thread_counter - 1
 
     def PVMODULE_GET_DATA_THREAD_jul(self):
-        data = pd.DataFrame()
-        self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(_month=7,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-        data =  pd.concat([self.pvmodule_irradiance, data])
+        _, data, _ = Irradiance().irradiance(_month=7,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+        self.pvmodule_dc_output_jul = System().dc_production(self.pvmodule_module, data)
         self.thread_progressbar_July.stop()
         self.thread_progressbar_July.set(1)
         self.thread_progressbar_July.grid_forget()
@@ -490,9 +483,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.thread_counter = self.thread_counter - 1
 
     def PVMODULE_GET_DATA_THREAD_aug(self):
-        data = pd.DataFrame()
-        self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(_month=8,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-        data =  pd.concat([self.pvmodule_irradiance, data])
+        _, data, _ = Irradiance().irradiance(_month=8,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+        self.pvmodule_dc_output_aug = System().dc_production(self.pvmodule_module, data)
         self.thread_progressbar_August.stop()
         self.thread_progressbar_August.set(1)
         self.thread_progressbar_August.grid_forget()
@@ -502,9 +494,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.thread_counter = self.thread_counter - 1
 
     def PVMODULE_GET_DATA_THREAD_sep(self):
-        data = pd.DataFrame()
-        self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(_month=9,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-        data =  pd.concat([self.pvmodule_irradiance, data])
+        _, data, _ = Irradiance().irradiance(_month=9,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+        self.pvmodule_dc_output_sep = System().dc_production(self.pvmodule_module, data)
         self.thread_progressbar_September.stop()
         self.thread_progressbar_September.set(1)
         self.thread_progressbar_September.grid_forget()
@@ -514,9 +505,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.thread_counter = self.thread_counter - 1
 
     def PVMODULE_GET_DATA_THREAD_oct(self):
-        data = pd.DataFrame()
-        self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(_month=10,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-        data =  pd.concat([self.pvmodule_irradiance, data])
+        _, data, _ = Irradiance().irradiance(_month=10,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+        self.pvmodule_dc_output_oct = System().dc_production(self.pvmodule_module, data)
         self.thread_progressbar_October.stop()
         self.thread_progressbar_October.set(1)
         self.thread_progressbar_October.grid_forget()
@@ -526,9 +516,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.thread_counter = self.thread_counter - 1
 
     def PVMODULE_GET_DATA_THREAD_nov(self):
-        data = pd.DataFrame()
-        self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(_month=11,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-        data =  pd.concat([self.pvmodule_irradiance, data])
+        _, data, _ = Irradiance().irradiance(_month=11,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+        self.pvmodule_dc_output_nov = System().dc_production(self.pvmodule_module, data)
         self.thread_progressbar_November.stop()
         self.thread_progressbar_November.set(1)
         self.thread_progressbar_November.grid_forget()
@@ -538,9 +527,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.thread_counter = self.thread_counter - 1
 
     def PVMODULE_GET_DATA_THREAD_dec(self):
-        data = pd.DataFrame()
-        self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(_month=12,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
-        data =  pd.concat([self.pvmodule_irradiance, data])
+        _, data, _ = Irradiance().irradiance(_month=12,module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)
+        self.pvmodule_dc_output_dec = System().dc_production(self.pvmodule_module, data)
         self.thread_progressbar_December.stop()
         self.thread_progressbar_December.set(1)
         self.thread_progressbar_December.grid_forget()
@@ -552,10 +540,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 
-
-
-
-
     def CHECK_FOR_THREADS(self):
         while self.thread_counter > 0:
             print("")
@@ -564,14 +548,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.months_convert = dict(January=1, February=2, March=3, April=4, May=5, June=6, July=7, August=8, September=9, October=10, November=11,December=12)
         self.monthly_data = ""
         self.change_month_label = customtkinter.CTkLabel(self.second_frame, text="Month:")                                           
-        self.change_month_label.grid(row = 0 , column=1, padx=10, pady=(10, 10))
+        self.change_month_label.grid(row = 0 , column=6, padx=10, pady=(10, 10))
         self.change_month = customtkinter.CTkOptionMenu(self.second_frame, dynamic_resizing=False,values=months, command= self.change_plotting_month)
-        self.change_month.grid(row=1, column=1, padx=10, pady=(10, 10))
+        self.change_month.grid(row=0, column=7, padx=10, pady=(10, 10))
         self.change_month.set('January')
         self.fig = Figure(facecolor='#242424')  
         self.bx = self.fig.add_subplot(212)
         self.ax = self.fig.add_subplot(211)
         self.fig.tight_layout()
+        
         self.ax.spines['bottom'].set_color('#144870')
         self.ax.spines['top'].set_color('#144870') 
         self.ax.spines['right'].set_color('#144870')
@@ -582,6 +567,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.ax.tick_params(axis='x', colors='#3b8ed0')
         self.ax.tick_params(axis='y', colors='#3b8ed0')
         self.ax.set_facecolor("#2b2b2b")
+        
         self.bx.spines['bottom'].set_color('#144870')
         self.bx.spines['top'].set_color('#144870') 
         self.bx.spines['right'].set_color('#144870')
@@ -605,11 +591,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.line2, = self.ax.plot(self.pvmodule_irradiance_jan['Time_H'], self.pvmodule_irradiance_jan['G_Front'], color='magenta', marker='s',linewidth='1',linestyle = 'dashdot', markersize=4)
         self.line3, = self.ax.plot(self.pvmodule_irradiance_jan['Time_H'], self.pvmodule_irradiance_jan['G_Rear'], color='green', marker='d',linewidth='1',linestyle = 'dotted', markersize=4)
         self.line1.axes.set_title("Irradiance")
+
+        self.line1_dc, = self.bx.plot(self.pvmodule_dc_output_jan['Time_H'], self.pvmodule_dc_output_jan['Total DC Power'], color='red', marker='v',linewidth='1',linestyle = 'dotted', markersize=4)
+        self.line2_dc, = self.bx.plot(self.pvmodule_dc_output_jan['Time_H'], self.pvmodule_dc_output_jan['Front DC Power'], color='magenta', marker='s',linewidth='1',linestyle = 'dashdot', markersize=4)
+        self.line3_dc, = self.bx.plot(self.pvmodule_dc_output_jan['Time_H'], self.pvmodule_dc_output_jan['Rear DC Power'], color='green', marker='d',linewidth='1',linestyle = 'dotted', markersize=4)
+        self.line1_dc.axes.set_title("Power")
        
         if customtkinter.get_appearance_mode() == "Dark":
             self.ax.legend(['Global Irradiance W/m2','Front Irradiance W/m2','Rear Irradiance W/m2'],frameon=False, labelcolor="white")
+            self.bx.legend(['Total DC Power (W)','Front DC Power (W)','Rear DC Power (W)'],frameon=False, labelcolor="white")
+
         else:
             self.ax.legend(['Global Irradiance W/m2','Front Irradiance W/m2','Rear Irradiance W/m2'],frameon=False, labelcolor="black")
+            self.bx.legend(['Total DC Power (W)','Front DC Power (W)','Rear DC Power (W)'],frameon=False, labelcolor="black")
+
         self.canvas = FigureCanvasTkAgg(self.fig,master=self.second_frame)
         self.canvas.get_tk_widget().grid(row=2, columnspan=5, padx=5, pady=5)
         self.second_frame.grid(row=0, column=1, padx=5, pady=5)
@@ -652,10 +647,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     self.select_frame_by_name("Graph")
                     self.simulate_button.configure(state="disabled")
                     self.thread_progressbar_January_Label = customtkinter.CTkLabel(self.second_frame, text="Importing January")                                           
-                    self.thread_progressbar_January_Label.grid(row=1, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_January_Label.grid(row=1, column=2, padx=(10, 10), pady=(150, 10), sticky="nsew")
                     self.thread_progressbar_January = customtkinter.CTkProgressBar(master=self.second_frame)
                     self.thread_progressbar_January.start()
-                    self.thread_progressbar_January.grid(row=1, column=1, padx=(100, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_January.grid(row=1, column=1, padx=(100, 10), pady=(150, 10), sticky="nsew")
 
                     self.thread_progressbar_February_Label = customtkinter.CTkLabel(self.second_frame, text="Importing February")                                           
                     self.thread_progressbar_February_Label.grid(row=2, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew")
@@ -688,79 +683,46 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     self.thread_progressbar_June.grid(row=6, column=1, padx=(100, 10), pady=(10, 10), sticky="nsew")
                     
                     self.thread_progressbar_July_Label = customtkinter.CTkLabel(self.second_frame, text="Importing July")                                           
-                    self.thread_progressbar_July_Label.grid(row=7, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_July_Label.grid(row=1, column=4, padx=(10, 10), pady=(150, 10), sticky="nsew")
                     self.thread_progressbar_July = customtkinter.CTkProgressBar(master=self.second_frame)
                     self.thread_progressbar_July.start()
-                    self.thread_progressbar_July.grid(row=7, column=1, padx=(100, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_July.grid(row=1, column=3, padx=(100, 10), pady=(150, 10), sticky="nsew")
 
                     self.thread_progressbar_August_Label = customtkinter.CTkLabel(self.second_frame, text="Importing August")                                           
-                    self.thread_progressbar_August_Label.grid(row=8, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_August_Label.grid(row=2, column=4, padx=(10, 10), pady=(10, 10), sticky="nsew")
                     self.thread_progressbar_August = customtkinter.CTkProgressBar(master=self.second_frame)
                     self.thread_progressbar_August.start()
-                    self.thread_progressbar_August.grid(row=8, column=1, padx=(100, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_August.grid(row=2, column=3, padx=(100, 10), pady=(10, 10), sticky="nsew")
 
                     self.thread_progressbar_September_Label = customtkinter.CTkLabel(self.second_frame, text="Importing September")                                           
-                    self.thread_progressbar_September_Label.grid(row=9, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_September_Label.grid(row=3, column=4, padx=(10, 10), pady=(10, 10), sticky="nsew")
                     self.thread_progressbar_September = customtkinter.CTkProgressBar(master=self.second_frame)
                     self.thread_progressbar_September.start()
-                    self.thread_progressbar_September.grid(row=9, column=1, padx=(100, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_September.grid(row=3, column=3, padx=(100, 10), pady=(10, 10), sticky="nsew")
 
                     self.thread_progressbar_October_Label = customtkinter.CTkLabel(self.second_frame, text="Importing October")                                           
-                    self.thread_progressbar_October_Label.grid(row=10, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_October_Label.grid(row=4, column=4, padx=(10, 10), pady=(10, 10), sticky="nsew")
                     self.thread_progressbar_October = customtkinter.CTkProgressBar(master=self.second_frame)
                     self.thread_progressbar_October.start()
-                    self.thread_progressbar_October.grid(row=10, column=1, padx=(100, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_October.grid(row=4, column=3, padx=(100, 10), pady=(10, 10), sticky="nsew")
 
                     self.thread_progressbar_November_Label = customtkinter.CTkLabel(self.second_frame, text="Importing November")                                           
-                    self.thread_progressbar_November_Label.grid(row=11, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_November_Label.grid(row=5, column=4, padx=(10, 10), pady=(10, 10), sticky="nsew")
                     self.thread_progressbar_November = customtkinter.CTkProgressBar(master=self.second_frame)
                     self.thread_progressbar_November.start()
-                    self.thread_progressbar_November.grid(row=11, column=1, padx=(100, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_November.grid(row=5, column=3, padx=(100, 10), pady=(10, 10), sticky="nsew")
 
                     self.thread_progressbar_December_Label = customtkinter.CTkLabel(self.second_frame, text="Importing December")                                           
-                    self.thread_progressbar_December_Label.grid(row=12, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_December_Label.grid(row=6, column=4, padx=(10, 10), pady=(10, 10), sticky="nsew")
                     self.thread_progressbar_December = customtkinter.CTkProgressBar(master=self.second_frame)
                     self.thread_progressbar_December.start()
-                    self.thread_progressbar_December.grid(row=12, column=1, padx=(100, 10), pady=(10, 10), sticky="nsew")
+                    self.thread_progressbar_December.grid(row=6, column=3, padx=(100, 10), pady=(10, 10), sticky="nsew")
+                    
+                    
+                    timer = threading.Timer(1.0, self.start_threads)
+                    timer.start()  # after 60 seconds, 'callback' will be called
 
-                    thread1 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_jan)
-                    thread1.start()
-
-                    thread2 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_feb)
-                    thread2.start()
-
-                    thread3 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_mar)
-                    thread3.start()
-
-                    thread4 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_apr)
-                    thread4.start()
-
-                    thread5 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_may)
-                    thread5.start()
-
-                    thread6 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_jun)
-                    thread6.start()
-
-                    thread7 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_jul)
-                    thread7.start()
-
-                    thread8 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_aug)
-                    thread8.start()
-
-                    thread9 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_sep)
-                    thread9.start()
-
-                    thread10 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_oct)
-                    thread10.start()
-
-                    thread11 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_nov)
-                    thread11.start()
-
-                    thread12 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_dec)
-                    thread12.start()
-                    self.thread_counter = 12
-                    check_for_threads = threading.Thread(target=self.CHECK_FOR_THREADS)
-                    check_for_threads.start()
+                    
 
                 except KeyError:
                     return tkinter.messagebox.showwarning(title="Error", message="Bad Location\n Location over sea or not covered.\n Please, select another location")
@@ -769,52 +731,109 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         except KeyError:
             return tkinter.messagebox.showwarning(title="Error", message="No Module, Inverter or Location selected")
 
+    def start_threads(self):
+        thread1 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_jan)
+        thread1.start()
+        thread2 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_feb)
+        thread2.start()
+        thread3 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_mar)
+        thread3.start()
+        thread4 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_apr)
+        thread4.start()
+        thread5 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_may)
+        thread5.start()
+        thread6 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_jun)
+        thread6.start()
+        thread7 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_jul)
+        thread7.start()
+        thread8 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_aug)
+        thread8.start()
+        thread9 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_sep)
+        thread9.start()
+        thread10 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_oct)
+        thread10.start()
+        thread11 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_nov)
+        thread11.start()
+        thread12 = threading.Thread(target=self.PVMODULE_GET_DATA_THREAD_dec)
+        thread12.start()
+        self.thread_counter = 12
+        check_for_threads = threading.Thread(target=self.CHECK_FOR_THREADS)
+        check_for_threads.start()
+        
 
     def change_plotting_month(self, event):
-        data = pd.DataFrame()
+        data_irr = pd.DataFrame()
+        data_pwr = pd.DataFrame()
         if event == "January":
-            data = self.pvmodule_irradiance_jan
+            data_irr = self.pvmodule_irradiance_jan
+            data_pwr = self.pvmodule_dc_output_jan
         if event == "February":
-            data = self.pvmodule_irradiance_feb
+            data_irr = self.pvmodule_irradiance_feb
+            data_pwr = self.pvmodule_dc_output_feb
         if event == "March":
-            data = self.pvmodule_irradiance_mar
+            data_irr = self.pvmodule_irradiance_mar
         if event == "April":
-            data = self.pvmodule_irradiance_apr
+            data_irr = self.pvmodule_irradiance_apr
+            data_pwr = self.pvmodule_dc_output_mar
         if event == "May":
-            data = self.pvmodule_irradiance_may
+            data_irr = self.pvmodule_irradiance_may
+            data_pwr = self.pvmodule_dc_output_may
         if event == "June":
-            data = self.pvmodule_irradiance_jun
+            data_irr = self.pvmodule_irradiance_jun
+            data_pwr = self.pvmodule_dc_output_jun
         if event == "July":
-            data = self.pvmodule_irradiance_jul
+            data_irr = self.pvmodule_irradiance_jul
+            data_pwr = self.pvmodule_dc_output_jul
         if event == "August":
-            data = self.pvmodule_irradiance_aug
+            data_irr = self.pvmodule_irradiance_aug
+            data_pwr = self.pvmodule_dc_output_aug
         if event == "September":
-            data = self.pvmodule_irradiance_sep
+            data_irr = self.pvmodule_irradiance_sep
+            data_pwr = self.pvmodule_dc_output_sep
         if event == "October":
-            data = self.pvmodule_irradiance_oct
+            data_irr = self.pvmodule_irradiance_oct
+            data_pwr = self.pvmodule_dc_output_oct
         if event == "November":
-            data = self.pvmodule_irradiance_nov
+            data_irr = self.pvmodule_irradiance_nov
+            data_pwr = self.pvmodule_dc_output_nov
         if event == "December":
-            data = self.pvmodule_irradiance_dec
+            data_irr = self.pvmodule_irradiance_dec
+            data_pwr = self.pvmodule_dc_output_dec
 
-        self.line1.set_xdata(data['Time_H'])
-        self.line1.set_ydata(data['Total_G'])
+        self.line1.set_xdata(data_irr['Time_H'])
+        self.line1.set_ydata(data_irr['Total_G'])
 
-        self.line2.set_xdata(data['Time_H'])
-        self.line2.set_ydata(data['G_Front'])
+        self.line2.set_xdata(data_irr['Time_H'])
+        self.line2.set_ydata(data_irr['G_Front'])
 
-        self.line3.set_xdata(data['Time_H'])
-        self.line3.set_ydata(data['G_Rear'])
+        self.line3.set_xdata(data_irr['Time_H'])
+        self.line3.set_ydata(data_irr['G_Rear'])
 
-        self.ax.set_xlim(data['Time_H'][0],data['Time_H'][-1])
-        self.ax.set_ylim(data['Total_G'].min(),data['Total_G'].max() + 50)
+        self.line1_dc.set_xdata(data_pwr['Time_H'])
+        self.line1_dc.set_ydata(data_pwr['Total DC Power'])
+
+        self.line2_dc.set_xdata(data_pwr['Time_H'])
+        self.line2_dc.set_ydata(data_pwr['Front DC Power'])
+
+        self.line3_dc.set_xdata(data_pwr['Time_H'])
+        self.line3_dc.set_ydata(data_pwr['Rear DC Power'])
+
+        self.ax.set_xlim(data_irr['Time_H'][0],data_irr['Time_H'][-1])
+        self.ax.set_ylim(data_irr['Total_G'].min(),data_irr['Total_G'].max() + 50)
+
+        self.bx.set_xlim(data_pwr['Time_H'][0],data_pwr['Time_H'][-1])
+        self.bx.set_ylim(data_pwr['Total DC Power'].min(),data_pwr['Total DC Power'].max() + 50)
         if customtkinter.get_appearance_mode() == "Dark":
             self.ax.legend(['Global Irradiance W/m2','Front Irradiance W/m2','Rear Irradiance W/m2'],frameon=False, labelcolor="white")
+            self.bx.legend(['Total DC Power (W)','Front DC Power (W)','Rear DC Power (W)'],frameon=False, labelcolor="white")
+
         else:
             self.ax.legend(['Global Irradiance W/m2','Front Irradiance W/m2','Rear Irradiance W/m2'],frameon=False, labelcolor="black")
+            self.bx.legend(['Total DC Power (W)','Front DC Power (W)','Rear DC Power (W)'],frameon=False, labelcolor="black")
 
-        total_irradiance = calculate_area_under_curve(y=data['Total_G'],dx=24/len(data.index))
-        print(f"Find print 1: Total Irradiance: {total_irradiance}")
+
+        total_irradiance = calculate_area_under_curve(y=data_pwr['Total DC Power'],dx=24/len(data_pwr.index))
+        print(f"Find print 1: Total Power DC: {total_irradiance}")
         self.canvas.draw()
 
 
