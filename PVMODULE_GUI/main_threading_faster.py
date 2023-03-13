@@ -544,6 +544,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         while self.thread_counter > 0:
             print("")
             pass
+        import seaborn as sns
+
         months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
         self.months_convert = dict(January=1, February=2, March=3, April=4, May=5, June=6, July=7, August=8, September=9, October=10, November=11,December=12)
         self.monthly_data = ""
@@ -587,15 +589,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.bx.set_facecolor("#dbdbdb")
             self.fig.set_facecolor("#ebebeb")
 
-        self.line1, = self.ax.plot(self.pvmodule_irradiance_jan['Time_H'], self.pvmodule_irradiance_jan['Total_G'], color='red', marker='v',linewidth='1',linestyle = 'dotted', markersize=4)
-        self.line2, = self.ax.plot(self.pvmodule_irradiance_jan['Time_H'], self.pvmodule_irradiance_jan['G_Front'], color='magenta', marker='s',linewidth='1',linestyle = 'dashdot', markersize=4)
-        self.line3, = self.ax.plot(self.pvmodule_irradiance_jan['Time_H'], self.pvmodule_irradiance_jan['G_Rear'], color='green', marker='d',linewidth='1',linestyle = 'dotted', markersize=4)
+
+        self.line1, = self.ax.plot(self.pvmodule_irradiance_jan['Time_H'], self.pvmodule_irradiance_jan['Total_G'], color='red', marker='v',linewidth='0.5',linestyle = 'dotted', markersize=2)
+        self.line2, = self.ax.plot(self.pvmodule_irradiance_jan['Time_H'], self.pvmodule_irradiance_jan['G_Front'], color='magenta', marker='s',linewidth='0.5',linestyle = 'dashdot', markersize=2)
+        self.line3, = self.ax.plot(self.pvmodule_irradiance_jan['Time_H'], self.pvmodule_irradiance_jan['G_Rear'], color='green', marker='d',linewidth='0.5',linestyle = 'dotted', markersize=2)
         self.line1.axes.set_title("Irradiance")
 
-        self.line1_dc, = self.bx.plot(self.pvmodule_dc_output_jan['Time_H'], self.pvmodule_dc_output_jan['Total DC Power'], color='red', marker='v',linewidth='1',linestyle = 'dotted', markersize=4)
-        self.line2_dc, = self.bx.plot(self.pvmodule_dc_output_jan['Time_H'], self.pvmodule_dc_output_jan['Front DC Power'], color='magenta', marker='s',linewidth='1',linestyle = 'dashdot', markersize=4)
-        self.line3_dc, = self.bx.plot(self.pvmodule_dc_output_jan['Time_H'], self.pvmodule_dc_output_jan['Rear DC Power'], color='green', marker='d',linewidth='1',linestyle = 'dotted', markersize=4)
+        self.line1_dc, = self.bx.plot(self.pvmodule_dc_output_jan['Time_H'], self.pvmodule_dc_output_jan['Total DC Power'], color='red', marker='v',linewidth='0.5',linestyle = 'dotted', markersize=2)
+        self.line2_dc, = self.bx.plot(self.pvmodule_dc_output_jan['Time_H'], self.pvmodule_dc_output_jan['Front DC Power'], color='magenta', marker='s',linewidth='0.5',linestyle = 'dashdot', markersize=2)
+        self.line3_dc, = self.bx.plot(self.pvmodule_dc_output_jan['Time_H'], self.pvmodule_dc_output_jan['Rear DC Power'], color='green', marker='d',linewidth='0.5',linestyle = 'dotted', markersize=2)
         self.line1_dc.axes.set_title("Power")
+
+        
+
+
        
         if customtkinter.get_appearance_mode() == "Dark":
             self.ax.legend(['Global Irradiance W/m2','Front Irradiance W/m2','Rear Irradiance W/m2'],frameon=False, labelcolor="white")
@@ -772,9 +779,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             data_pwr = self.pvmodule_dc_output_feb
         if event == "March":
             data_irr = self.pvmodule_irradiance_mar
+            data_pwr = self.pvmodule_dc_output_mar
         if event == "April":
             data_irr = self.pvmodule_irradiance_apr
-            data_pwr = self.pvmodule_dc_output_mar
+            data_pwr = self.pvmodule_dc_output_apr
         if event == "May":
             data_irr = self.pvmodule_irradiance_may
             data_pwr = self.pvmodule_dc_output_may
@@ -818,10 +826,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.line3_dc.set_xdata(data_pwr['Time_H'])
         self.line3_dc.set_ydata(data_pwr['Rear DC Power'])
 
-        self.ax.set_xlim(data_irr['Time_H'][0],data_irr['Time_H'][-1])
+        self.ax.set_xlim(data_irr['Time_H'].min(),data_irr['Time_H'].max())
         self.ax.set_ylim(data_irr['Total_G'].min(),data_irr['Total_G'].max() + 50)
 
-        self.bx.set_xlim(data_pwr['Time_H'][0],data_pwr['Time_H'][-1])
+        self.bx.set_xlim(data_pwr['Time_H'].min(),data_pwr['Time_H'].max())
         self.bx.set_ylim(data_pwr['Total DC Power'].min(),data_pwr['Total DC Power'].max() + 50)
         if customtkinter.get_appearance_mode() == "Dark":
             self.ax.legend(['Global Irradiance W/m2','Front Irradiance W/m2','Rear Irradiance W/m2'],frameon=False, labelcolor="white")
