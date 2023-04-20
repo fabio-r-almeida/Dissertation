@@ -36,26 +36,6 @@ class App(customtkinter.CTk):
         self.pvmodule_elevation = 2
         self.pvmodule_module_spacing = None
         self.image_list_to_destroy = []
-
-        import subprocess
-        import sys
-        def check(name):
-            latest_version = str(subprocess.run([sys.executable, '-m', 'pip', 'install', '{}==random'.format(name)], capture_output=True, text=True))
-            latest_version = latest_version[latest_version.find('(from versions:')+15:]
-            latest_version = latest_version[:latest_version.find(')')]
-            latest_version = latest_version.replace(' ','').split(',')[-1]
-
-            current_version = str(subprocess.run([sys.executable, '-m', 'pip', 'show', '{}'.format(name)], capture_output=True, text=True))
-            current_version = current_version[current_version.find('Version:')+8:]
-            current_version = current_version[:current_version.find('\\n')].replace(' ','') 
-
-            if latest_version == current_version:
-                return True
-            else:
-                return False
-        check('pvmodule')
-
-
         super().__init__()
         splash = Splash()
 
@@ -72,7 +52,7 @@ class App(customtkinter.CTk):
 
 
         # load images with light and dark mode image
-        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "images")
+        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "methods/images")
         self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "CustomTkinter_logo_single.png")), size=(26, 26))
         self.large_test_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "large_test_image.png")), size=(500, 150))
         self.image_icon_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "image_icon_light.png")), size=(20, 20))
@@ -916,6 +896,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 if __name__ == '__main__':
+    import subprocess
+    import sys
+    def check(name):
+            latest_version = str(subprocess.run([sys.executable, '-m', 'pip', 'install', '{}==random'.format(name)], capture_output=True, text=True))
+            latest_version = latest_version[latest_version.find('(from versions:')+15:]
+            latest_version = latest_version[:latest_version.find(')')]
+            latest_version = latest_version.replace(' ','').split(',')[-1]
+
+            current_version = str(subprocess.run([sys.executable, '-m', 'pip', 'show', '{}'.format(name)], capture_output=True, text=True))
+            current_version = current_version[current_version.find('Version:')+8:]
+            current_version = current_version[:current_version.find('\\n')].replace(' ','') 
+
+            
+
+            if latest_version == current_version:
+                pass
+            else:
+                subprocess.run([sys.executable, '-m', 'pip', 'install', f'{name} --upgrade'.format(name)], capture_output=False, text=False)
+            
+    check('pvmodule')
     multiprocessing.freeze_support()
     app = App()
     app.mainloop()

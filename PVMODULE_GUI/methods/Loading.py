@@ -24,7 +24,7 @@ class Loading(tkinter.Toplevel):
         self.resizable(False, False)
 
         # load and create background image
-        current_path = os.path.dirname(os.path.abspath(__file__))
+        current_path = os.path.dirname(os.path.realpath(__file__))
         self.splash_text = tkinter.StringVar(value = f'''\n\n\n\n\n\n\n\t           V.{importlib.metadata.version("pvmodule")}\n\n\n
         
         \nLoading ...''')  
