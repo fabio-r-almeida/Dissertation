@@ -1,0 +1,72 @@
+from pvmodule import PVGIS
+from pvmodule import System
+from multiprocessing import Process, Queue
+
+class Get_Data_Threads():
+    
+    def __init__(self):  
+        self.ac_data = None
+        self.dc_data = None
+        self.irradiation_data = None
+        self.location = None
+        self.inverter = None
+        self.module = None
+
+    def get_ac_data(self):
+        return self.ac_data
+    
+    def get_dc_data(self):
+        return self.dc_data
+    
+    def get_irradiation_data(self):
+        return self.irradiation_data
+    
+    def get_location(self):
+        return self.location
+    
+    def get_module(self):
+        return self.module
+    
+    def get_inverter(self):
+        return self.inverter
+
+
+    def bi_worker(self,queue, location, module, inverter, azimuth):
+        _, data , _ = PVGIS().retrieve_all_year_bifacial(location, azimuth = azimuth)
+        dc = System().dc_production(module, data, "Global irradiance on a fixed plane", "2m Air Temperature", "10m Wind speed")
+        ac = System().ac_production(dc, inverter, module)
+        self.ac_data = ac
+        self.dc_data = dc
+        self.irradiation_data = data
+        self.location = location
+        self.inverter = inverter
+        self.module = module
+        queue.put(ac)
+        
+    def bi_PVMODULE_GET_DATA_THREAD_PER_MONTH(self,QUEUE, location, module, inverter, azimuth):
+        queue = Queue()
+        p1 = Process(target=self.worker, args=(queue, location, module, inverter, azimuth))
+        p1.start()  
+        QUEUE.put(queue.get())   
+        return queue.get()
+    
+    def worker(self,queue, location, module, inverter, azimuth, panel_tilt):
+        _, data , _ = PVGIS().retrieve_all_year(location, azimuth = azimuth, panel_tilt=panel_tilt)
+        dc = System().dc_production(module, data, "Global irradiance on a fixed plane", "2m Air Temperature", "10m Wind speed")
+        ac = System().ac_production(dc, inverter, module)
+        self.ac_data = ac
+        self.dc_data = dc
+        self.irradiation_data = data
+        self.location = location
+        self.inverter = inverter
+        self.module = module
+        queue.put(ac)
+        
+    def PVMODULE_GET_DATA_THREAD_PER_MONTH(self,QUEUE, location, module, inverter, azimuth, panel_tilt):
+        queue = Queue()
+        p1 = Process(target=self.worker, args=(queue, location, module, inverter, azimuth, panel_tilt))
+        p1.start()  
+        QUEUE.put(queue.get())   
+        return queue.get()
+
+

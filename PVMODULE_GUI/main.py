@@ -9,26 +9,52 @@ from tktooltip import ToolTip
 from PIL import Image
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import matplotlib.dates as mdates
 from numpy import trapz as calculate_area_under_curve
-from Loading import *
-from Splash import *
+from methods.Loading import *
+from methods.Splash import *
+import pandas as pd
+from methods.Get_Data_Threads import Get_Data_Threads
+import threading
+import multiprocessing
+from multiprocessing import Process, Queue
+
 
 customtkinter.set_appearance_mode("Dark")
 class App(customtkinter.CTk):
     
     def __init__(self):
         #pvmodule variables:
+        self.THREADS = Get_Data_Threads()
         self.pvmodule_module = None
         self.pvmodule_inverter = None
         self.pvmodule_location = None
         self.pvmodule_irradiance = None
+        self.yearly_kwah = None
         self.pvmodule_albedo = 0.2
         self.pvmodule_panel_tilt = 35
         self.pvmodule_azimuth = 0
         self.pvmodule_elevation = 2
         self.pvmodule_module_spacing = None
         self.image_list_to_destroy = []
+
+        import subprocess
+        import sys
+        def check(name):
+            latest_version = str(subprocess.run([sys.executable, '-m', 'pip', 'install', '{}==random'.format(name)], capture_output=True, text=True))
+            latest_version = latest_version[latest_version.find('(from versions:')+15:]
+            latest_version = latest_version[:latest_version.find(')')]
+            latest_version = latest_version.replace(' ','').split(',')[-1]
+
+            current_version = str(subprocess.run([sys.executable, '-m', 'pip', 'show', '{}'.format(name)], capture_output=True, text=True))
+            current_version = current_version[current_version.find('Version:')+8:]
+            current_version = current_version[:current_version.find('\\n')].replace(' ','') 
+
+            if latest_version == current_version:
+                return True
+            else:
+                return False
+        check('pvmodule')
+
 
         super().__init__()
         splash = Splash()
@@ -46,7 +72,7 @@ class App(customtkinter.CTk):
 
 
         # load images with light and dark mode image
-        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_images")
+        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "images")
         self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "CustomTkinter_logo_single.png")), size=(26, 26))
         self.large_test_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "large_test_image.png")), size=(500, 150))
         self.image_icon_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "image_icon_light.png")), size=(20, 20))
@@ -89,7 +115,7 @@ class App(customtkinter.CTk):
         self.frame_3_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Frame 3",
                                                       fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                                       image=self.add_user_image, anchor="w", command=self.frame_3_button_event)
-        self.frame_3_button.grid(row=3, column=0, sticky="ew")
+        #self.frame_3_button.grid(row=3, column=0, sticky="ew")
 
 
 
@@ -377,20 +403,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             selected_module = self.modules.loc[self.modules['Model Number'] == event].squeeze()
 
-            self.pvmodule_module = self.PVMODULE_define_module(event, 
+            threading.Thread(target=self.PVMODULE_define_module, args=(event, 
                                                                 ''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()),
                                                                 ''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()), 
-                                                                ''.join(c for c in str(self.module_losses.get()) if c.isdigit())
-                                                                )
+                                                                ''.join(c for c in str(self.module_losses.get()) if c.isdigit()),)).start()
             self.Module_Amount_Input_string.configure(state="normal")
             self.Module_Amount_Input_string.configure(fg_color="#3b8ed0")
             self.Module_losses_Input_array.configure(fg_color="#3b8ed0")
             self.Module_Amount_Input_array.configure(fg_color="#3b8ed0")
-            self.Auto_Select_Inverter_Button.configure(fg_color="#3b8ed0")
+            
 
             self.Module_Amount_Input_array.configure(state="normal")
             self.Module_losses_Input_array.configure(state="normal")
-            self.Auto_Select_Inverter_Button.configure(state="normal")
 
             self.module_wattage.set("DC Wattage: " + str(selected_module['Pmax']) + " W" )
             self.module_technology.set("Technology: " + str(selected_module['Technology']) )
@@ -404,9 +428,81 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.module_size.set("Size: " + str(selected_module['Short Side']) + ' x ' + str(selected_module['Long Side']))
             self.tabview_information_module_info.grid(row=1, column=0, padx=(10, 10), pady=(10, 10), sticky="nsew")
 
+    def plot(self, yearly_irradiance):
+
+        import seaborn as sns
+        months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
+        self.change_month_label = customtkinter.CTkLabel(self.second_frame, text="Month:")                                           
+        self.change_month_label.grid(row = 0 , column=6, padx=10, pady=(10, 10))
+        self.change_month = customtkinter.CTkOptionMenu(self.second_frame, dynamic_resizing=False,values=months, command= self.change_plotting_month)
+        self.change_month.grid(row=0, column=7, padx=10, pady=(10, 10))
+        self.change_month.set('January')
+        self.fig = Figure(facecolor='#242424')  
+        self.bx = self.fig.add_subplot(212)
+        self.ax = self.fig.add_subplot(211)
+        self.fig.tight_layout()
+        
+        self.ax.spines['bottom'].set_color('#144870')
+        self.ax.spines['top'].set_color('#144870') 
+        self.ax.spines['right'].set_color('#144870')
+        self.ax.spines['left'].set_color('#144870')
+        self.ax.title.set_color('#3b8ed0')
+        self.ax.yaxis.label.set_color('#3b8ed0')
+        self.ax.xaxis.label.set_color('#3b8ed0')
+        self.ax.tick_params(axis='x', colors='#3b8ed0')
+        self.ax.tick_params(axis='y', colors='#3b8ed0')
+        self.ax.set_facecolor("#2b2b2b")
+        
+        self.bx.spines['bottom'].set_color('#144870')
+        self.bx.spines['top'].set_color('#144870') 
+        self.bx.spines['right'].set_color('#144870')
+        self.bx.spines['left'].set_color('#144870')
+        self.bx.title.set_color('#3b8ed0')
+        self.bx.yaxis.label.set_color('#3b8ed0')
+        self.bx.xaxis.label.set_color('#3b8ed0')
+        self.bx.tick_params(axis='x', colors='#3b8ed0')
+        self.bx.tick_params(axis='y', colors='#3b8ed0')
+        self.bx.set_facecolor("#2b2b2b")
+        if customtkinter.get_appearance_mode() == "Dark":
+            self.ax.set_facecolor("#2b2b2b")
+            self.bx.set_facecolor("#2b2b2b")
+            self.fig.set_facecolor("#242424")
+        else:
+            self.ax.set_facecolor("#dbdbdb")
+            self.bx.set_facecolor("#dbdbdb")
+            self.fig.set_facecolor("#ebebeb")
+        
+        self.yearly_kwah = yearly_irradiance
+
+        first_data = yearly_irradiance.loc[yearly_irradiance['Month'] == 1]
+
+
+        self.line1, = self.ax.plot(first_data.index, first_data['Total Irradiance'], color='red', marker='v',linewidth='0.5',linestyle = 'dotted', markersize=2)
+        self.line2, = self.ax.plot(first_data.index, first_data['Irradiance w/m2'], color='magenta', marker='s',linewidth='0.5',linestyle = 'dashdot', markersize=2)
+        self.line1.axes.set_title("Irradiance")
+
+        self.line1_dc, = self.bx.plot(first_data.index, first_data['Total DC Power'], color='red', marker='v',linewidth='0.5',linestyle = 'dotted', markersize=2)
+        self.line2_dc, = self.bx.plot(first_data.index, first_data['Total AC Power'], color='magenta', marker='s',linewidth='0.5',linestyle = 'dashdot', markersize=2)
+        self.line1_dc.axes.set_title("Power")
+
+       
+        if customtkinter.get_appearance_mode() == "Dark":
+            self.ax.legend(['Global Irradiance','Irradiance W/m2'],frameon=False, labelcolor="white")
+            self.bx.legend(['Total DC Power (kW)','Total AC Power (kW)'],frameon=False, labelcolor="white")
+
+        else:
+            self.ax.legend(['Global Irradiance','Irradiance W/m2'],frameon=False, labelcolor="black")
+            self.bx.legend(['Total DC Power (kW)','Total AC Power (kW)'],frameon=False, labelcolor="black")
+
+        self.canvas = FigureCanvasTkAgg(self.fig,master=self.second_frame)
+        self.canvas.get_tk_widget().grid(row=2, columnspan=5, padx=5, pady=5)
+        self.second_frame.grid(row=0, column=1, padx=5, pady=5)
+        self.simulate_button.configure(state="normal")
+        
 
 
     def check_if_can_simulate(self):
+        self.second_frame.grid_forget()
 
         if self.PVGIS_Panel_Tilt_input.get() != '':
             self.pvmodule_panel_tilt = float(self.PVGIS_Panel_Tilt_input.get())
@@ -437,151 +533,108 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             if self.pvmodule_location != None and can_simulate:
             
                 try:
-                    loading = Loading()
-                    loading.current_loadings.append("Calculating Irradiance from PVGIS")
-                    loading.bar()
-                    self.pvmodule_inputs, self.pvmodule_irradiance, self.pvmodule_metadata = Irradiance().irradiance(module=self.pvmodule_module, location=self.pvmodule_location, panel_tilt=self.pvmodule_panel_tilt, azimuth=self.pvmodule_azimuth, albedo=self.pvmodule_albedo,panel_distance=self.pvmodule_module_spacing)                
-                    print("done")
-                    #print(self.pvmodule_inputs)
-                    #print(self.pvmodule_metadata)
                     self.select_frame_by_name("Graph")
+                    self.simulate_button.configure(state="disabled")
+
+                    self.label = []
+                    self.progress_bar = []
                     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
-                    self.months_convert = dict(January=1, February=2, March=3, April=4, May=5, June=6, July=7, August=8, September=9, October=10, November=11,December=12)
-                    self.monthly_data = ""
 
-                    self.change_month_label = customtkinter.CTkLabel(self.second_frame, text="Month:")                                           
-                    self.change_month_label.grid(row = 2 , column=1, padx=10, pady=(10, 10))
+                    for i in range(1, 13): 
+                        if i <= 6:
+                            row = i
+                            column = 2
+                        else:
+                            row = i-6
+                            column = 4
+                        label = customtkinter.CTkLabel(self.second_frame, text=f"Importing {months[i-1]}")
+                        if row == 1:
+                            label.grid(row=row, column=column, padx=(10, 10), pady=(150, 10), sticky="nsew")
+                        else:
+                            label.grid(row=row, column=column, padx=(10, 10), pady=(10, 10), sticky="nsew")
+                        progress_bar = customtkinter.CTkProgressBar(master=self.second_frame)
+                        progress_bar.start()
+                        if row == 1:
+                            progress_bar.grid(row=row, column=column-1, padx=(100, 10), pady=(150, 10), sticky="nsew")                        
+                        else:
+                            progress_bar.grid(row=row, column=column-1, padx=(100, 10), pady=(10, 10), sticky="nsew")
+                        
+                        self.label.append(label)
+                        self.progress_bar.append(progress_bar)
 
-                    self.change_month = customtkinter.CTkOptionMenu(self.second_frame, dynamic_resizing=False,values=months, command= self.change_plotting_month)
-                    self.change_month.grid(row=3, column=1, padx=10, pady=(10, 10))
-                    self.change_month.set('January')
-
-                    self.fig = Figure(facecolor='#242424')
+                    #In order to not block the progress bars           
+                    timer = threading.Timer(1.0, self.start_threads)
+                    timer.start()  # after 60 seconds, 'callback' will be called
                     
-                    self.ax = self.fig.add_subplot(212)
-                    self.bx = self.fig.add_subplot(211)
-                    self.fig.tight_layout()
 
-
-                    self.ax.spines['bottom'].set_color('#144870')
-                    self.ax.spines['top'].set_color('#144870') 
-                    self.ax.spines['right'].set_color('#144870')
-                    self.ax.spines['left'].set_color('#144870')
-                    self.ax.title.set_color('#3b8ed0')
-                    self.ax.yaxis.label.set_color('#3b8ed0')
-                    self.ax.xaxis.label.set_color('#3b8ed0')
-                    self.ax.tick_params(axis='x', colors='#3b8ed0')
-                    self.ax.tick_params(axis='y', colors='#3b8ed0')
-                    self.ax.set_facecolor("#2b2b2b")
-
-                    self.bx.spines['bottom'].set_color('#144870')
-                    self.bx.spines['top'].set_color('#144870') 
-                    self.bx.spines['right'].set_color('#144870')
-                    self.bx.spines['left'].set_color('#144870')
-                    self.bx.title.set_color('#3b8ed0')
-                    self.bx.yaxis.label.set_color('#3b8ed0')
-                    self.bx.xaxis.label.set_color('#3b8ed0')
-                    self.bx.tick_params(axis='x', colors='#3b8ed0')
-                    self.bx.tick_params(axis='y', colors='#3b8ed0')
-                    self.bx.set_facecolor("#2b2b2b")
-
-                    if customtkinter.get_appearance_mode() == "Dark":
-                        self.ax.set_facecolor("#2b2b2b")
-                        self.bx.set_facecolor("#2b2b2b")
-                        self.fig.set_facecolor("#242424")
-                    else:
-                        self.ax.set_facecolor("#dbdbdb")
-                        self.bx.set_facecolor("#dbdbdb")
-                        self.fig.set_facecolor("#ebebeb")
-
-
-                    #self.bx.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['Total_G'], color='#3b8ed0', marker ='x')
-                    #self.cx.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['Total_G'], color='#3b8ed0', marker ='x')
-                    #self.dx.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['Total_G'], color='#3b8ed0', marker ='x')
-                    
-                    self.line, = self.ax.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['Day'], color='#3b8ed0')
-                    self.line1, = self.ax.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['Month'], color='white')
-
-                    self.line.axes.set_title(f"Yearly Irradiance")
-
-
-                    self.lineb, = self.bx.plot(self.pvmodule_irradiance['DOY'], self.pvmodule_irradiance['Total_G'], color='#3b8ed0')
-                    
-                    
-                    #self.button_right = customtkinter.CTkButton(self.second_frame,text="Increase Slope >",command=self.increase)
-                    #self.button_right.grid(row=2, column=2, padx=5, pady=5)
-
-                    self.canvas = FigureCanvasTkAgg(self.fig,master=self.second_frame)
-                    self.canvas.get_tk_widget().grid(row=0, columnspan=5, padx=5, pady=5)
-                    self.second_frame.grid(row=0, column=1, padx=5, pady=5)
-
-                    self.change_plotting_month('January')
-                    loading.destroy()
-                    
                 except KeyError:
                     return tkinter.messagebox.showwarning(title="Error", message="Bad Location\n Location over sea or not covered.\n Please, select another location")
             else:
-                print("")
-                #return tkinter.messagebox.showwarning(title="Error", message="No Location selected")
+                return tkinter.messagebox.showwarning(title="Error", message="No Location selected")
         except KeyError:
             return tkinter.messagebox.showwarning(title="Error", message="No Module, Inverter or Location selected")
 
-    def change_plotting_day(self, event):
-        days_convert = dict(January=31, February=28, March=31, April=30, May=31, June=30, July=31, August=31, September=30, October=31, November=30,December=31)
-        
-        if int(round(self.change_day.get(),0)) > days_convert[self.change_month.get()]:
-            day_number = days_convert[self.change_month.get()]
+    def start_threads(self):  
+        queue = Queue()
+        if self.pvmodule_module['BIPV'] == 'Y' and self.pvmodule_panel_tilt == 90:
+            p1 = Process(target=self.THREADS.bi_PVMODULE_GET_DATA_THREAD_PER_MONTH, args=(queue, self.pvmodule_location, self.pvmodule_module, self.pvmodule_inverter, self.pvmodule_azimuth))
         else:
-            day_number = int(round(self.change_day.get(),0))
+            p1 = Process(target=self.THREADS.PVMODULE_GET_DATA_THREAD_PER_MONTH, args=(queue, self.pvmodule_location, self.pvmodule_module, self.pvmodule_inverter, self.pvmodule_azimuth, self.pvmodule_panel_tilt))
 
-        data = self.monthly_data[(self.monthly_data['Month'] == self.months_convert [self.change_month.get()]) & (self.monthly_data['Day'] == day_number)]
-        self.line.axes.set_title(f"{self.change_month.get()} - {day_number}")
+        p1.start()     
+        data =  queue.get()
+        for i in range(0, len(self.progress_bar)): 
+                        self.progress_bar[i].stop()
+                        self.progress_bar[i].set(1)
+                        self.progress_bar[i].grid_forget()
+                        self.label[i].grid_forget()       
+        plot = threading.Thread(target=self.plot, args=(data,))
+        plot.start()
 
-        xformatter = mdates.DateFormatter('%H:%M')
-        self.line.set_xdata(data.index)
-        self.ax.xaxis.set_major_formatter(xformatter)
-        self.line.set_ydata(data['Total_G'])
-
-
-        self.line1.axes.set_title(f"{self.change_month.get()} - {day_number}")
-        self.line1.set_xdata(data.index)
-        self.ax.xaxis.set_major_formatter(xformatter)
-        self.line1.set_ydata(data['G_Rear'])
-
-        self.ax.set_xlim(data.index[0],data.index[-1])
-        self.ax.set_ylim(data['Total_G'].min(),data['Total_G'].max())
-        self.ax.legend(['Irradiance W/m2'])
-
-        self.lineb.set_xdata(data.index)
-        self.bx.xaxis.set_major_formatter(xformatter)
-        self.lineb.set_ydata(data['Total_G'])
-        self.bx.set_xlim(data.index[0],data.index[-1])
-        self.bx.set_ylim(data['Total_G'].min(),data['Total_G'].max())
-
-
-
-        total_irradiance = calculate_area_under_curve(y=data['Total_G'],dx=24/len(data.index))
         
-        
-        print(f"Find print 1: Total Irradiance: {total_irradiance}")
-        self.canvas.draw()
-
 
     def change_plotting_month(self, event):
+        data_irr = pd.DataFrame()
+        months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
+        data_irr = self.yearly_kwah.loc[self.yearly_kwah['Month'] == int(months.index(event))+1]
 
-        self_slider_label = customtkinter.CTkLabel(self.second_frame, text="Day of the Month: ")                                           
-        self_slider_label.grid(row = 2 , column=2, columnspan=2,padx=10, pady=(10, 10))
-        self.change_day = customtkinter.CTkSlider(self.second_frame, from_=1, to=31, width=500, number_of_steps=31 , command = self.change_plotting_day)
-        self.change_day.grid(row=3, column=2,columnspan=2, padx=10, pady=(10, 10))
-        data = self.pvmodule_irradiance[self.pvmodule_irradiance['Month'] == self.months_convert[self.change_month.get()]]
-        self.monthly_data = data
-        self.line.axes.set_title(self.change_month.get())
-        self.line.set_xdata(data.index)
-        self.line.set_ydata(data['Total_G'])
-        self.ax.set_xlim(data.index[0],data.index[-1])
-        self.ax.set_ylim(data['Total_G'].min(),data['Total_G'].max())
+        self.line1.set_xdata(data_irr.index)
+        self.line1.set_ydata(data_irr['Total Irradiance'])
+
+        self.line2.set_xdata(data_irr.index)
+        self.line2.set_ydata(data_irr['Irradiance w/m2'])
+
+
+        self.line1_dc.set_xdata(data_irr.index)
+        self.line1_dc.set_ydata(data_irr['Total DC Power'])
+
+        self.line2_dc.set_xdata(data_irr.index)
+        self.line2_dc.set_ydata(data_irr['Total AC Power'])
+
+
+        self.ax.set_xlim(data_irr.index.min(),data_irr.index.max())
+        self.ax.set_ylim(data_irr['Total Irradiance'].min(),data_irr['Total Irradiance'].max() + data_irr['Total Irradiance'].max()*0.1)
+
+        self.bx.set_xlim(data_irr.index.min(),data_irr.index.max())
+        self.bx.set_ylim(data_irr['Total DC Power'].min(),data_irr['Total DC Power'].max()+ data_irr['Total DC Power'].max()*0.1)
+        if customtkinter.get_appearance_mode() == "Dark":
+            self.ax.legend(['Global Irradiance','Irradiance W/m2'],frameon=False, labelcolor="white")
+            self.bx.legend(['Total DC Power (kW)','Total AC Power (kW)'],frameon=False, labelcolor="white")
+
+        else:
+            self.ax.legend(['Global Irradiance','Irradiance W/m2'],frameon=False, labelcolor="black")
+            self.bx.legend(['Total DC Power (kW)','Total AC Power (kW)'],frameon=False, labelcolor="black")
+            self.ax.set_xticklabels(self.ax.get_xticklabels(), rotation=45)
+            self.bx.set_xticklabels(self.bx.get_xticklabels(), rotation=45)
+
+
+        total_irradiance = calculate_area_under_curve(y=data_irr['Total AC Power'],dx=24/len(data_irr.index))
+        print(f"Find print 1: Total Power AC: {total_irradiance}")
         self.canvas.draw()
 
+
+
+        
 
 
     def combofill_inverter(self, event):                                                                               
@@ -603,14 +656,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.pvmodule_inverter = Inverters().inverter(name=selected_inverter['Model Number'])
 
     def PVMODULE_auto_select_inverter(self):
-        loading = Loading()
-        loading.current_loadings.append("Selecting best the Inverter")
-        loading.bar()
-
         if self.pvmodule_module == None:
-            return tkinter.messagebox.showwarning(title="Error", message="No suitable inverter found.")
+            return tkinter.messagebox.showwarning(title="Error", message="No module selected found.")
         else:
-            self.pvmodule_inverter = Inverters().auto_select_inverter(module = self.pvmodule_module)
+            self.pvmodule_inverter, self.pvmodule_module = Inverters().auto_select_inverter(module = self.pvmodule_module)
             inverter = self.pvmodule_inverter.squeeze()
 
             if inverter.empty:
@@ -624,17 +673,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.Inverter_List_Model_menu.configure(fg_color="#3b8ed0")
         self.Inverter_List_Model_menu.configure(state="normal")
         self.combofill_inverter(self.Inverter_List_Brand_menu.get())
-        loading.destroy()
-        
         return self.pvmodule_inverter 
 
     def PVMODULE_define_module(self,Model_name, nr_per_string, nr_per_array, losses):
-        loading = Loading()
-        loading.current_loadings.append("Uploading the Module")
-        loading.bar()
-        return_module =  Modules().module(model = Model_name , modules_per_string = float(nr_per_string) ,number_of_strings = float(nr_per_array) , losses = float(losses))
-        loading.destroy()
-        return return_module
+        self.pvmodule_module =  Modules().module(model = Model_name , modules_per_string = float(nr_per_string) ,number_of_strings = float(nr_per_array) , losses = float(losses))
+        self.Auto_Select_Inverter_Button.configure(state="normal")
+        self.Auto_Select_Inverter_Button.configure(fg_color="#3b8ed0")
+        return self.pvmodule_module
         
 
     def slider_event(self, value):
@@ -846,10 +891,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         self.ax.set_facecolor("#2b2b2b")
                         self.bx.set_facecolor("#2b2b2b")
                         self.fig.set_facecolor("#242424")
+                        self.ax.legend(['Global Irradiance W/m2','Front Irradiance W/m2','Rear Irradiance W/m2'],frameon=False, labelcolor="white")
+
             else:
                         self.ax.set_facecolor("#dbdbdb")
                         self.bx.set_facecolor("#dbdbdb")
                         self.fig.set_facecolor("#ebebeb")
+                        self.ax.legend(['Global Irradiance W/m2','Front Irradiance W/m2','Rear Irradiance W/m2'],frameon=False, labelcolor="black")
+
         except:
             pass
         customtkinter.set_appearance_mode(new_appearance_mode)
@@ -860,20 +909,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         close = tkinter.messagebox.askokcancel("Close", "Would you like to close the program?")
         if close:
             import os
-            for image in self.image_list_to_destroy:
-                if os.path.exists(image):
-                    try:
-                        os.remove(image)
-                    except:
-                        print("image could not be removed in method 'on_close'")
-            self.destroy()
+            os._exit(1)
 
 
 
 
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
+    multiprocessing.freeze_support()
     app = App()
     app.mainloop()
+
 
