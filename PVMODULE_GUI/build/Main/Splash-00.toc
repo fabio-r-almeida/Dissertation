@@ -1,4 +1,4 @@
-('C:\\Users\\Fabio\\Desktop\\Github\\Dissertation\\PVMODULE_GUI\\methods\\images\\bg_gradient.jpg',
+('C:\\Users\\Fabio\\Desktop\\Github\\Dissertation\\PVMODULE_GUI\\images\\bg_gradient.jpg',
  'C:\\Users\\Fabio\\Desktop\\Github\\Dissertation\\PVMODULE_GUI\\build\\Main\\Splash-00.res',
  'C:\\Users\\Fabio\\Desktop\\Github\\Dissertation\\PVMODULE_GUI\\build\\Main\\Splash-00_script.tcl',
  None,

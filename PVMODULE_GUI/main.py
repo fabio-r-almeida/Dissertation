@@ -17,7 +17,7 @@ from Get_Data_Threads import Get_Data_Threads
 import threading
 import multiprocessing
 from multiprocessing import Process, Queue
-import pyi_splash
+#import sys
 
 customtkinter.set_appearance_mode("Dark")
 class App(customtkinter.CTk):
@@ -37,12 +37,12 @@ class App(customtkinter.CTk):
         self.pvmodule_module_spacing = None
         self.image_list_to_destroy = []
         super().__init__()
-        #splash = Splash()
-        pyi_splash.update_text('UI Loaded ...')
+        splash = Splash()
+        #if getattr(sys, 'frozen', False):
+        #    import pyi_splash
 
         #splash.current_loadings.append("")        #<<<<<<<<--------------------
         #splash.bar()                              #<<<<<<<<--------------------
-        pyi_splash.update_text('UI sad ...')
 
         self.title("PV Module GUI")
         self.geometry(f"{1200}x{600}")
@@ -66,9 +66,8 @@ class App(customtkinter.CTk):
                                                      dark_image=Image.open(os.path.join(image_path, "add_user_light.png")), size=(20, 20))
         
         
-        #splash.current_loadings.append("Load Images")        #<<<<<<<<--------------------
-        #splash.bar()                              #<<<<<<<<--------------------
-        pyi_splash.update_text('UI saasdasdasdd ...')
+        splash.current_loadings.append("Load Images")        #<<<<<<<<--------------------
+        splash.bar()                              #<<<<<<<<--------------------
 
         # create navigation frame
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
@@ -106,9 +105,8 @@ class App(customtkinter.CTk):
         self.appearance_mode_menu = customtkinter.CTkOptionMenu(self.navigation_frame, values=["Dark", "Light"],command=self.change_appearance_mode_event)
         self.appearance_mode_menu.grid(row=6, column=0, padx=20, pady=20, sticky="s")
 
-        #splash.current_loadings.append("Loading Frames")        #<<<<<<<<--------------------
-        #splash.bar()                              #<<<<<<<<--------------------
-        pyi_splash.update_text('UI saaasdasdasdsdasdasdd ...')
+        splash.current_loadings.append("Loading Frames")        #<<<<<<<<--------------------
+        splash.bar()                              #<<<<<<<<--------------------
 
 
 
@@ -120,9 +118,8 @@ class App(customtkinter.CTk):
         self.home_frame.grid_columnconfigure(0, weight=1)
         
         
-        #splash.current_loadings.append("Loading Assets")        #<<<<<<<<--------------------
-        #splash.bar()                              #<<<<<<<<--------------------
-        pyi_splash.update_text('UI saasdasdasddasdasdasdasdasdasd ...')
+        splash.current_loadings.append("Loading Assets")        #<<<<<<<<--------------------
+        splash.bar()                              #<<<<<<<<--------------------
 
 
        
@@ -199,9 +196,8 @@ class App(customtkinter.CTk):
 
 
 
-        #splash.current_loadings.append("Importing Modules")        #<<<<<<<<--------------------
-        #splash.bar()                                               #<<<<<<<<--------------------
-        pyi_splash.update_text('UI a ...')
+        splash.current_loadings.append("Importing Modules")        #<<<<<<<<--------------------
+        splash.bar()                                               #<<<<<<<<--------------------
      
 
         self.modules = Modules().list_modules(print_data=False)  
@@ -243,9 +239,8 @@ class App(customtkinter.CTk):
 
                                                                                                          
 
-        #splash.current_loadings.append("Importing Inverters")        #<<<<<<<<--------------------
-        #splash.bar()                              #<<<<<<<<--------------------
-        pyi_splash.update_text('UIasdasdasds a ...')
+        splash.current_loadings.append("Importing Inverters")        #<<<<<<<<--------------------
+        splash.bar()                              #<<<<<<<<--------------------
 
         self.inverters = Inverters().list_inverters()   
         inverter_brand = self.inverters['Manufacturer']                                                                  
@@ -337,9 +332,8 @@ class App(customtkinter.CTk):
         
         self.simulate_button = customtkinter.CTkButton(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), border_width=1, fg_color='#66ff99', text_color="black",text_color_disabled='black', text="Simulate", command=self.check_if_can_simulate)
         self.simulate_button.grid(row=4, column=0, padx=(50, 50), pady=(50, 5), sticky="nsew")
-        #splash.current_loadings.append("Importing Assets")          #<<<<<<<<--------------------
-        #splash.bar()                                                #<<<<<<<<--------------------
-        pyi_splash.update_text('UIasdasdasdasdasdasds a ...')
+        splash.current_loadings.append("Importing Assets")          #<<<<<<<<--------------------
+        splash.bar()                                                #<<<<<<<<--------------------
 
         # create second frame
         self.second_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -350,11 +344,11 @@ class App(customtkinter.CTk):
         #self.third_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
 
 
-
+        #if getattr(sys, 'frozen', False):
+        #    pyi_splash.close()
         # select default frame
-        #splash.current_loadings.append("Initializing Assets")        #<<<<<<<<--------------------
-        #splash.bar()                              #<<<<<<<<--------------------
-        pyi_splash.update_text('UIasdasdasdasdasdasdaasdasdasds a ...')
+        splash.current_loadings.append("Initializing Assets")        #<<<<<<<<--------------------
+        splash.bar()                              #<<<<<<<<--------------------
         self.select_frame_by_name("Setup")
         self.Module_List_Brand_menu.set("Module Brand")
         self.Module_List_Model_menu.set("Module Model")
@@ -363,8 +357,7 @@ class App(customtkinter.CTk):
         self.map_window_frame = None
         self.about_me_Toplevel = None
         self.appearance_mode_menu.set("Dark")
-        #splash.destroy()
-        pyi_splash.close()
+        splash.destroy()
         self.protocol("WM_DELETE_WINDOW",  self.on_close)
         
 

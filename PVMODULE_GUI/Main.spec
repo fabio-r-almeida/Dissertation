@@ -8,7 +8,7 @@ a = Analysis(
     ['C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Main.py'],
     pathex=[],
     binaries=[],
-    datas=[('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/methods/Splash.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/methods/Loading.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/methods/Get_Data_Threads.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/methods/images', 'images/'), ('C:/Users/Fabio/AppData/Local/Programs/Python/Python38/Lib/site-packages/customtkinter', 'customtkinter/')],
+    datas=[('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Splash.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Loading.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Get_Data_Threads.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/images', 'images/'), ('C:/Users/Fabio/AppData/Local/Programs/Python/Python38/Lib/site-packages/customtkinter', 'customtkinter/')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -21,7 +21,7 @@ a = Analysis(
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 splash = Splash(
-    'C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/methods/images/bg_gradient.jpg',
+    'C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/images/bg_gradient.jpg',
     binaries=a.binaries,
     datas=a.datas,
     text_pos=None,
