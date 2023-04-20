@@ -10,14 +10,14 @@ from PIL import Image
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from numpy import trapz as calculate_area_under_curve
-from methods.Loading import *
-from methods.Splash import *
+from Loading import *
+from Splash import *
 import pandas as pd
-from methods.Get_Data_Threads import Get_Data_Threads
+from Get_Data_Threads import Get_Data_Threads
 import threading
 import multiprocessing
 from multiprocessing import Process, Queue
-
+import pyi_splash
 
 customtkinter.set_appearance_mode("Dark")
 class App(customtkinter.CTk):
@@ -37,10 +37,12 @@ class App(customtkinter.CTk):
         self.pvmodule_module_spacing = None
         self.image_list_to_destroy = []
         super().__init__()
-        splash = Splash()
+        #splash = Splash()
+        pyi_splash.update_text('UI Loaded ...')
 
-        splash.current_loadings.append("")        #<<<<<<<<--------------------
-        splash.bar()                              #<<<<<<<<--------------------
+        #splash.current_loadings.append("")        #<<<<<<<<--------------------
+        #splash.bar()                              #<<<<<<<<--------------------
+        pyi_splash.update_text('UI sad ...')
 
         self.title("PV Module GUI")
         self.geometry(f"{1200}x{600}")
@@ -52,7 +54,7 @@ class App(customtkinter.CTk):
 
 
         # load images with light and dark mode image
-        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "methods/images")
+        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "images")
         self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "CustomTkinter_logo_single.png")), size=(26, 26))
         self.large_test_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "large_test_image.png")), size=(500, 150))
         self.image_icon_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "image_icon_light.png")), size=(20, 20))
@@ -64,8 +66,9 @@ class App(customtkinter.CTk):
                                                      dark_image=Image.open(os.path.join(image_path, "add_user_light.png")), size=(20, 20))
         
         
-        splash.current_loadings.append("Load Images")        #<<<<<<<<--------------------
-        splash.bar()                              #<<<<<<<<--------------------
+        #splash.current_loadings.append("Load Images")        #<<<<<<<<--------------------
+        #splash.bar()                              #<<<<<<<<--------------------
+        pyi_splash.update_text('UI saasdasdasdd ...')
 
         # create navigation frame
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
@@ -103,8 +106,9 @@ class App(customtkinter.CTk):
         self.appearance_mode_menu = customtkinter.CTkOptionMenu(self.navigation_frame, values=["Dark", "Light"],command=self.change_appearance_mode_event)
         self.appearance_mode_menu.grid(row=6, column=0, padx=20, pady=20, sticky="s")
 
-        splash.current_loadings.append("Loading Frames")        #<<<<<<<<--------------------
-        splash.bar()                              #<<<<<<<<--------------------
+        #splash.current_loadings.append("Loading Frames")        #<<<<<<<<--------------------
+        #splash.bar()                              #<<<<<<<<--------------------
+        pyi_splash.update_text('UI saaasdasdasdsdasdasdd ...')
 
 
 
@@ -116,8 +120,9 @@ class App(customtkinter.CTk):
         self.home_frame.grid_columnconfigure(0, weight=1)
         
         
-        splash.current_loadings.append("Loading Assets")        #<<<<<<<<--------------------
-        splash.bar()                              #<<<<<<<<--------------------
+        #splash.current_loadings.append("Loading Assets")        #<<<<<<<<--------------------
+        #splash.bar()                              #<<<<<<<<--------------------
+        pyi_splash.update_text('UI saasdasdasddasdasdasdasdasdasd ...')
 
 
        
@@ -194,8 +199,9 @@ class App(customtkinter.CTk):
 
 
 
-        splash.current_loadings.append("Importing Modules")        #<<<<<<<<--------------------
-        splash.bar()                                               #<<<<<<<<--------------------
+        #splash.current_loadings.append("Importing Modules")        #<<<<<<<<--------------------
+        #splash.bar()                                               #<<<<<<<<--------------------
+        pyi_splash.update_text('UI a ...')
      
 
         self.modules = Modules().list_modules(print_data=False)  
@@ -237,8 +243,9 @@ class App(customtkinter.CTk):
 
                                                                                                          
 
-        splash.current_loadings.append("Importing Inverters")        #<<<<<<<<--------------------
-        splash.bar()                              #<<<<<<<<--------------------
+        #splash.current_loadings.append("Importing Inverters")        #<<<<<<<<--------------------
+        #splash.bar()                              #<<<<<<<<--------------------
+        pyi_splash.update_text('UIasdasdasds a ...')
 
         self.inverters = Inverters().list_inverters()   
         inverter_brand = self.inverters['Manufacturer']                                                                  
@@ -330,8 +337,9 @@ class App(customtkinter.CTk):
         
         self.simulate_button = customtkinter.CTkButton(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), border_width=1, fg_color='#66ff99', text_color="black",text_color_disabled='black', text="Simulate", command=self.check_if_can_simulate)
         self.simulate_button.grid(row=4, column=0, padx=(50, 50), pady=(50, 5), sticky="nsew")
-        splash.current_loadings.append("Importing Assets")          #<<<<<<<<--------------------
-        splash.bar()                                                #<<<<<<<<--------------------
+        #splash.current_loadings.append("Importing Assets")          #<<<<<<<<--------------------
+        #splash.bar()                                                #<<<<<<<<--------------------
+        pyi_splash.update_text('UIasdasdasdasdasdasds a ...')
 
         # create second frame
         self.second_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -344,8 +352,9 @@ class App(customtkinter.CTk):
 
 
         # select default frame
-        splash.current_loadings.append("Initializing Assets")        #<<<<<<<<--------------------
-        splash.bar()                              #<<<<<<<<--------------------
+        #splash.current_loadings.append("Initializing Assets")        #<<<<<<<<--------------------
+        #splash.bar()                              #<<<<<<<<--------------------
+        pyi_splash.update_text('UIasdasdasdasdasdasdaasdasdasds a ...')
         self.select_frame_by_name("Setup")
         self.Module_List_Brand_menu.set("Module Brand")
         self.Module_List_Model_menu.set("Module Model")
@@ -354,7 +363,8 @@ class App(customtkinter.CTk):
         self.map_window_frame = None
         self.about_me_Toplevel = None
         self.appearance_mode_menu.set("Dark")
-        splash.destroy()
+        #splash.destroy()
+        pyi_splash.close()
         self.protocol("WM_DELETE_WINDOW",  self.on_close)
         
 
@@ -896,26 +906,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 if __name__ == '__main__':
-    import subprocess
-    import sys
-    def check(name):
-            latest_version = str(subprocess.run([sys.executable, '-m', 'pip', 'install', '{}==random'.format(name)], capture_output=True, text=True))
-            latest_version = latest_version[latest_version.find('(from versions:')+15:]
-            latest_version = latest_version[:latest_version.find(')')]
-            latest_version = latest_version.replace(' ','').split(',')[-1]
-
-            current_version = str(subprocess.run([sys.executable, '-m', 'pip', 'show', '{}'.format(name)], capture_output=True, text=True))
-            current_version = current_version[current_version.find('Version:')+8:]
-            current_version = current_version[:current_version.find('\\n')].replace(' ','') 
-
-            
-
-            if latest_version == current_version:
-                pass
-            else:
-                subprocess.run([sys.executable, '-m', 'pip', 'install', f'{name} --upgrade'.format(name)], capture_output=False, text=False)
-            
-    check('pvmodule')
     multiprocessing.freeze_support()
     app = App()
     app.mainloop()
