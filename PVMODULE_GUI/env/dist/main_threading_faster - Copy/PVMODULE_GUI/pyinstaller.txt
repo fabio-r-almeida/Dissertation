@@ -1,1 +1,0 @@
-pyinstaller --noconfirm --onefile --windowed --add-data "C:\Users\Fabio\AppData\Local\Programs\Python\Python38\Lib\site-packages\customtkinter;customtkinter/"  "C:\Users\Fabio\Desktop\Github\Dissertation\PVMODULE_GUI\main_threading_faster.py"

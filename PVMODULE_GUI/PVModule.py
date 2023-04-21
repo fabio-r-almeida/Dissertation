@@ -7,7 +7,7 @@ from PIL import Image
 from Loading import *
 from Splash import *
 from Map import *
-from Get_Data_Threads import Get_Data_Threads
+from Get_Data_Threads import *
 import threading
 import multiprocessing
 from multiprocessing import Process, Queue
@@ -64,6 +64,9 @@ class App(customtkinter.CTk):
                                                  dark_image=Image.open(os.path.join(image_path, "chat_light.png")), size=(20, 20))
         self.add_user_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "add_user_dark.png")),
                                                      dark_image=Image.open(os.path.join(image_path, "add_user_light.png")), size=(20, 20))
+        self.yearly_analysis_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "Yearly_analysis_light.png")),
+                                                     dark_image=Image.open(os.path.join(image_path, "Yearly_analysis_dark.png")), size=(20, 20))
+    
         
         
         splash.current_loadings.append("Load Images")        #<<<<<<<<--------------------
@@ -90,13 +93,13 @@ class App(customtkinter.CTk):
         self.frame_2_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Graphs",
                                                       fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                                       image=self.chat_image, anchor="w", command=self.frame_2_button_event)
-        self.frame_2_button.grid(row=2, column=0, sticky="ew")
+        #self.frame_2_button.grid(row=2, column=0, sticky="ew")
 
 
 
-        self.frame_3_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Frame 3",
+        self.frame_3_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Yearly Analysis",
                                                       fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
-                                                      image=self.add_user_image, anchor="w", command=self.frame_3_button_event)
+                                                      image=self.yearly_analysis_image, anchor="w", command=self.frame_3_button_event)
         #self.frame_3_button.grid(row=3, column=0, sticky="ew")
 
 
@@ -341,7 +344,7 @@ class App(customtkinter.CTk):
 
 
         # create third frame
-        #self.third_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+        self.third_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
 
 
         #if getattr(sys, 'frozen', False):
@@ -368,7 +371,7 @@ class App(customtkinter.CTk):
     def about_event(self):
         if self.about_me_Toplevel is None or not self.about_me_Toplevel.winfo_exists():
             self.about_me_Toplevel= customtkinter.CTkToplevel(self) 
-            self.about_me_Toplevel.geometry(f"{400}x{330}") 
+            self.about_me_Toplevel.geometry(f"{440}x{330}") 
             self.about_me_Toplevel.title("About")                                                                                  
             map_frame = customtkinter.CTkLabel(self.about_me_Toplevel, wraplength=350, text='''Copyright (c), 2023, Fábio Ramalho de Almeida
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -490,6 +493,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             return tkinter.messagebox.showwarning(title="Error", message="No Module, Inverter or Location selected")
 
     def start_threads(self):  
+        #Make 'Graph' and 'Yearly Analysis' buttons available
+        self.frame_3_button.grid(row=3, column=0, sticky="ew")
+        self.frame_2_button.grid(row=2, column=0, sticky="ew")
+
         queue = Queue()
         if self.pvmodule_module['BIPV'] == 'Y' and self.pvmodule_panel_tilt == 90:
             p1 = Process(target=self.THREADS.bi_PVMODULE_GET_DATA_THREAD_PER_MONTH, args=(queue, self.pvmodule_location, self.pvmodule_module, self.pvmodule_inverter, self.pvmodule_azimuth))
@@ -497,13 +504,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             p1 = Process(target=self.THREADS.PVMODULE_GET_DATA_THREAD_PER_MONTH, args=(queue, self.pvmodule_location, self.pvmodule_module, self.pvmodule_inverter, self.pvmodule_azimuth, self.pvmodule_panel_tilt))
 
         p1.start()     
-        data =  queue.get()
+        data ,yearly_kwh, yearly_kwh_wp, yearly_in_plane_irr, sys_eff, capacity_factor, perfom_ratio =  queue.get()
         for i in range(0, len(self.progress_bar)): 
                         self.progress_bar[i].stop()
                         self.progress_bar[i].set(1)
                         self.progress_bar[i].grid_forget()
-                        self.label[i].grid_forget()       
-        plot = threading.Thread(target=Plot.plot, args=(self,data,))
+                        self.label[i].grid_forget()     
+
+        plot = threading.Thread(target=Plot.plot, args=(self, data, yearly_kwh, yearly_kwh_wp, yearly_in_plane_irr, sys_eff, capacity_factor, perfom_ratio ,))
         plot.start()
 
         
@@ -697,7 +705,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         # set button color for selected button
         self.home_button.configure(fg_color=("gray75", "gray25") if name == "Setup" else "transparent")
         self.frame_2_button.configure(fg_color=("gray75", "gray25") if name == "Graph" else "transparent")
-        self.frame_3_button.configure(fg_color=("gray75", "gray25") if name == "frame_3" else "transparent")
+        self.frame_3_button.configure(fg_color=("gray75", "gray25") if name == "Yearly Analysis" else "transparent")
         # show selected frame
         if name == "Setup":
             self.home_frame.grid(row=0, column=1, sticky="nsew")
@@ -707,10 +715,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.second_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.second_frame.grid_forget()
-        #if name == "frame_3":
-        #    self.third_frame.grid(row=0, column=1, sticky="nsew")
-        #else:
-        #    self.third_frame.grid_forget()
+        if name == "Yearly Analysis":
+            self.third_frame.grid(row=0, column=1, sticky="nsew")
+        else:
+            self.third_frame.grid_forget()
 
 
 
@@ -721,7 +729,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.select_frame_by_name("Graph")
 
     def frame_3_button_event(self):
-        self.select_frame_by_name("frame_3")
+        self.select_frame_by_name("Yearly Analysis")
 
     def change_appearance_mode_event(self, new_appearance_mode):
         try:
@@ -749,6 +757,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 if __name__ == '__main__':
+    import urllib.request
+    import requests
+
+    currentVersion = "1.0.0"
+    URL = urllib.request.urlopen('https://example.com/yourapp/version.html')
+
+    data = URL.read()
+    if (data == currentVersion):
+        print("App is up to date!")
+    else:
+        print("App is not up to date! App is on version " + currentVersion + " but could be on version " + data + "!")
+        print("Downloading new version now!")
+        newVersion = requests.get("https://github.com/yourapp/app-"+data+".exe")
+        open("app.exe", "wb").write(newVersion.content)
+        print("New version downloaded, restarting in 5 seconds!")
     multiprocessing.freeze_support()
     app = App()
     app.mainloop()

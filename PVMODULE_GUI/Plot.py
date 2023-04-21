@@ -11,7 +11,38 @@ class Plot():
         pass
 
 
-    def plot(self, yearly_irradiance):
+    def plot(self, yearly_irradiance, yearly_kwh,yearly_kwh_wp,yearly_in_plane_irr,sys_eff,capacity_factor,perfom_ratio):
+
+        self.tabview_stats = customtkinter.CTkTabview(self.third_frame, width=300)
+        self.tabview_stats.grid(row=1, column=6,columnspan=2, rowspan=5, padx=(10, 5), pady=(10, 10), sticky="nsew")
+        self.tabview_stats.add("Yearly Statistics")
+        self.tabview_stats.tab("Yearly Statistics").grid_columnconfigure(0, weight=1)
+        #self.yearly_kwh, self.yearly_kwh_wp, self.yearly_in_plane_irr, self.sys_eff, self.capacity_factor, self.perfom_ratio
+        
+
+        yearly_kwh = tkinter.StringVar(value = f"Yearly Energy: {round(yearly_kwh,2)} [kWh]") 
+        Yearly_kwh = customtkinter.CTkButton(master=self.tabview_stats.tab("Yearly Statistics"), anchor='w', state="disabled",text_color_disabled="white",textvariable=f"{yearly_kwh}")
+        Yearly_kwh.grid(row=0, column=0, padx=50, pady=(self.tabview_stats.winfo_height()/10, 5), sticky="news")
+
+        yearly_kwh_wp = tkinter.StringVar(value = f"Yearly Energy per Peak: {round(yearly_kwh_wp,2)} [kWh/Wp]") 
+        Yearly_kwh_wp = customtkinter.CTkButton(master=self.tabview_stats.tab("Yearly Statistics"), anchor='w', state="disabled",text_color_disabled="white",textvariable=f"{yearly_kwh_wp}")
+        Yearly_kwh_wp.grid(row=1, column=0, padx=50, pady=(self.tabview_stats.winfo_height()/10, 5), sticky="news")
+
+        yearly_in_plane_irr = tkinter.StringVar(value = f"Yearly in-plane Irradiation: {round(yearly_in_plane_irr,2)} [kWh/m2]") 
+        Yearly_in_plane_irr = customtkinter.CTkButton(master=self.tabview_stats.tab("Yearly Statistics"), anchor='w', state="disabled",text_color_disabled="white",textvariable=f"{yearly_in_plane_irr}")
+        Yearly_in_plane_irr.grid(row=2, column=0, padx=50, pady=(self.tabview_stats.winfo_height()/10, 5), sticky="news")
+
+        sys_eff = tkinter.StringVar(value = f"System Efficiency: {round(sys_eff,2)} %") 
+        Sys_eff = customtkinter.CTkButton(master=self.tabview_stats.tab("Yearly Statistics"), anchor='w', state="disabled",text_color_disabled="white",textvariable=f"{sys_eff}")
+        Sys_eff.grid(row=3, column=0, padx=50, pady=(self.tabview_stats.winfo_height()/10, 5), sticky="news")
+
+        capacity_factor = tkinter.StringVar(value = f"Capacity Factor: {round(capacity_factor,2)} %") 
+        Capacity_factor = customtkinter.CTkButton(master=self.tabview_stats.tab("Yearly Statistics"), anchor='w', state="disabled",text_color_disabled="white",textvariable=f"{capacity_factor}")
+        Capacity_factor.grid(row=4, column=0, padx=50, pady=(self.tabview_stats.winfo_height()/10, 5), sticky="news")
+        
+        perfom_ratio = tkinter.StringVar(value = f"Performance Ratio: {round(perfom_ratio,2)} %") 
+        Perfom_ratio = customtkinter.CTkButton(master=self.tabview_stats.tab("Yearly Statistics"), anchor='w', state="disabled",text_color_disabled="white",textvariable=f"{perfom_ratio}")
+        Perfom_ratio.grid(row=5, column=0, padx=50, pady=(self.tabview_stats.winfo_height()/10, 5), sticky="news")
         
         months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
         self.change_month_label = customtkinter.CTkLabel(self.second_frame, text="Month:")                                           

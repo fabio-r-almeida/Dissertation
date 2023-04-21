@@ -46,6 +46,9 @@ class Get_Data_Threads():
     def get_yearly_kwh_wp(self):
         return self.yearly_kwh_wp
     
+    def get_yearly_in_plane_irr(self):
+        return self.yearly_in_plane_irr
+    
     def get_sys_eff(self):
         return self.sys_eff
     
@@ -57,7 +60,7 @@ class Get_Data_Threads():
     
 
 
-    def bi_worker(self,queue, location, module, inverter, azimuth):
+    def bi_worker(self, queue, location, module, inverter, azimuth):
         _, data , _ = pvgis.PVGIS().retrieve_all_year_bifacial(location, azimuth = azimuth)
         dc = system.System().dc_production(module, data, "Global irradiance on a fixed plane", "2m Air Temperature", "10m Wind speed")
         ac = system.System().ac_production(dc, inverter, module)
@@ -67,8 +70,8 @@ class Get_Data_Threads():
         self.location = location
         self.inverter = inverter
         self.module = module
-        self.yearly_kwh, self.yearly_kwh_wp, self.yearly_in_plane_irr, self.sys_eff, self.capacity_factor, self.perfom_ratio = System().Yearly_Stats(ac, module)
-        queue.put(ac)
+        self.yearly_kwh, self.yearly_kwh_wp, self.yearly_in_plane_irr, self.sys_eff, self.capacity_factor, self.perfom_ratio = system.System().Yearly_Stats(ac, module)
+        queue.put([ac,self.yearly_kwh, self.yearly_kwh_wp, self.yearly_in_plane_irr, self.sys_eff, self.capacity_factor, self.perfom_ratio])
         
     def bi_PVMODULE_GET_DATA_THREAD_PER_MONTH(self,QUEUE, location, module, inverter, azimuth):
         queue = Queue()
@@ -77,7 +80,7 @@ class Get_Data_Threads():
         QUEUE.put(queue.get())   
         return queue.get()
     
-    def worker(self,queue, location, module, inverter, azimuth, panel_tilt):
+    def worker(self, queue, location, module, inverter, azimuth, panel_tilt):
         _, data , _ = pvgis.PVGIS().retrieve_all_year(location, azimuth = azimuth, panel_tilt=panel_tilt)
         dc = system.System().dc_production(module, data, "Global irradiance on a fixed plane", "2m Air Temperature", "10m Wind speed")
         ac = system.System().ac_production(dc, inverter, module)
@@ -87,7 +90,8 @@ class Get_Data_Threads():
         self.location = location
         self.inverter = inverter
         self.module = module
-        queue.put(ac)
+        self.yearly_kwh, self.yearly_kwh_wp, self.yearly_in_plane_irr, self.sys_eff, self.capacity_factor, self.perfom_ratio = system.System().Yearly_Stats(ac, module)
+        queue.put([ac,self.yearly_kwh, self.yearly_kwh_wp, self.yearly_in_plane_irr, self.sys_eff, self.capacity_factor, self.perfom_ratio])
         
     def PVMODULE_GET_DATA_THREAD_PER_MONTH(self,QUEUE, location, module, inverter, azimuth, panel_tilt):
         queue = Queue()
