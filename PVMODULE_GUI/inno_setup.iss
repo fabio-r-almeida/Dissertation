@@ -5,7 +5,7 @@
 #define MyAppVersion "2023.04.177"
 #define MyAppPublisher "Fábio Almeida"
 #define MyAppURL "https://fabio-almeida.com/"
-#define MyAppExeName "Main.exe"
+#define MyAppExeName "PVModule.exe"
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
@@ -38,8 +38,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Fabio\Desktop\Github\Dissertation\PVMODULE_GUI\dist\Main\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Fabio\Desktop\Github\Dissertation\PVMODULE_GUI\dist\Main\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\Fabio\Desktop\Github\Dissertation\PVMODULE_GUI\dist\PVModule\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Fabio\Desktop\Github\Dissertation\PVMODULE_GUI\dist\PVModule\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
