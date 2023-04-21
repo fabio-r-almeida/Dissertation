@@ -3,9 +3,11 @@ import os
 import tkinter.messagebox
 import customtkinter
 from tkinter import *
-import importlib.metadata
 from PIL import Image
 from tkinter.ttk import Progressbar
+import httpimport
+with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='AutoUpdate'):
+    import pvmodule_version
 
 class Splash(tkinter.Toplevel):
     current_loadings = []
@@ -24,7 +26,7 @@ class Splash(tkinter.Toplevel):
 
         # load and create background image
         current_path = os.path.dirname(os.path.realpath(__file__))
-        self.splash_text = tkinter.StringVar(value = f'''\n\n\n\n\n\n\n\t           V.{importlib.metadata.version("pvmodule")}\n\n\n
+        self.splash_text = tkinter.StringVar(value = f'''\n\n\n\n\n\n\n\t           V.{pvmodule_version.__version__}\n\n\n
         
         \nLoading ...''')   
 
@@ -53,7 +55,7 @@ class Splash(tkinter.Toplevel):
 
 
     def bar(self):
-        self.splash_text.set(f'''\n\n\n\n\n\n\n\t           V.{importlib.metadata.version("pvmodule")}\n\n\n
+        self.splash_text.set(f'''\n\n\n\n\n\n\n\t           V.{pvmodule_version.__version__}\n\n\n
         
         \n{self.current_loadings[-1]}''' )
         self.progress['value'] = len(self.current_loadings)/len(self.initial_loadings)*100
