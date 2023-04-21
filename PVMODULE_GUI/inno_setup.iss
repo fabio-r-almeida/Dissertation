@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "PVmodule"
-#define MyAppVersion "2023.04.177"
+#define MyAppVersion "latest"
 #define MyAppPublisher "Fábio Almeida"
 #define MyAppURL "https://fabio-almeida.com/"
 #define MyAppExeName "PVModule.exe"
