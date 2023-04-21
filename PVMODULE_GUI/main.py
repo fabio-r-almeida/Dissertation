@@ -14,10 +14,11 @@ from multiprocessing import Process, Queue
 from Plot import *
 import sys
 import httpimport
-with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='AutoUpdate'):
+with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
     import irradiance as IRRADIANCE
     import module as MODULE
     import inverter as INVERTER
+    import pvmodule_version as VERSION
 
 customtkinter.set_appearance_mode("Dark")
 class App(customtkinter.CTk):
@@ -38,17 +39,13 @@ class App(customtkinter.CTk):
         self.image_list_to_destroy = []
         super().__init__()
         splash = Splash()
-        if getattr(sys, 'frozen', False):
-            import pyi_splash
-            pyi_splash.update_text("PyInstaller is a great software!")
-            pyi_splash.update_text("Second time's a charm!")
-
-        
+        #if getattr(sys, 'frozen', False):
+        #    import pyi_splash
 
         #splash.current_loadings.append("")        #<<<<<<<<--------------------
         #splash.bar()                              #<<<<<<<<--------------------
 
-        self.title("PV Module GUI")
+        self.title(f"PV Module GUI {VERSION.__version__}")
         self.geometry(f"{1200}x{600}")
 
         # set grid layout 1x2
@@ -351,9 +348,9 @@ class App(customtkinter.CTk):
         #if getattr(sys, 'frozen', False):
         #    pyi_splash.close()
         # select default frame
-        if getattr(sys, 'frozen', False):
-            pyi_splash.close()
-            
+        #if getattr(sys, 'frozen', False):
+        #    pyi_splash.close()
+
         splash.current_loadings.append("Initializing Assets")        #<<<<<<<<--------------------
         splash.bar()                              #<<<<<<<<--------------------
         self.select_frame_by_name("Setup")
@@ -750,9 +747,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         if close:
             import os
             os._exit(1)
-
-
-
 
 
 if __name__ == '__main__':
