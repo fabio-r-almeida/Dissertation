@@ -25,6 +25,7 @@ class Loading(tkinter.Toplevel):
         self.title("Loading")
         self.geometry(f"{self.width}x{self.height}")
         self.resizable(False, False)
+        self.attributes('-topmost', 'true')
 
         # load and create background image
         current_path = os.path.dirname(os.path.realpath(__file__))
