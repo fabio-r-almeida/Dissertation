@@ -12,7 +12,6 @@ import threading
 import multiprocessing
 from multiprocessing import Process, Queue
 from Plot import *
-import sys
 import httpimport
 with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
     import irradiance as IRRADIANCE
