@@ -31,7 +31,7 @@ class App(customtkinter.CTk):
         with open('VERSION.txt') as f:
             local_version = f.readlines()[0]
         if local_version == online_version:
-            print("ok")
+            pass
         else:
             tkinter.messagebox.showwarning(title="Update Available", message="Please upgrade to the latest version")
         #pvmodule variables:
