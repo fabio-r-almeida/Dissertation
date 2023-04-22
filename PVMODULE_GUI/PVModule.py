@@ -24,16 +24,6 @@ class App(customtkinter.CTk):
     
     def __init__(self):
 
-        link = "https://raw.githubusercontent.com/fabio-r-almeida/Dissertation/main/PVMODULE_GUI/version.py?raw=true"
-        import requests
-        f = requests.get(link)
-        online_version = f.text
-        with open('VERSION.txt') as f:
-            local_version = f.readlines()[0]
-        if local_version == online_version:
-            pass
-        else:
-            tkinter.messagebox.showwarning(title="Update Available", message="Please upgrade to the latest version")
         #pvmodule variables:
         self.THREADS = Get_Data_Threads()
         self.pvmodule_module = None
@@ -376,6 +366,18 @@ class App(customtkinter.CTk):
         self.appearance_mode_menu.set("Dark")
         splash.destroy()
         self.protocol("WM_DELETE_WINDOW",  self.on_close)
+
+        link = "https://raw.githubusercontent.com/fabio-r-almeida/Dissertation/main/PVMODULE_GUI/version.py?raw=true"
+        import requests
+        f = requests.get(link)
+        online_version = f.text
+        with open('VERSION.txt') as f:
+            local_version = f.readlines()[0]
+        if local_version == online_version:
+            pass
+        else:
+            tkinter.messagebox.showinfo(title="Update Available", message="Please upgrade to the latest version")
+            os._exit(1)
         
 
 
