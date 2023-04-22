@@ -14,10 +14,10 @@ Types if import:
 IMPORTANT: Do NOT post this list to the issue-tracker. Use it as a basis for
             tracking down the missing module yourself. Thanks!
 
-missing module named org - imported by copy (optional)
+missing module named 'org.python' - imported by copy (optional), xml.sax (delayed, conditional)
 missing module named _frozen_importlib_external - imported by importlib._bootstrap (delayed), importlib (optional), importlib.abc (optional), zipimport (top-level)
 excluded module named _frozen_importlib - imported by importlib (optional), importlib.abc (optional), zipimport (top-level)
-missing module named 'org.python' - imported by pickle (optional), xml.sax (delayed, conditional)
+missing module named org - imported by pickle (optional)
 missing module named posix - imported by os (conditional, optional), shutil (conditional)
 missing module named resource - imported by posix (top-level), IPython.utils.timing (optional), test.support (optional)
 missing module named grp - imported by shutil (optional), tarfile (optional), pathlib (delayed), distutils.archive_util (optional), gevent.subprocess (optional), setuptools._distutils.archive_util (optional)
@@ -76,6 +76,7 @@ missing module named trove_classifiers - imported by setuptools.config._validate
 missing module named 'setuptools.extern.packaging.specifiers' - imported by setuptools.config.setupcfg (top-level), setuptools.config._apply_pyprojecttoml (delayed)
 missing module named 'setuptools.extern.packaging.requirements' - imported by setuptools.config.setupcfg (top-level), setuptools._reqs (top-level)
 missing module named 'setuptools.extern.packaging.markers' - imported by setuptools.config.setupcfg (top-level)
+missing module named _scproxy - imported by urllib.request (conditional)
 missing module named simplejson - imported by requests.compat (conditional, optional)
 missing module named _dummy_threading - imported by dummy_threading (optional)
 missing module named StringIO - imported by urllib3.packages.six (conditional), six (conditional)
@@ -92,7 +93,6 @@ missing module named 'cryptography.hazmat' - imported by urllib3.contrib.pyopens
 missing module named 'OpenSSL.SSL' - imported by urllib3.contrib.pyopenssl (top-level)
 missing module named OpenSSL - imported by urllib3.contrib.pyopenssl (top-level)
 missing module named urllib3_secure_extra - imported by urllib3 (optional)
-missing module named _scproxy - imported by urllib.request (conditional)
 missing module named pvmodule_version - imported by Loading (top-level), Splash (top-level), C:\Users\Fabio\Desktop\Github\Dissertation\PVMODULE_GUI\PVModule.py (top-level)
 missing module named inverter - imported by C:\Users\Fabio\Desktop\Github\Dissertation\PVMODULE_GUI\PVModule.py (top-level)
 missing module named module - imported by C:\Users\Fabio\Desktop\Github\Dissertation\PVMODULE_GUI\PVModule.py (top-level)
