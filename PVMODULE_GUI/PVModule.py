@@ -86,8 +86,9 @@ class App(customtkinter.CTk):
         else:
             splash.destroy()
             f = requests.get(changelog)
-            changes = f.text
+            changes = f.text.replace("Added", "\033[1m Added \033[0m").replace("Fixed", "\033[1m Fixed \033[0m").replace("Removed", "\033[1m Removed \033[0m")
             if tkinter.messagebox.askyesno(title="Update Available", message=f'Would you like to update?\n\n\nCurrent Version: {local_version}\nLatest Version: {online_version}\nChange Log:\n{changes}') == True:
+                os._exit(1)
                 webbrowser.open_new_tab("https://github.com/fabio-r-almeida/Dissertation/blob/main/PVMODULE_GUI/Output/Pvmodule%20Installer.exe?raw=true")
                 os._exit(1)
             splash = Splash()
