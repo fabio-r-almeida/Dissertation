@@ -12,6 +12,7 @@ import threading
 import multiprocessing
 from multiprocessing import Process, Queue
 from Plot import *
+import webbrowser
 import httpimport
 with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
     import irradiance as IRRADIANCE
@@ -44,13 +45,16 @@ class App(customtkinter.CTk):
 
         #splash.current_loadings.append("")        #<<<<<<<<--------------------
         #splash.bar()                              #<<<<<<<<--------------------
-
+        
         self.title(f"PV Module GUI {VERSION.__version__}")
         self.geometry(f"{1200}x{600}")
-
+    
+        splash.current_loadings.append("Looking for updates")        #<<<<<<<<--------------------
+        splash.bar()        
         # set grid layout 1x2
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
+            
 
 
 
@@ -67,8 +71,26 @@ class App(customtkinter.CTk):
                                                      dark_image=Image.open(os.path.join(image_path, "add_user_light.png")), size=(20, 20))
         self.yearly_analysis_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "Yearly_analysis_light.png")),
                                                      dark_image=Image.open(os.path.join(image_path, "Yearly_analysis_dark.png")), size=(20, 20))
-    
         
+        self.iconbitmap(os.path.join(image_path, "icon.ico"))
+
+        link = "https://raw.githubusercontent.com/fabio-r-almeida/Dissertation/main/PVMODULE_GUI/version.py?raw=true"
+        changelog = "https://raw.githubusercontent.com/fabio-r-almeida/Dissertation/main/PVMODULE_GUI/changelog.py?raw=true"
+        import requests
+        f = requests.get(link)
+        online_version = f.text.replace("__version__","").replace("'", "").replace("=", "").replace(" ", "")
+        with open('VERSION.txt') as f:
+            local_version = f.readlines()[0].replace("__version__","").replace("'", "").replace("=", "").replace(" ", "")
+        if local_version == online_version:
+            pass
+        else:
+            splash.destroy()
+            f = requests.get(changelog)
+            changes = f.text
+            if tkinter.messagebox.askyesno(title="Update Available", message=f'Would you like to update?\n\n\nCurrent Version: {local_version}\nLatest Version: {online_version}\nChange Log:\n{changes}') == True:
+                webbrowser.open_new_tab("https://github.com/fabio-r-almeida/Dissertation/blob/main/PVMODULE_GUI/Output/Pvmodule%20Installer.exe?raw=true")
+                os._exit(1)
+            splash = Splash()
         
         splash.current_loadings.append("Load Images")        #<<<<<<<<--------------------
         splash.bar()                              #<<<<<<<<--------------------
@@ -367,17 +389,6 @@ class App(customtkinter.CTk):
         splash.destroy()
         self.protocol("WM_DELETE_WINDOW",  self.on_close)
 
-        link = "https://raw.githubusercontent.com/fabio-r-almeida/Dissertation/main/PVMODULE_GUI/version.py?raw=true"
-        import requests
-        f = requests.get(link)
-        online_version = f.text
-        with open('VERSION.txt') as f:
-            local_version = f.readlines()[0]
-        if local_version == online_version:
-            pass
-        else:
-            tkinter.messagebox.showinfo(title="Update Available", message="Please upgrade to the latest version")
-            os._exit(1)
         
 
 
