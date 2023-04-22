@@ -5,9 +5,8 @@ import customtkinter
 from tkinter import *
 from PIL import Image
 from tkinter.ttk import Progressbar
-import httpimport
-with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
-    import pvmodule_version as VERSION
+with open('VERSION.txt') as f:
+    VERSION = f.readlines()[0].replace("__version__","").replace("'", "").replace("=", "").replace(" ", "")
 
 class Splash(tkinter.Toplevel):
     current_loadings = []
@@ -27,7 +26,7 @@ class Splash(tkinter.Toplevel):
 
         # load and create background image
         current_path = os.path.dirname(os.path.realpath(__file__))
-        self.splash_text = tkinter.StringVar(value = f'''\n\n\n\n\n\n\n\t           V.{VERSION.__version__}\n\n\n
+        self.splash_text = tkinter.StringVar(value = f'''\n\n\n\n\n\n\n\t           V.{VERSION}\n\n\n
         
         \nLoading ...''')   
 
@@ -56,7 +55,7 @@ class Splash(tkinter.Toplevel):
 
 
     def bar(self):
-        self.splash_text.set(f'''\n\n\n\n\n\n\n\t           V.{VERSION.__version__}\n\n\n
+        self.splash_text.set(f'''\n\n\n\n\n\n\n\t           V.{VERSION}\n\n\n
         
         \n{self.current_loadings[-1]}''' )
         self.progress['value'] = len(self.current_loadings)/len(self.initial_loadings)*100

@@ -46,7 +46,6 @@ class App(customtkinter.CTk):
         #splash.current_loadings.append("")        #<<<<<<<<--------------------
         #splash.bar()                              #<<<<<<<<--------------------
         
-        self.title(f"PV Module GUI {VERSION.__version__}")
         self.geometry(f"{1200}x{600}")
     
         splash.current_loadings.append("Looking for updates")        #<<<<<<<<--------------------
@@ -86,15 +85,15 @@ class App(customtkinter.CTk):
         else:
             splash.destroy()
             f = requests.get(changelog)
-            changes = f.text.replace("Added", "\033[1m Added \033[0m").replace("Fixed", "\033[1m Fixed \033[0m").replace("Removed", "\033[1m Removed \033[0m")
+            changes = f.text
             if tkinter.messagebox.askyesno(title="Update Available", message=f'Would you like to update?\n\n\nCurrent Version: {local_version}\nLatest Version: {online_version}\nChange Log:\n{changes}') == True:
-                os._exit(1)
                 webbrowser.open_new_tab("https://github.com/fabio-r-almeida/Dissertation/blob/main/PVMODULE_GUI/Output/Pvmodule%20Installer.exe?raw=true")
                 os._exit(1)
             splash = Splash()
         
         splash.current_loadings.append("Load Images")        #<<<<<<<<--------------------
         splash.bar()                              #<<<<<<<<--------------------
+        self.title(f"PV Module GUI {local_version}")
 
         # create navigation frame
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
