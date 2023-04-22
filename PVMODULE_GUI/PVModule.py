@@ -757,21 +757,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 if __name__ == '__main__':
-    import urllib.request
+    link = "https://raw.githubusercontent.com/fabio-r-almeida/Dissertation/main/PVMODULE_GUI/version.py?raw=true"
     import requests
-
-    currentVersion = "1.0.0"
-    URL = urllib.request.urlopen('https://example.com/yourapp/version.html')
-
-    data = URL.read()
-    if (data == currentVersion):
-        print("App is up to date!")
+    f = requests.get(link)
+    online_version = f.text
+    with open('VERSION.txt') as f:
+       local_version = f.readlines()[0]
+    if local_version == online_version:
+        print('up to date')
     else:
-        print("App is not up to date! App is on version " + currentVersion + " but could be on version " + data + "!")
-        print("Downloading new version now!")
-        newVersion = requests.get("https://github.com/yourapp/app-"+data+".exe")
-        open("app.exe", "wb").write(newVersion.content)
-        print("New version downloaded, restarting in 5 seconds!")
+        print('please upgrade to latest version')
     multiprocessing.freeze_support()
     app = App()
     app.mainloop()
