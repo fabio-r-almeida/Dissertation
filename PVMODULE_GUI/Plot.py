@@ -13,6 +13,12 @@ class Plot():
 
     def plot(self, yearly_irradiance, yearly_kwh,yearly_kwh_wp,yearly_in_plane_irr,sys_eff,capacity_factor,perfom_ratio):
 
+        try:
+            for widgets in self.third_frame.winfo_children():
+                widgets.destroy()
+        except:
+            pass
+
         self.tabview_stats = customtkinter.CTkTabview(self.third_frame, width=300)
         self.tabview_stats.grid(row=1, column=6,columnspan=2, rowspan=5, padx=(10, 5), pady=(10, 10), sticky="nsew")
         self.tabview_stats.add("Yearly Statistics")

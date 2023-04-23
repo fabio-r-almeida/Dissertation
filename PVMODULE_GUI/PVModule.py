@@ -7,6 +7,7 @@ from PIL import Image
 from Loading import *
 from Splash import *
 from Map import *
+from PPFD_Plot import *
 from Get_Data_Threads import *
 import threading
 import multiprocessing
@@ -18,7 +19,9 @@ with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
     import irradiance as IRRADIANCE
     import module as MODULE
     import inverter as INVERTER
-    import pvmodule_version as VERSION
+    import pvmodule_version as VERSION_API
+with open('VERSION.txt') as f:
+    SOFTWARE_VERSION = f.readlines()[0].replace("__version__","").replace("'", "").replace("=", "").replace(" ", "")
 
 customtkinter.set_appearance_mode("Dark")
 class App(customtkinter.CTk):
@@ -70,6 +73,8 @@ class App(customtkinter.CTk):
                                                      dark_image=Image.open(os.path.join(image_path, "add_user_light.png")), size=(20, 20))
         self.yearly_analysis_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "Yearly_analysis_light.png")),
                                                      dark_image=Image.open(os.path.join(image_path, "Yearly_analysis_dark.png")), size=(20, 20))
+        self.ppdf_dli = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "ppfd_light.png")),
+                                                     dark_image=Image.open(os.path.join(image_path, "ppfd_dark.png")), size=(20, 20))
         
         self.iconbitmap(os.path.join(image_path, "icon.ico"))
 
@@ -98,7 +103,7 @@ class App(customtkinter.CTk):
         # create navigation frame
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
         self.navigation_frame.grid(row=0, column=0, sticky="nsew")
-        self.navigation_frame.grid_rowconfigure(4, weight=1)
+        self.navigation_frame.grid_rowconfigure(5, weight=1)
 
         self.navigation_frame_label = customtkinter.CTkLabel(self.navigation_frame, text="Solar Estimator", image=self.logo_image,
                                                              compound="left", font=customtkinter.CTkFont(size=15, weight="bold"))
@@ -123,6 +128,10 @@ class App(customtkinter.CTk):
         self.frame_3_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="Yearly Analysis",
                                                       fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                                       image=self.yearly_analysis_image, anchor="w", command=self.frame_3_button_event)
+        
+        self.frame_4_button = customtkinter.CTkButton(self.navigation_frame, corner_radius=0, height=40, border_spacing=10, text="PPFD & DLI",
+                                                      fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
+                                                      image=self.ppdf_dli, anchor="w", command=self.frame_4_button_event)
         #self.frame_3_button.grid(row=3, column=0, sticky="ew")
 
 
@@ -135,9 +144,13 @@ class App(customtkinter.CTk):
         splash.bar()                              #<<<<<<<<--------------------
 
 
-
+        self.versions1 = customtkinter.CTkLabel(self.navigation_frame,anchor="w", text="",fg_color="transparent",bg_color="transparent")
+        self.versions1.grid(row=20, column=0, padx=(20, 20), pady=(0, 5), sticky="n")
         self.about_button = customtkinter.CTkButton(master=self.navigation_frame, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), text="About", command=self.about_event)
-        self.about_button.grid(row=10, column=0, padx=(20, 20), pady=(20, 20), sticky="nsew")
+        self.about_button.grid(row=20, column=0, padx=(20, 20), pady=(20, 10), sticky="nsew")
+        self.versions = customtkinter.CTkLabel(self.navigation_frame,anchor="w", text=f"API:\t{VERSION_API.__version__}\nBuild:\t{SOFTWARE_VERSION}")
+        self.versions.grid(row=21, column=0, padx=(20, 20), pady=(5, 0), sticky="s")
+
 
         # create home frame
         self.home_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -369,6 +382,9 @@ class App(customtkinter.CTk):
         # create third frame
         self.third_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
 
+        # create fourth frame
+        self.fourth_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
+
 
         #if getattr(sys, 'frozen', False):
         #    pyi_splash.close()
@@ -481,7 +497,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     self.label = []
                     self.progress_bar = []
                     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
+                    #Make 'Graph' buttons available
+                    self.frame_2_button.grid(row=2, column=0, sticky="ew") 
 
+                    try:
+                        for widgets in self.second_frame.winfo_children():
+                            widgets.destroy()
+                        for widgets in self.third_frame.winfo_children():
+                            widgets.destroy()
+                        for widgets in self.fourth_frame.winfo_children():
+                            widgets.destroy()
+                    except:
+                        pass
                     for i in range(1, 13): 
                         if i <= 6:
                             row = i
@@ -516,11 +543,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         except KeyError:
             return tkinter.messagebox.showwarning(title="Error", message="No Module, Inverter or Location selected")
 
-    def start_threads(self):  
-        #Make 'Graph' and 'Yearly Analysis' buttons available
-        self.frame_3_button.grid(row=3, column=0, sticky="ew")
-        self.frame_2_button.grid(row=2, column=0, sticky="ew")
-
+    def start_threads(self): 
         queue = Queue()
         if self.pvmodule_module['BIPV'] == 'Y' and self.pvmodule_panel_tilt == 90:
             p1 = Process(target=self.THREADS.bi_PVMODULE_GET_DATA_THREAD_PER_MONTH, args=(queue, self.pvmodule_location, self.pvmodule_module, self.pvmodule_inverter, self.pvmodule_azimuth))
@@ -528,15 +551,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             p1 = Process(target=self.THREADS.PVMODULE_GET_DATA_THREAD_PER_MONTH, args=(queue, self.pvmodule_location, self.pvmodule_module, self.pvmodule_inverter, self.pvmodule_azimuth, self.pvmodule_panel_tilt))
 
         p1.start()     
-        data ,yearly_kwh, yearly_kwh_wp, yearly_in_plane_irr, sys_eff, capacity_factor, perfom_ratio =  queue.get()
+        self.SYSdata, self.SYSyearly_kwh, self.SYSyearly_kwh_wp, self.SYSyearly_in_plane_irr, self.SYSsys_eff, self.SYScapacity_factor, self.SYSperfom_ratio =  queue.get()
         for i in range(0, len(self.progress_bar)): 
                         self.progress_bar[i].stop()
                         self.progress_bar[i].set(1)
                         self.progress_bar[i].grid_forget()
                         self.label[i].grid_forget()     
 
-        plot = threading.Thread(target=Plot.plot, args=(self, data, yearly_kwh, yearly_kwh_wp, yearly_in_plane_irr, sys_eff, capacity_factor, perfom_ratio ,))
+        plot = threading.Thread(target=Plot.plot, args=(self, self.SYSdata, self.SYSyearly_kwh, self.SYSyearly_kwh_wp, self.SYSyearly_in_plane_irr, self.SYSsys_eff, self.SYScapacity_factor, self.SYSperfom_ratio,))
         plot.start()
+
+        #Make 'Yearly Analysis', 'PPFD & DLI' buttons available
+        self.frame_4_button.grid(row=4, column=0, sticky="ew")
+        self.frame_3_button.grid(row=3, column=0, sticky="ew")
 
         
     def change_plotting_month(self, event):
@@ -730,6 +757,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.home_button.configure(fg_color=("gray75", "gray25") if name == "Setup" else "transparent")
         self.frame_2_button.configure(fg_color=("gray75", "gray25") if name == "Graph" else "transparent")
         self.frame_3_button.configure(fg_color=("gray75", "gray25") if name == "Yearly Analysis" else "transparent")
+        self.frame_4_button.configure(fg_color=("gray75", "gray25") if name == "PPFD & DLI" else "transparent")
         # show selected frame
         if name == "Setup":
             self.home_frame.grid(row=0, column=1, sticky="nsew")
@@ -743,6 +771,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.third_frame.grid(row=0, column=1, sticky="nsew")
         else:
             self.third_frame.grid_forget()
+        if name == "PPFD & DLI":
+            self.fourth_frame.grid(row=0, column=1, sticky="nsew")
+        else:
+            self.fourth_frame.grid_forget()
 
 
 
@@ -750,10 +782,34 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.select_frame_by_name("Setup")
 
     def frame_2_button_event(self):
+        try:
+            for widgets in self.second_frame.winfo_children():
+                widgets.destroy()
+            for widgets in self.third_frame.winfo_children():
+                widgets.destroy()
+            for widgets in self.fourth_frame.winfo_children():
+                widgets.destroy()
+        except:
+            pass
+        plot = threading.Thread(target=Plot.plot, args=(self, self.SYSdata, self.SYSyearly_kwh, self.SYSyearly_kwh_wp, self.SYSyearly_in_plane_irr, self.SYSsys_eff, self.SYScapacity_factor, self.SYSperfom_ratio,))
+        plot.start()
         self.select_frame_by_name("Graph")
 
     def frame_3_button_event(self):
         self.select_frame_by_name("Yearly Analysis")
+
+    def frame_4_button_event(self):
+        
+        try:
+            for widgets in self.second_frame.winfo_children():
+                widgets.destroy()
+            for widgets in self.fourth_frame.winfo_children():
+                widgets.destroy()
+        except:
+            pass
+        ppfd = threading.Thread(target=PPFD_Plot.plot_ppfd, args=(self, self.SYSdata,))
+        ppfd.start()
+        self.select_frame_by_name("PPFD & DLI")
 
     def change_appearance_mode_event(self, new_appearance_mode):
         try:
