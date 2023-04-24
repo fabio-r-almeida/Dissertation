@@ -11,7 +11,7 @@ class PPFD_Plot():
         pass
 
 
-    def plot_ppfd(self, yearly_irradiance):
+    def plot_ppfd(self, SYSAgro_data, SYSppfd_dli):
 
         #months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
         #self.change_month_label = customtkinter.CTkLabel(self.fourth_frame, text="Month:")                                           
@@ -42,8 +42,8 @@ class PPFD_Plot():
             self.fig_ppfd.set_facecolor("#ebebeb")
         
         for i in range(1, 13):
-            data = yearly_irradiance.loc[yearly_irradiance['month'] == i]
-            self.line1_ppfd, = self.ax_ppfd.plot(data.index, data['Total Irradiance'], color='red', marker='v',linewidth='0.5',linestyle = 'dotted', markersize=2)
+            data = SYSAgro_data.loc[SYSAgro_data['month'] == i]
+            self.line1_ppfd, = self.ax_ppfd.plot(data.index, data['PPFD'], color='red', marker='v',linewidth='0.5',linestyle = 'dotted', markersize=2)
         self.line1_ppfd.axes.set_title("Photosynthetic Photon Flux Density")
 
        

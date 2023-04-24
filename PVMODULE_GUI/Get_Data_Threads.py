@@ -103,7 +103,7 @@ class Get_Data_Threads():
     
     def agro_worker(self, queue, location):
         _, data , _ = pvgis.PVGIS().retrieve_all_year(location, azimuth = 0, panel_tilt=0)
-        data, agro_data = agro_indicators.PPFD_DLI(location, data)
+        data, agro_data = agro_indicators.Agro_Indicators().PPFD_DLI(location, data)
         queue.put([data, agro_data])
         
     def PVMODULE_GET_PPDF_DLI(self,QUEUE, location):

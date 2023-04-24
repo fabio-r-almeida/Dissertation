@@ -521,27 +521,27 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     except:
                         pass
                     
-                    for i in range(1, 13): 
-                        if i <= 6:
-                            row = i
-                            column = 2
-                        else:
-                            row = i-6
-                            column = 4
-                        label = customtkinter.CTkLabel(self.second_frame, text=f"Importing {months[i-1]}")
-                        if row == 1:
-                            label.grid(row=row, column=column, padx=(10, 10), pady=(150, 10), sticky="nsew")
-                        else:
-                            label.grid(row=row, column=column, padx=(10, 10), pady=(10, 10), sticky="nsew")
-                        progress_bar_GRAPH = customtkinter.CTkProgressBar(master=self.second_frame)
-                        progress_bar_GRAPH.start()
-                        if row == 1:
-                            progress_bar_GRAPH.grid(row=row, column=column-1, padx=(100, 10), pady=(150, 10), sticky="nsew")                        
-                        else:
-                            progress_bar_GRAPH.grid(row=row, column=column-1, padx=(100, 10), pady=(10, 10), sticky="nsew")
-                        
-                        self.label_GRAPH.append(label)
-                        self.progress_bar_GRAPH.append(progress_bar_GRAPH)
+                    #for i in range(1, 13): 
+                    #    if i <= 6:
+                    #        row = i
+                    #        column = 2
+                    #    else:
+                    #        row = i-6
+                    #        column = 4
+                    #    label = customtkinter.CTkLabel(self.second_frame, text=f"Importing {months[i-1]}")
+                    #    if row == 1:
+                    #        label.grid(row=row, column=column, padx=(10, 10), pady=(150, 10), sticky="nsew")
+                    #    else:
+                    #        label.grid(row=row, column=column, padx=(10, 10), pady=(10, 10), sticky="nsew")
+                    #    progress_bar_GRAPH = customtkinter.CTkProgressBar(master=self.second_frame)
+                    #    progress_bar_GRAPH.start()
+                    #    if row == 1:
+                    #        progress_bar_GRAPH.grid(row=row, column=column-1, padx=(100, 10), pady=(150, 10), sticky="nsew")                        
+                    #    else:
+                    #        progress_bar_GRAPH.grid(row=row, column=column-1, padx=(100, 10), pady=(10, 10), sticky="nsew")
+                    #    
+                    #    self.label_GRAPH.append(label)
+                    #    self.progress_bar_GRAPH.append(progress_bar_GRAPH)
 
                     #In order to not block the progress bars           
                     timer = threading.Timer(1.0, self.start_threads)
@@ -556,9 +556,37 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         except KeyError:
             return tkinter.messagebox.showwarning(title="Error", message="No Module, Inverter or Location selected")
 
+    def create_loading_progressbar(self, frame):
+        months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
+        label_ = []
+        progress_bar = []
+        for i in range(1, 13): 
+            if i <= 6:
+                row = i
+                column = 2
+            else:
+                row = i-6
+                column = 4
+            label = customtkinter.CTkLabel(frame, text=f"Importing {months[i-1]}")
+            if row == 1:
+                label.grid(row=row, column=column, padx=(10, 10), pady=(150, 10), sticky="nsew")
+            else:
+                label.grid(row=row, column=column, padx=(10, 10), pady=(10, 10), sticky="nsew")
+            progress_bar_GRAPH = customtkinter.CTkProgressBar(master=frame)
+            progress_bar_GRAPH.start()
+            if row == 1:
+                progress_bar_GRAPH.grid(row=row, column=column-1, padx=(100, 10), pady=(150, 10), sticky="nsew")                        
+            else:
+                progress_bar_GRAPH.grid(row=row, column=column-1, padx=(100, 10), pady=(10, 10), sticky="nsew")
+            
+            label_.append(label)
+            progress_bar.append(progress_bar_GRAPH)
+        return progress_bar, label_
+
     def start_threads(self): 
         queue = Queue()
         queue_agro = Queue()
+        progress_bar, label = self.create_loading_progressbar(self.second_frame)
         if self.pvmodule_module['BIPV'] == 'Y' and self.pvmodule_panel_tilt == 90:
             p1 = Process(target=self.THREADS.bi_PVMODULE_GET_DATA_THREAD_PER_MONTH, args=(queue, self.pvmodule_location, self.pvmodule_module, self.pvmodule_inverter, self.pvmodule_azimuth))
         else:
@@ -567,28 +595,37 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         
         p1.start() 
          
-        
+       
         self.SYSdata, self.SYSyearly_kwh, self.SYSyearly_kwh_wp, self.SYSyearly_in_plane_irr, self.SYSsys_eff, self.SYScapacity_factor, self.SYSperfom_ratio =  queue.get()
-        
-        for i in range(0, len(self.progress_bar_GRAPH)): 
-                        self.progress_bar_GRAPH[i].stop()
-                        self.progress_bar_GRAPH[i].set(1)
-                        self.progress_bar_GRAPH[i].grid_forget()
-                        self.label_GRAPH[i].grid_forget()
+        for i in range(0, len(progress_bar)): 
+                        progress_bar[i].stop()
+                        progress_bar[i].set(1)
+                        progress_bar[i].grid_forget()
+                        label[i].grid_forget()
 
         plot = threading.Thread(target=Plot.plot, args=(self, self.SYSdata, self.SYSyearly_kwh, self.SYSyearly_kwh_wp, self.SYSyearly_in_plane_irr, self.SYSsys_eff, self.SYScapacity_factor, self.SYSperfom_ratio,))
         self.threads.append(plot)
         plot.start()
+        #Make 'Yearly Analysis', 'PPFD & DLI' buttons available
+        self.frame_4_button.grid(row=4, column=0, sticky="ew")
+        self.frame_3_button.grid(row=3, column=0, sticky="ew")
+        self.home_frame.grid_forget()
+        progress_bar, label = self.create_loading_progressbar(self.fourth_frame)
         p2.start()  
-        self.SYSppdf_dli = queue_agro.get()
-        ppfd_dli_plot = threading.Thread(target=PPFD_Plot.plot_ppfd, args=(self, self.SYSppdf_dli,))
+        self.SYSAgro_data, self.SYSppfd_dli = queue_agro.get()
+        for i in range(0, len(progress_bar)): 
+                        progress_bar[i].stop()
+                        progress_bar[i].set(1)
+                        progress_bar[i].grid_forget()
+                        label[i].grid_forget()
+
+        
+        ppfd_dli_plot = threading.Thread(target=PPFD_Plot.plot_ppfd, args=(self, self.SYSAgro_data, self.SYSppfd_dli ,))
         self.threads.append(ppfd_dli_plot)
         ppfd_dli_plot.start()
 
-        #Make 'Yearly Analysis', 'PPFD & DLI' buttons available
-        self.home_frame.grid_forget()
-        self.frame_4_button.grid(row=4, column=0, sticky="ew")
-        self.frame_3_button.grid(row=3, column=0, sticky="ew")
+
+
 
         
     def change_plotting_month(self, event):
