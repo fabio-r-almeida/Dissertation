@@ -40,6 +40,8 @@ copy VERSION_ini.txt config.ini
 
 pyinstaller --noconsole --noconfirm --onedir --windowed --clean --add-data "C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/PPFD_Plot.py;." --add-data "C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/VERSION.txt;." --add-data "C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Plot.py;." --add-data "C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Map.py;." --add-data "C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Splash.py;." --add-data "C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Loading.py;." --add-data "C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Get_Data_Threads.py;." --add-data "C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/images;images/" --add-data "C:/Users/Fabio/AppData/Local/Programs/Python/Python38/Lib/site-packages/customtkinter;customtkinter/" --icon "C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/images/icon.ico" "C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/PVModule.py" 
 
+rd /q /s "build" 2>nul
+
 iscc inno_setup.iss
 
 git add -A
