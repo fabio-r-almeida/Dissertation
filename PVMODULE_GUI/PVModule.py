@@ -30,6 +30,9 @@ class App(customtkinter.CTk):
 
         #pvmodule variables:
         self.THREADS = Get_Data_Threads()
+
+        self.threads= []
+
         self.pvmodule_module = None
         self.pvmodule_inverter = None
         self.pvmodule_location = None
@@ -432,7 +435,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
             selected_module = self.modules.loc[self.modules['Model Number'] == event].squeeze()
 
-            threading.Thread(target=self.PVMODULE_define_module, args=(event, 
+            fill_info = threading.Thread(target=self.PVMODULE_define_module, args=(event, 
                                                                 ''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()),
                                                                 ''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()), 
                                                                 ''.join(c for c in str(self.module_losses.get()) if c.isdigit()),)).start()
@@ -440,6 +443,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.Module_Amount_Input_string.configure(fg_color="#3b8ed0")
             self.Module_losses_Input_array.configure(fg_color="#3b8ed0")
             self.Module_Amount_Input_array.configure(fg_color="#3b8ed0")
+            self.threads.append(fill_info)
             
 
             self.Module_Amount_Input_array.configure(state="normal")
@@ -533,6 +537,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
                     #In order to not block the progress bars           
                     timer = threading.Timer(1.0, self.start_threads)
+                    self.threads.append(timer)
                     timer.start()  # after 60 seconds, 'callback' will be called
                     
 
@@ -550,11 +555,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         else:
             p1 = Process(target=self.THREADS.PVMODULE_GET_DATA_THREAD_PER_MONTH, args=(queue, self.pvmodule_location, self.pvmodule_module, self.pvmodule_inverter, self.pvmodule_azimuth, self.pvmodule_panel_tilt))
         p1.start()  
-        p1.join(500)
-        if p1.is_alive():
-            print("Function is hanging!")
-            p1.terminate()
-            print("Kidding, just terminated!")   
+           
         self.SYSdata, self.SYSyearly_kwh, self.SYSyearly_kwh_wp, self.SYSyearly_in_plane_irr, self.SYSsys_eff, self.SYScapacity_factor, self.SYSperfom_ratio =  queue.get()
         for i in range(0, len(self.progress_bar)): 
                         self.progress_bar[i].stop()
@@ -563,6 +564,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                         self.label[i].grid_forget()     
 
         plot = threading.Thread(target=Plot.plot, args=(self, self.SYSdata, self.SYSyearly_kwh, self.SYSyearly_kwh_wp, self.SYSyearly_in_plane_irr, self.SYSsys_eff, self.SYScapacity_factor, self.SYSperfom_ratio,))
+        self.threads.append(plot)
         plot.start()
 
         #Make 'Yearly Analysis', 'PPFD & DLI' buttons available
@@ -797,6 +799,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         except:
             pass
         plot = threading.Thread(target=Plot.plot, args=(self, self.SYSdata, self.SYSyearly_kwh, self.SYSyearly_kwh_wp, self.SYSyearly_in_plane_irr, self.SYSsys_eff, self.SYScapacity_factor, self.SYSperfom_ratio,))
+        self.threads.append(plot)
         plot.start()
         self.select_frame_by_name("Graph")
 
@@ -813,6 +816,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         except:
             pass
         ppfd = threading.Thread(target=PPFD_Plot.plot_ppfd, args=(self, self.SYSdata,))
+        self.threads.append(ppfd)
         ppfd.start()
         self.select_frame_by_name("PPFD & DLI")
 
@@ -837,13 +841,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     def on_close(self):
         close = tkinter.messagebox.askokcancel("Close", "Would you like to close the program?")
         if close:
+            for thread in self.threads:
+                try:
+                    thread.raise_exception()
+                    thread.kill()
+                except:
+                    pass
             import sys
             sys.exit()
 
 
 if __name__ == '__main__':
-    
+    splash = Splash()
     multiprocessing.freeze_support()
+    splash.destroy()
     app = App()
     app.mainloop()
 
