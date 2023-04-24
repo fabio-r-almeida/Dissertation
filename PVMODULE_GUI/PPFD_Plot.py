@@ -41,10 +41,9 @@ class PPFD_Plot():
             self.ax_ppfd.set_facecolor("#dbdbdb")
             self.fig_ppfd.set_facecolor("#ebebeb")
         
-        first_data = yearly_irradiance#.loc[yearly_irradiance['Month'] == 1]
-
-
-        self.line1_ppfd, = self.ax_ppfd.plot(first_data.index, first_data['Total Irradiance'], color='red', marker='v',linewidth='0.5',linestyle = 'dotted', markersize=2)
+        for i in range(1, 13):
+            data = yearly_irradiance.loc[yearly_irradiance['month'] == i]
+            self.line1_ppfd, = self.ax_ppfd.plot(data.index, data['Total Irradiance'], color='red', marker='v',linewidth='0.5',linestyle = 'dotted', markersize=2)
         self.line1_ppfd.axes.set_title("Photosynthetic Photon Flux Density")
 
        

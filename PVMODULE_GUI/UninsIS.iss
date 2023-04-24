@@ -1,7 +1,7 @@
 
 
 
-#define VerFile FileOpen("config.ini")
+#define VerFile FileOpen("version.ini")
 #define AppVer FileRead(VerFile)
 #expr FileClose(VerFile)
 #undef VerFile

@@ -3,7 +3,7 @@ import os
 import tkinter.messagebox
 from tkinter import *
 from tktooltip import ToolTip
-from PIL import Image
+import PIL.Image
 from Loading import *
 from Splash import *
 from Map import *
@@ -23,10 +23,17 @@ with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
 with open('VERSION.txt') as f:
     SOFTWARE_VERSION = f.readlines()[0].replace("__version__","").replace("'", "").replace("=", "").replace(" ", "")
 
-customtkinter.set_appearance_mode("Dark")
+import configparser
+
+
 class App(customtkinter.CTk):
     
     def __init__(self):
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        config_dot_ini_theme = config['THEME']['value']
+        customtkinter.set_appearance_mode(config_dot_ini_theme)
+
 
         #pvmodule variables:
         self.THREADS = Get_Data_Threads()
@@ -65,19 +72,19 @@ class App(customtkinter.CTk):
 
         # load images with light and dark mode image
         image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "images")
-        self.logo_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "CustomTkinter_logo_single.png")), size=(26, 26))
-        self.large_test_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "large_test_image.png")), size=(500, 150))
-        self.image_icon_image = customtkinter.CTkImage(Image.open(os.path.join(image_path, "image_icon_light.png")), size=(20, 20))
-        self.home_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "home_dark.png")),
-                                                 dark_image=Image.open(os.path.join(image_path, "home_light.png")), size=(20, 20))
-        self.chat_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "chat_dark.png")),
-                                                 dark_image=Image.open(os.path.join(image_path, "chat_light.png")), size=(20, 20))
-        self.add_user_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "add_user_dark.png")),
-                                                     dark_image=Image.open(os.path.join(image_path, "add_user_light.png")), size=(20, 20))
-        self.yearly_analysis_image = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "Yearly_analysis_light.png")),
-                                                     dark_image=Image.open(os.path.join(image_path, "Yearly_analysis_dark.png")), size=(20, 20))
-        self.ppdf_dli = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "ppfd_light.png")),
-                                                     dark_image=Image.open(os.path.join(image_path, "ppfd_dark.png")), size=(20, 20))
+        self.logo_image = customtkinter.CTkImage(PIL.Image.open(os.path.join(image_path, "CustomTkinter_logo_single.png")), size=(26, 26))
+        self.large_test_image = customtkinter.CTkImage(PIL.Image.open(os.path.join(image_path, "large_test_image.png")), size=(500, 150))
+        self.image_icon_image = customtkinter.CTkImage(PIL.Image.open(os.path.join(image_path, "image_icon_light.png")), size=(20, 20))
+        self.home_image = customtkinter.CTkImage(light_image=PIL.Image.open(os.path.join(image_path, "home_dark.png")),
+                                                 dark_image=PIL.Image.open(os.path.join(image_path, "home_light.png")), size=(20, 20))
+        self.chat_image = customtkinter.CTkImage(light_image=PIL.Image.open(os.path.join(image_path, "chat_dark.png")),
+                                                 dark_image=PIL.Image.open(os.path.join(image_path, "chat_light.png")), size=(20, 20))
+        self.add_user_image = customtkinter.CTkImage(light_image=PIL.Image.open(os.path.join(image_path, "add_user_dark.png")),
+                                                     dark_image=PIL.Image.open(os.path.join(image_path, "add_user_light.png")), size=(20, 20))
+        self.yearly_analysis_image = customtkinter.CTkImage(light_image=PIL.Image.open(os.path.join(image_path, "Yearly_analysis_light.png")),
+                                                     dark_image=PIL.Image.open(os.path.join(image_path, "Yearly_analysis_dark.png")), size=(20, 20))
+        self.ppdf_dli = customtkinter.CTkImage(light_image=PIL.Image.open(os.path.join(image_path, "ppfd_light.png")),
+                                                     dark_image=PIL.Image.open(os.path.join(image_path, "ppfd_dark.png")), size=(20, 20))
         
         self.iconbitmap(os.path.join(image_path, "icon.ico"))
 
@@ -233,7 +240,7 @@ class App(customtkinter.CTk):
         self.sidebar_button_1 = customtkinter.CTkButton(self.tabview_PVGIS.tab("PVGIS Selection"), command=self.sidebar_button_event)
         self.sidebar_button_1.grid(row=4, columnspan=2, padx=10, pady=10)
         self.sidebar_button_1.configure(state="enabled", text="Select on Map", text_color="white")
-        ToolTip(self.sidebar_button_1, msg="Opens a map widget where the user can click and it will automatically transfer the coordinates into the correct input.", delay=2.0)   # True by default
+        ToolTip(self.sidebar_button_1, msg="Opens a map widget where the user can click and it will automatically transfer the coordinates into the correct input.", delay=1)   # True by default
 
 
 
@@ -262,14 +269,14 @@ class App(customtkinter.CTk):
         self.modules_amount_string = tkinter.StringVar(value = "Modules: 1") 
         self.Module_Amount_Output_string = customtkinter.CTkLabel(self.tabview_module.tab("Modules Selection"), textvariable=self.modules_amount_string)
         self.Module_Amount_Output_string.grid(row=2, column=1, padx=10, pady=(10, 0))
-        ToolTip(self.Module_Amount_Input_string, msg="The value represents the amount of modules are mounted in series (modules per string).", delay=2.0)   # True by default
+        ToolTip(self.Module_Amount_Input_string, msg="The value represents the amount of modules are mounted in series (modules per string).", delay=1.0)   # True by default
 
         self.Module_Amount_Input_array = customtkinter.CTkButton(self.tabview_module.tab("Modules Selection"),fg_color="grey", state="disabled", text="Nº / Array",command=self.open_input_dialog_amount_array)
         self.Module_Amount_Input_array.grid(row=3, column=0, padx=10, pady=(10, 10))
         self.modules_amount_array = tkinter.StringVar(value = "Modules: 1") 
         self.Module_Amount_Output_array = customtkinter.CTkLabel(self.tabview_module.tab("Modules Selection"), textvariable=self.modules_amount_array)
         self.Module_Amount_Output_array.grid(row=3, column=1, padx=10, pady=(10, 0))
-        ToolTip(self.Module_Amount_Input_array, msg="The value represents the amount of modules/string are mounted in paralel.", delay=2.0)   # True by default
+        ToolTip(self.Module_Amount_Input_array, msg="The value represents the amount of modules/string are mounted in paralel.", delay=1.0)   # True by default
 
         self.module_losses = tkinter.StringVar(value = "Losses: 0%") 
         self.Module_losses_Input_array = customtkinter.CTkLabel(self.tabview_module.tab("Modules Selection"), textvariable=self.module_losses)
@@ -277,7 +284,7 @@ class App(customtkinter.CTk):
         self.Module_losses_Input_array = customtkinter.CTkSlider(self.tabview_module.tab("Modules Selection"),state="disabled", fg_color="grey", from_=0, to=15, width=100 , command = self.slider_event)
         self.Module_losses_Input_array.grid(row=4, column=1, padx=10, pady=(10, 10))
 
-        ToolTip(self.Module_losses_Input_array, msg="The percentage of losses the module has due to: \n-Dust\n-Damage\n-Partial Shading\n- ...", delay=2.0)   # True by default
+        ToolTip(self.Module_losses_Input_array, msg="The percentage of losses the module has due to: \n-Dust\n-Damage\n-Partial Shading\n- ...", delay=1.0)   # True by default
 
                                                                                                          
 
@@ -301,7 +308,7 @@ class App(customtkinter.CTk):
         self.Auto_Select_Inverter_Button = customtkinter.CTkButton(self.tabview_inverter.tab("Inverters Selection"), fg_color="grey", state="disabled", command= self.PVMODULE_auto_select_inverter)
         self.Auto_Select_Inverter_Button.grid(row=2, column=0, padx=10, pady=10)
         self.Auto_Select_Inverter_Button.configure(text="Auto-select", text_color="white")
-        ToolTip(self.Auto_Select_Inverter_Button, msg="Auto-select chooses a suitable inverter (not necessarily the best option available).", delay=2.0)   # True by default
+        ToolTip(self.Auto_Select_Inverter_Button, msg="Auto-select chooses a suitable inverter (not necessarily the best option available).", delay=1.0)   # True by default
 
 
         
@@ -364,13 +371,13 @@ class App(customtkinter.CTk):
         self.sidebar_button_2.grid(row=2, column=0, padx=50, pady=(0, 5), sticky="news")
         self.Latitude_entry_var = tkinter.StringVar(value = "Latitude: 00.0000")   
         self.sidebar_button_2.configure(state="disabled", textvariable=self.Latitude_entry_var, text_color_disabled="white")
-        ToolTip(self.sidebar_button_2, msg="Latitude coordinates", delay=2.0)   # True by default
+        ToolTip(self.sidebar_button_2, msg="Latitude coordinates", delay=1.0)   # True by default
 
         self.sidebar_button_3 = customtkinter.CTkButton(self.tabview_information_pvgis_info.tab("PVGIS Info"))
         self.sidebar_button_3.grid(row=3, column=0, padx=50, pady=(0, 5), sticky="news")
         self.Longitude_entry_var = tkinter.StringVar(value = "Longitude: 00.0000")                                                
         self.sidebar_button_3.configure(state="disabled", textvariable=self.Longitude_entry_var, text_color_disabled="white")
-        ToolTip(self.sidebar_button_3, msg="Longitude coordinates", delay=2.0)   # True by default
+        ToolTip(self.sidebar_button_3, msg="Longitude coordinates", delay=1.0)   # True by default
         
         self.simulate_button = customtkinter.CTkButton(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), border_width=1, fg_color='#66ff99', text_color="black",text_color_disabled='black', text="Simulate", command=self.check_if_can_simulate)
         self.simulate_button.grid(row=4, column=0, padx=(50, 50), pady=(50, 5), sticky="nsew")
@@ -404,7 +411,7 @@ class App(customtkinter.CTk):
         self.Inverter_List_Model_menu.set("Inverter Model")
         self.map_window_frame = None
         self.about_me_Toplevel = None
-        self.appearance_mode_menu.set("Dark")
+        self.appearance_mode_menu.set(config_dot_ini_theme)
         splash.destroy()
         self.protocol("WM_DELETE_WINDOW",  self.on_close)
 
@@ -499,7 +506,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     self.simulate_button.configure(state="disabled")
 
                     self.label = []
-                    self.progress_bar = []
+                    self.progress_bar_GRAPH = []
+                    self.progress_bar_PPFD_DLI = []
                     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
                     #Make 'Graph' buttons available
                     self.frame_2_button.grid(row=2, column=0, sticky="ew") 
@@ -525,15 +533,37 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                             label.grid(row=row, column=column, padx=(10, 10), pady=(150, 10), sticky="nsew")
                         else:
                             label.grid(row=row, column=column, padx=(10, 10), pady=(10, 10), sticky="nsew")
-                        progress_bar = customtkinter.CTkProgressBar(master=self.second_frame)
-                        progress_bar.start()
+                        progress_bar_GRAPH = customtkinter.CTkProgressBar(master=self.second_frame)
+                        progress_bar_GRAPH.start()
                         if row == 1:
-                            progress_bar.grid(row=row, column=column-1, padx=(100, 10), pady=(150, 10), sticky="nsew")                        
+                            progress_bar_GRAPH.grid(row=row, column=column-1, padx=(100, 10), pady=(150, 10), sticky="nsew")                        
                         else:
-                            progress_bar.grid(row=row, column=column-1, padx=(100, 10), pady=(10, 10), sticky="nsew")
+                            progress_bar_GRAPH.grid(row=row, column=column-1, padx=(100, 10), pady=(10, 10), sticky="nsew")
                         
                         self.label.append(label)
-                        self.progress_bar.append(progress_bar)
+                        self.progress_bar_GRAPH.append(progress_bar_GRAPH)
+
+                    for i in range(1, 13): 
+                        if i <= 6:
+                            row = i
+                            column = 2
+                        else:
+                            row = i-6
+                            column = 4
+                        label = customtkinter.CTkLabel(self.second_frame, text=f"Importing {months[i-1]}")
+                        if row == 1:
+                            label.grid(row=row, column=column, padx=(10, 10), pady=(150, 10), sticky="nsew")
+                        else:
+                            label.grid(row=row, column=column, padx=(10, 10), pady=(10, 10), sticky="nsew")
+                        progress_bar_PPFD_DLI = customtkinter.CTkProgressBar(master=self.second_frame)
+                        progress_bar_PPFD_DLI.start()
+                        if row == 1:
+                            progress_bar_PPFD_DLI.grid(row=row, column=column-1, padx=(100, 10), pady=(150, 10), sticky="nsew")                        
+                        else:
+                            progress_bar_PPFD_DLI.grid(row=row, column=column-1, padx=(100, 10), pady=(10, 10), sticky="nsew")
+                        
+                        self.label.append(label)
+                        self.progress_bar_PPFD_DLI.append(progress_bar_PPFD_DLI)
 
                     #In order to not block the progress bars           
                     timer = threading.Timer(1.0, self.start_threads)
@@ -557,11 +587,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         p1.start()  
            
         self.SYSdata, self.SYSyearly_kwh, self.SYSyearly_kwh_wp, self.SYSyearly_in_plane_irr, self.SYSsys_eff, self.SYScapacity_factor, self.SYSperfom_ratio =  queue.get()
-        for i in range(0, len(self.progress_bar)): 
-                        self.progress_bar[i].stop()
-                        self.progress_bar[i].set(1)
-                        self.progress_bar[i].grid_forget()
-                        self.label[i].grid_forget()     
+        for i in range(0, len(self.progress_bar_GRAPH)): 
+                        self.progress_bar_GRAPH[i].stop()
+                        self.progress_bar_GRAPH[i].set(1)
+                        self.progress_bar_GRAPH[i].grid_forget()
+                        self.label[i].grid_forget()  
+
+        for i in range(0, len(self.progress_bar_PPFD_DLI)): 
+                        self.progress_bar_PPFD_DLI[i].stop()
+                        self.progress_bar_PPFD_DLI[i].set(1)
+                        self.progress_bar_PPFD_DLI[i].grid_forget()
+                        self.label[i].grid_forget()   
+
 
         plot = threading.Thread(target=Plot.plot, args=(self, self.SYSdata, self.SYSyearly_kwh, self.SYSyearly_kwh_wp, self.SYSyearly_in_plane_irr, self.SYSsys_eff, self.SYScapacity_factor, self.SYSperfom_ratio,))
         self.threads.append(plot)
@@ -837,6 +874,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             pass
         customtkinter.set_appearance_mode(new_appearance_mode)
 
+        parser = configparser.ConfigParser()
+        parser.read('config.ini')
+        parser.set('THEME', 'value', str(new_appearance_mode))
+        with open("config.ini", "w+") as configfile:
+            parser.write(configfile)
+
+
 
     def on_close(self):
         close = tkinter.messagebox.askokcancel("Close", "Would you like to close the program?")
@@ -847,14 +891,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                     thread.kill()
                 except:
                     pass
-            import sys
-            sys.exit()
+            os._exit(1)
 
 
 if __name__ == '__main__':
-    splash = Splash()
     multiprocessing.freeze_support()
-    splash.destroy()
     app = App()
     app.mainloop()
 
