@@ -8,7 +8,7 @@ a = Analysis(
     ['C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/PVModule.py'],
     pathex=[],
     binaries=[],
-    datas=[('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/PPFD_Plot.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/VERSION.txt', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Plot.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Map.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Splash.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Loading.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Get_Data_Threads.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/images', 'images/'), ('C:/Users/Fabio/AppData/Local/Programs/Python/Python38/Lib/site-packages/customtkinter', 'customtkinter/')],
+    datas=[('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/PPFD_Plot.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/VERSION.txt', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Plot.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Map.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Splash.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/Get_Data_Threads.py', '.'), ('C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/images', 'images/'), ('C:/Users/Fabio/AppData/Local/Programs/Python/Python38/Lib/site-packages/customtkinter', 'customtkinter/')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

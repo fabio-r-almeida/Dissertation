@@ -14,7 +14,7 @@ from multiprocessing import Process, Queue
 from Plot import *
 import webbrowser
 import httpimport
-import sched, time
+import schedule, time
 with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
     import irradiance as IRRADIANCE
     import module as MODULE
@@ -39,6 +39,7 @@ class App(customtkinter.CTk):
         self.THREADS = Get_Data_Threads()
 
         self.threads= []
+        self.stop_blinking_event = False
 
         self.pvmodule_module = None
         self.pvmodule_inverter = None
@@ -590,15 +591,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.third_frame.grid_forget()
 
         if self.checkbox_ppfd_dli.get() == 1:
-            if self.checkbox_power_estimate.get() == 1:
-                self.blinking_button = sched.schedule.every(2).seconds.do(self.start_blink_button_frame, button=self.frame_4_button)
-            #self.select_frame_by_name("PPFD & DLI")
             self.frame_4_button.grid(row=4, column=0, sticky="ew") 
             queue_agro = Queue()
             p2 = Process(target=self.THREADS.PVMODULE_GET_PPDF_DLI, args=(queue_agro, self.pvmodule_location, ))
             progress_bar, label = self.create_loading_progressbar(self.fourth_frame)
             p2.start()  
             self.SYSAgro_data, self.SYSppfd_dli = queue_agro.get()
+            if self.checkbox_power_estimate.get() == 1:
+                self.stop_blinking_event = False
+                self.blinking_button = threading.Thread(target=self.run_threaded, args=(self.frame_4_button,))
+                self.blinking_button.start()
+                
             for i in range(0, len(progress_bar)): 
                             progress_bar[i].stop()
                             progress_bar[i].set(1)
@@ -611,7 +614,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             ppfd_dli_plot.start()
             self.home_frame.grid_forget()
             self.third_frame.grid_forget()
-            self.second_frame.grid_forget()
+            self.fourth_frame.grid_forget()
 
 
 
@@ -622,9 +625,27 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     
     def start_blink_button_frame(self, button):
+        print("Start blink button frame")
         button.configure(fg_color=("gray70", "gray30"))
         time.sleep(1)
-        button.configure(fg_color=("gray75", "gray25"))
+        button.configure(fg_color='transparent')
+        time.sleep(1)
+        if not self.stop_blinking_event:
+            self.blinking_button = threading.Thread(target=self.run_threaded, args=(self.frame_4_button,))
+            self.blinking_button.start()
+
+        #self.blinking_button = schedule.every(4).seconds.do(self.run_threaded, button=self.frame_4_button)
+        #self.blinking_button.run()
+
+
+    def run_threaded(self, button):
+        self.blinking_button = threading.Thread(target=self.start_blink_button_frame, args=(button,))
+        self.blinking_button.start()
+        self.blinking_button.join()
+
+    
+
+
 
 
 
@@ -847,6 +868,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.select_frame_by_name("Yearly Analysis")
 
     def frame_4_button_event(self):
+        try:
+            self.stop_blinking_event = True
+        except:
+            pass
         self.select_frame_by_name("PPFD & DLI")
 
     def change_appearance_mode_event(self, new_appearance_mode):
