@@ -1,7 +1,0 @@
-customtkinter==5.1.2
-matplotlib==3.5.1
-Pillow==9.4.0
-pvmodule==0.0.79
-tkinter_tooltip==2.1.0
-tkintermapview==1.28
-sciPy==1.8
