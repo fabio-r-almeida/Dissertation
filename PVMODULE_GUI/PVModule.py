@@ -549,8 +549,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             p1 = Process(target=self.THREADS.bi_PVMODULE_GET_DATA_THREAD_PER_MONTH, args=(queue, self.pvmodule_location, self.pvmodule_module, self.pvmodule_inverter, self.pvmodule_azimuth))
         else:
             p1 = Process(target=self.THREADS.PVMODULE_GET_DATA_THREAD_PER_MONTH, args=(queue, self.pvmodule_location, self.pvmodule_module, self.pvmodule_inverter, self.pvmodule_azimuth, self.pvmodule_panel_tilt))
-
-        p1.start()     
+        p1.start()  
+        p1.join(500)
+        if p1.is_alive():
+            print("Function is hanging!")
+            p1.terminate()
+            print("Kidding, just terminated!")   
         self.SYSdata, self.SYSyearly_kwh, self.SYSyearly_kwh_wp, self.SYSyearly_in_plane_irr, self.SYSsys_eff, self.SYScapacity_factor, self.SYSperfom_ratio =  queue.get()
         for i in range(0, len(self.progress_bar)): 
                         self.progress_bar[i].stop()
@@ -562,6 +566,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         plot.start()
 
         #Make 'Yearly Analysis', 'PPFD & DLI' buttons available
+        self.home_frame.grid_forget()
         self.frame_4_button.grid(row=4, column=0, sticky="ew")
         self.frame_3_button.grid(row=3, column=0, sticky="ew")
 
@@ -832,8 +837,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     def on_close(self):
         close = tkinter.messagebox.askokcancel("Close", "Would you like to close the program?")
         if close:
-            import os
-            os._exit(1)
+            import sys
+            sys.exit()
 
 
 if __name__ == '__main__':
