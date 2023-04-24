@@ -1,9 +1,8 @@
 import customtkinter
-from Loading import *
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-import pandas as pd
-from numpy import trapz as calculate_area_under_curve
+import matplotlib.pyplot as plt
+
 
 
 class PPFD_Plot():
@@ -40,7 +39,9 @@ class PPFD_Plot():
         else:
             self.ax_ppfd.set_facecolor("#dbdbdb")
             self.fig_ppfd.set_facecolor("#ebebeb")
-        
+        cm = plt.get_cmap('brg')
+        self.ax_ppfd.set_prop_cycle(color=[cm(1.*i/12) for i in range(12)])
+
         for i in range(1, 13):
             data = SYSAgro_data.loc[SYSAgro_data['month'] == i]
             self.line1_ppfd, = self.ax_ppfd.plot(data.index, data['PPFD'], color='red', marker='v',linewidth='0.5',linestyle = 'dotted', markersize=2)

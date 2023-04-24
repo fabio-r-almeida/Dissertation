@@ -1,9 +1,9 @@
 import customtkinter
-from Loading import *
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
 from numpy import trapz as calculate_area_under_curve
+import tkinter
 
 
 class Plot():

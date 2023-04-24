@@ -1,6 +1,5 @@
 import customtkinter
 import tkintermapview
-from Loading import *
 #from pvmodule import Location
 import httpimport
 with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
@@ -28,10 +27,6 @@ class Map(customtkinter.CTk):
 
             def left_click_event(coordinates_tuple):
 
-                loading = Loading() 
-                loading.current_loadings.append("Reading map coordinates")
-                loading.bar()
-
                 map_widget.delete_all_marker()                                                                      
                 latitude = round(coordinates_tuple[0],4)                                                            
                 longitude = round(coordinates_tuple[1],4)                                                           
@@ -41,8 +36,7 @@ class Map(customtkinter.CTk):
                                                                                                  
                 self.Latitude_entry_var.set("Latitude: " + str(latitude))                                                                  
                 self.Longitude_entry_var.set("Longitude: "+ str(longitude))                                                                  
-                self.map_window_frame.destroy()                                                                                    
-                loading.destroy()                                                                
+                self.map_window_frame.destroy()                                                                                                                                                    
 
             map_widget.add_left_click_map_command(left_click_event) 
         else:
