@@ -43,7 +43,7 @@ pyinstaller --noconsole --noconfirm --onedir --windowed --clean --add-data "C:/U
 
 rd /q /s "build" 2>nul
 
-iscc inno_setup.iss
+iscc UninsIS.iss
 
 git add -A
 git commit -m "Automatic Push"
