@@ -14,6 +14,7 @@ from multiprocessing import Process, Queue
 from Plot import *
 import webbrowser
 import httpimport
+import sched, time
 with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
     import irradiance as IRRADIANCE
     import module as MODULE
@@ -585,11 +586,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             #Make 'Yearly Analysis', 'PPFD & DLI' buttons available
             self.frame_3_button.grid(row=3, column=0, sticky="ew")
             self.home_frame.grid_forget()
-            self.frame_4_button.grid_forget()
-            self.frame_3_button.grid_forget()
+            self.fourth_frame.grid_forget()
+            self.third_frame.grid_forget()
 
         if self.checkbox_ppfd_dli.get() == 1:
-            self.select_frame_by_name("PPFD & DLI")
+            if self.checkbox_power_estimate.get() == 1:
+                self.blinking_button = sched.schedule.every(2).seconds.do(self.start_blink_button_frame, button=self.frame_4_button)
+            #self.select_frame_by_name("PPFD & DLI")
             self.frame_4_button.grid(row=4, column=0, sticky="ew") 
             queue_agro = Queue()
             p2 = Process(target=self.THREADS.PVMODULE_GET_PPDF_DLI, args=(queue_agro, self.pvmodule_location, ))
@@ -607,8 +610,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.threads.append(ppfd_dli_plot)
             ppfd_dli_plot.start()
             self.home_frame.grid_forget()
-            self.frame_3_button.grid_forget()
-            self.frame_2_button.grid_forget()
+            self.third_frame.grid_forget()
+            self.second_frame.grid_forget()
 
 
 
@@ -616,6 +619,14 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         
     def change_plotting_month(self, event):
         Plot.change_plotting_month(self, event)
+
+    
+    def start_blink_button_frame(self, button):
+        button.configure(fg_color=("gray70", "gray30"))
+        time.sleep(1)
+        button.configure(fg_color=("gray75", "gray25"))
+
+
 
     def combofill_inverter(self, event):                                                                               
             v = self.inverters[ self.inverters['Manufacturer'] == self.Inverter_List_Brand_menu.get()]['Model Number'].tolist()
