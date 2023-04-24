@@ -5,6 +5,7 @@ import httpimport
 with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
     import pvgis
     import system
+    import agro_indicators
 
 class Get_Data_Threads():
     
@@ -99,5 +100,18 @@ class Get_Data_Threads():
         p1.start()  
         QUEUE.put(queue.get())   
         return queue.get()
+    
+    def agro_worker(self, queue, location):
+        _, data , _ = pvgis.PVGIS().retrieve_all_year(location, azimuth = 0, panel_tilt=0)
+        data, agro_data = agro_indicators.PPFD_DLI(location, data)
+        queue.put([data, agro_data])
+        
+    def PVMODULE_GET_PPDF_DLI(self,QUEUE, location):
+        queue = Queue()
+        p1 = Process(target=self.agro_worker, args=(queue, location))
+        p1.start()  
+        QUEUE.put(queue.get())   
+        return queue.get()
+    
 
 
