@@ -626,8 +626,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     
     def start_blink_button_frame(self, button):
-        print("Start blink button frame")
-        button.configure(fg_color=("gray70", "gray30"))
+        button.configure(fg_color=("gray30", "gray70"))
         time.sleep(1)
         button.configure(fg_color='transparent')
         time.sleep(1)
