@@ -21,7 +21,7 @@ a = Analysis(
 )
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 splash = Splash(
-    'C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/images/bg_gradient.png',
+    'C:/Users/Fabio/Desktop/Github/Dissertation/PVMODULE_GUI/images/bg_gradient.jpg',
     binaries=a.binaries,
     datas=a.datas,
     text_pos=None,
