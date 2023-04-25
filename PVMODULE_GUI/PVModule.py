@@ -1,5 +1,8 @@
 import customtkinter
 import os
+import sys
+if getattr(sys, 'frozen', False):
+    import pyi_splash
 import tkinter.messagebox
 from tkinter import *
 from tktooltip import ToolTip
@@ -14,7 +17,7 @@ from multiprocessing import Process, Queue
 from Plot import *
 import webbrowser
 import httpimport
-import schedule, time
+import time
 with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
     import irradiance as IRRADIANCE
     import module as MODULE
@@ -88,7 +91,7 @@ class App(customtkinter.CTk):
                                                      dark_image=PIL.Image.open(os.path.join(image_path, "ppfd_dark.png")), size=(20, 20))
         
         self.iconbitmap(os.path.join(image_path, "icon.ico"))
-
+        
         link = "https://raw.githubusercontent.com/fabio-r-almeida/Dissertation/main/PVMODULE_GUI/version.py?raw=true"
         changelog = "https://raw.githubusercontent.com/fabio-r-almeida/Dissertation/main/PVMODULE_GUI/changelog.py?raw=true"
         import requests
@@ -420,9 +423,7 @@ class App(customtkinter.CTk):
         self.about_me_Toplevel = None
         self.appearance_mode_menu.set(config_dot_ini_theme)
         splash.destroy()
-        self.protocol("WM_DELETE_WINDOW",  self.on_close)
-
-        
+        self.protocol("WM_DELETE_WINDOW",  self.on_close)       
 
 
     def about_event(self):
@@ -634,9 +635,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.blinking_button = threading.Thread(target=self.run_threaded, args=(self.frame_4_button,))
             self.blinking_button.start()
 
-        #self.blinking_button = schedule.every(4).seconds.do(self.run_threaded, button=self.frame_4_button)
-        #self.blinking_button.run()
-
 
     def run_threaded(self, button):
         self.blinking_button = threading.Thread(target=self.start_blink_button_frame, args=(button,))
@@ -644,9 +642,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         self.blinking_button.join()
 
     
-
-
-
 
 
     def combofill_inverter(self, event):                                                                               
@@ -914,6 +909,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 if __name__ == '__main__':
     multiprocessing.freeze_support()
     app = App()
+    import sys
+    if getattr(sys, 'frozen', False):
+        pyi_splash.close()
     app.mainloop()
 
 
