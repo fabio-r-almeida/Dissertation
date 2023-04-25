@@ -103,6 +103,7 @@ class Plot():
         self.line1_dc, = self.bx.plot(first_data.index, first_data['Total DC Power'], color='red', marker='v',linewidth='0.5',linestyle = 'dotted', markersize=2)
         self.line2_dc, = self.bx.plot(first_data.index, first_data['Total AC Power'], color='magenta', marker='s',linewidth='0.5',linestyle = 'dashdot', markersize=2)
         self.line1_dc.axes.set_title("Power")
+        self.fig.autofmt_xdate()
 
        
         if customtkinter.get_appearance_mode() == "Dark":

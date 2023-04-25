@@ -2,6 +2,7 @@ import customtkinter
 import tkintermapview
 #from pvmodule import Location
 import httpimport
+from config_parser import *
 with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
     import location as LOCATION
 
@@ -32,6 +33,7 @@ class Map(customtkinter.CTk):
                 longitude = round(coordinates_tuple[1],4)                                                           
 
                 self.pvmodule_location = LOCATION.Location().set_location(latitude=latitude, longitude=longitude)
+                config_ini_parser().set_location(latitude, longitude)
                 self.tabview_information_pvgis_info.grid(row=1, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew") 
                                                                                                  
                 self.Latitude_entry_var.set("Latitude: " + str(latitude))                                                                  

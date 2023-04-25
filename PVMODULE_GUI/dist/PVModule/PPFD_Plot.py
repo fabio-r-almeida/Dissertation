@@ -12,7 +12,6 @@ class PPFD_Plot():
 
 
     def plot_ppfd(self, SYSAgro_data, SYSppfd_dli):
-        matplotlib.use('agg')
 
         #months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
         #self.change_month_label = customtkinter.CTkLabel(self.fourth_frame, text="Month:")                                           
@@ -56,7 +55,7 @@ class PPFD_Plot():
         else:
             self.ax_ppfd.legend(['Monthly Average PPFD'],frameon=False, labelcolor="black")
         
-        plt.xticks(rotation=45)
+        self.fig_ppfd.autofmt_xdate()
         self.canvas_ppfd = FigureCanvasTkAgg(self.fig_ppfd,master=self.fourth_frame)
         self.canvas_ppfd.get_tk_widget().grid(row=2, columnspan=5, padx=5, pady=5)
         self.fourth_frame.grid(row=0, column=1, padx=5, pady=5)

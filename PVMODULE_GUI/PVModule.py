@@ -15,9 +15,11 @@ import threading
 import multiprocessing
 from multiprocessing import Process, Queue
 from Plot import *
+from config_parser import *
 import webbrowser
 import httpimport
 import time
+import json
 with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
     import irradiance as IRRADIANCE
     import module as MODULE
@@ -386,9 +388,9 @@ class App(customtkinter.CTk):
         self.simulate_button = customtkinter.CTkButton(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), border_width=1, fg_color='#66ff99', text_color="black",text_color_disabled='black', text="Simulate", command=self.check_if_can_simulate)
         self.simulate_button.grid(row=4, column=0, padx=(50, 50), pady=(50, 5), sticky="nsew")
         
-        self.checkbox_power_estimate = customtkinter.CTkCheckBox(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), text="Power Estimation", onvalue=1, offvalue=0)
+        self.checkbox_power_estimate = customtkinter.CTkCheckBox(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), text="Power Estimation", onvalue=1, offvalue=0, command=self.set_checkbox_power)
         self.checkbox_power_estimate.grid(row=5, column=0, padx=(25, 50), pady=(10, 5), sticky="nsew")
-        self.checkbox_ppfd_dli = customtkinter.CTkCheckBox(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), text="PPFD & DLI", onvalue=1, offvalue=0)
+        self.checkbox_ppfd_dli = customtkinter.CTkCheckBox(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), text="PPFD & DLI", onvalue=1, offvalue=0, command=self.set_checkbox_ppfd)
         self.checkbox_ppfd_dli.grid(row=6, column=0, padx=(25, 50), pady=(5, 5), sticky="nsew")
         
         splash.current_loadings.append("Importing Assets")          #<<<<<<<<--------------------
@@ -422,8 +424,48 @@ class App(customtkinter.CTk):
         self.map_window_frame = None
         self.about_me_Toplevel = None
         self.appearance_mode_menu.set(config_dot_ini_theme)
+        try:
+            self.pvmodule_module = json.loads(config['MODULE']['module'])
+            self.Module_List_Brand_menu.set(self.pvmodule_module['brand'])
+            self.Module_List_Model_menu.set(self.pvmodule_module['model'])
+            self.Module_Amount_Input_string.configure(state="normal")
+            self.modules_amount_string.set(f"Modules: {self.pvmodule_module['modules_per_string']}")
+            self.modules_amount_array.set(f"Modules: {self.pvmodule_module['number_of_strings']}")
+            self.Module_Amount_Input_array.configure(state="normal")
+            self.Module_Amount_Input_string.configure(fg_color="#3b8ed0")
+            self.Module_losses_Input_array.configure(fg_color="#3b8ed0")
+            self.Module_Amount_Input_array.configure(fg_color="#3b8ed0")
+            self.module_losses.set(f"Losses: {self.pvmodule_module['losses']}%")
+            self.fill_module_information(self.pvmodule_module['model'])
+        except:
+            pass
+        try:
+            self.pvmodule_inverter = json.loads(config['INVERTER']['inverter'])
+            self.Inverter_List_Brand_menu.set(self.pvmodule_inverter['Manufacturer'])
+            self.Inverter_List_Model_menu.set(self.pvmodule_inverter['Model Number'])
+            self.fill_inverter_information(self.pvmodule_inverter['Model Number'])
+        except:
+            pass
+        try:
+            latitude = config['LOCATION']['latitude']
+            longitude = config['LOCATION']['longitude']
+            self.pvmodule_location = LOCATION.Location().set_location(latitude=float(latitude), longitude=float(longitude))
+            self.tabview_information_pvgis_info.grid(row=1, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew")                                                                                  
+            self.Latitude_entry_var.set("Latitude: " + str(latitude))                                                                  
+            self.Longitude_entry_var.set("Longitude: "+ str(longitude)) 
+        except:
+            pass
+        try:
+            if int(config['SIMULATE']['power']) == 1:
+                self.checkbox_power_estimate.select()
+            if int(config['SIMULATE']['ppfd']) == 1:
+                self.checkbox_ppfd_dli.select()
+        except:
+            pass
+    
         splash.destroy()
-        self.protocol("WM_DELETE_WINDOW",  self.on_close)       
+        self.protocol("WM_DELETE_WINDOW",  self.on_close)  
+             
 
 
     def about_event(self):
@@ -451,9 +493,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             selected_module = self.modules.loc[self.modules['Model Number'] == event].squeeze()
 
             fill_info = threading.Thread(target=self.PVMODULE_define_module, args=(event, 
-                                                                ''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()),
-                                                                ''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()), 
-                                                                ''.join(c for c in str(self.module_losses.get()) if c.isdigit()),)).start()
+                                                                ''.join(c for c in str(self.modules_amount_string.get()).split('.', 1)[0] if c.isdigit()),
+                                                                ''.join(c for c in str(self.modules_amount_array.get()).split('.', 1)[0] if c.isdigit()), 
+                                                                ''.join(c for c in str(self.module_losses.get()).split('.', 1)[0] if c.isdigit()),)).start()
             self.Module_Amount_Input_string.configure(state="normal")
             self.Module_Amount_Input_string.configure(fg_color="#3b8ed0")
             self.Module_losses_Input_array.configure(fg_color="#3b8ed0")
@@ -476,7 +518,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.module_size.set("Size: " + str(selected_module['Short Side']) + ' x ' + str(selected_module['Long Side']))
             self.tabview_information_module_info.grid(row=1, column=0, padx=(10, 10), pady=(10, 10), sticky="nsew")
 
-   
+    def set_checkbox_power(self):
+        config_ini_parser().set_checkbox_power(self.checkbox_power_estimate.get())
+    def set_checkbox_ppfd(self):
+        config_ini_parser().set_checkbox_ppfd(self.checkbox_ppfd_dli.get())
 
     def check_if_can_simulate(self):
         self.second_frame.grid_forget()
@@ -656,12 +701,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.inverter_nominal_voc.set("Nominal Voltage : " + str(selected_inverter['Voltage Nominal (Vdc)']) + " V" )
             self.inverter_efficiency.set("Efficiency: " + str(selected_inverter['Weighted Efficiency (%)']) + " %" )
             self.pvmodule_inverter = INVERTER.Inverters().inverter(name=selected_inverter['Model Number'])
+            config_ini_parser().set_inverter(self.pvmodule_inverter)
 
     def PVMODULE_auto_select_inverter(self):
         if self.pvmodule_module == None:
             return tkinter.messagebox.showwarning(title="Error", message="No module selected found.")
         else:
             self.pvmodule_inverter, self.pvmodule_module = INVERTER.Inverters().auto_select_inverter(module = self.pvmodule_module)
+
+            config_ini_parser().set_module(self.pvmodule_module)
+            config_ini_parser().set_inverter(self.pvmodule_inverter)
             inverter = self.pvmodule_inverter.squeeze()
 
             if inverter.empty:
@@ -679,6 +728,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     def PVMODULE_define_module(self,Model_name, nr_per_string, nr_per_array, losses):
         self.pvmodule_module =  MODULE.Modules().module(model = Model_name , modules_per_string = float(nr_per_string) ,number_of_strings = float(nr_per_array) , losses = float(losses))
+        config_ini_parser().set_module(self.pvmodule_module)
         self.Auto_Select_Inverter_Button.configure(state="normal")
         self.Auto_Select_Inverter_Button.configure(fg_color="#3b8ed0")
         return self.pvmodule_module
@@ -686,7 +736,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     def slider_event(self, value):
         self.module_losses.set(f"Losses: {round(int(value),0)}%")
-        self.pvmodule_module['losses'] = float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))
+        self.pvmodule_module['losses'] = float(''.join(c for c in str(self.module_losses.get()).split('.', 1)[0] if c.isdigit()))
+        config_ini_parser().set_module(self.pvmodule_module)
         selected_module = self.modules.loc[self.modules['Model Number'] == self.Module_List_Model_menu.get()].squeeze()
         num = float(selected_module['Isc'])*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))
         count = 0
@@ -721,7 +772,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         else:
             self.module_wattage.set("DC Wattage: " + str(round(selected_module['Pmax']*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))*(1-float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/100),2)) + " W" )
     
-        self.pvmodule_module['modules_per_string'] = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))
  
 
     def open_input_dialog_amount_string(self):
@@ -766,20 +816,20 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             else:
                 self.module_wattage.set("DC Wattage: " + str(round(selected_module['Pmax']*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))*(1-float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/100),2)) + " W" )
     
-            self.pvmodule_module['modules_per_string'] = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))
+            self.pvmodule_module['number_of_strings'] = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))
+            config_ini_parser().set_module(self.pvmodule_module)
 
 
 
 
     def open_input_dialog_amount_array(self):
-        dialog = customtkinter.CTkInputDialog(text="Amount of Modules per Array (amount of string)", title="Amount of Modules per Array")
+        dialog = customtkinter.CTkInputDialog(text="Amount of Strings per Array ", title="Amount of Modules per Array")
         self.modules_amount_array.set(value = "Modules: " + str(dialog.get_input())) 
 
         if not ''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()).isdigit():
-            self.pvmodule_module['number_of_strings'] = 1 
+            self.pvmodule_module['number_per_strings'] = 1 
             self.modules_amount_array.set(value = "Modules: 1") 
         else:
-            self.pvmodule_module['number_of_strings'] = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))
             selected_module = self.modules.loc[self.modules['Model Number'] == self.Module_List_Model_menu.get()].squeeze()
             num = float(selected_module['Isc'])*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))
             count = 0
@@ -813,7 +863,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             else:
                 self.module_wattage.set("DC Wattage: " + str(round(selected_module['Pmax']*float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))*float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))*(1-float(''.join(c for c in str(self.module_losses.get()) if c.isdigit()))/100),2)) + " W" )
     
-            self.pvmodule_module['modules_per_string'] = float(''.join(c for c in str(self.modules_amount_string.get()) if c.isdigit()))
+            self.pvmodule_module['modules_per_string'] = float(''.join(c for c in str(self.modules_amount_array.get()) if c.isdigit()))
+            config_ini_parser().set_module(self.pvmodule_module)
+
 
     def change_scaling_event(self, new_scaling: str):
         new_scaling_float = int(new_scaling.replace("%", "")) / 100
