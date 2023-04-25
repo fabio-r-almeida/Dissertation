@@ -34,7 +34,7 @@ LicenseFile=C:\Users\Fabio\Desktop\Github\Dissertation\PVMODULE_GUI\license.txt
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=commandline
-OutputBaseFilename=Pvmodule Installer {#AppVer}
+OutputBaseFilename=Pvmodule Installer
 SetupIconFile=C:\Users\Fabio\Desktop\Github\Dissertation\PVMODULE_GUI\images\icon.ico
 Compression=lzma
 SolidCompression=yes
