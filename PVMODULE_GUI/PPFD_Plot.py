@@ -2,6 +2,7 @@ import customtkinter
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
+import matplotlib
 
 
 
@@ -53,10 +54,14 @@ class PPFD_Plot():
 
         else:
             self.ax_ppfd.legend(['Monthly Average PPFD'],frameon=False, labelcolor="black")
-
+        
+        self.fig_ppfd.autofmt_xdate()
         self.canvas_ppfd = FigureCanvasTkAgg(self.fig_ppfd,master=self.fourth_frame)
         self.canvas_ppfd.get_tk_widget().grid(row=2, columnspan=5, padx=5, pady=5)
         self.fourth_frame.grid(row=0, column=1, padx=5, pady=5)
+        self.home_frame.grid_forget()
+        self.third_frame.grid_forget()
+        self.fourth_frame.grid_forget()
 
 
     #def change_plotting_month(self, event):

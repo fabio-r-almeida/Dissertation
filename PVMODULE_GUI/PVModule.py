@@ -613,13 +613,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             ppfd_dli_plot = threading.Thread(target=PPFD_Plot.plot_ppfd, args=(self, self.SYSAgro_data, self.SYSppfd_dli ,))
             self.threads.append(ppfd_dli_plot)
             ppfd_dli_plot.start()
-            ppfd_dli_plot.join()
-            self.home_frame.grid_forget()
-            self.third_frame.grid_forget()
-            self.fourth_frame.grid_forget()
-
-
-
+            if self.checkbox_power_estimate.get() == 0:
+                self.select_frame_by_name("PPFD & DLI")
 
         
     def change_plotting_month(self, event):
