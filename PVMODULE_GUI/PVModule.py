@@ -425,34 +425,37 @@ class App(customtkinter.CTk):
         self.about_me_Toplevel = None
         self.appearance_mode_menu.set(config_dot_ini_theme)
         try:
-            self.pvmodule_module = json.loads(config['MODULE']['module'])
-            self.Module_List_Brand_menu.set(self.pvmodule_module['brand'])
-            self.Module_List_Model_menu.set(self.pvmodule_module['model'])
-            self.Module_Amount_Input_string.configure(state="normal")
-            self.modules_amount_string.set(f"Modules: {self.pvmodule_module['modules_per_string']}")
-            self.modules_amount_array.set(f"Modules: {self.pvmodule_module['number_of_strings']}")
-            self.Module_Amount_Input_array.configure(state="normal")
-            self.Module_Amount_Input_string.configure(fg_color="#3b8ed0")
-            self.Module_losses_Input_array.configure(fg_color="#3b8ed0")
-            self.Module_Amount_Input_array.configure(fg_color="#3b8ed0")
-            self.module_losses.set(f"Losses: {self.pvmodule_module['losses']}%")
-            self.fill_module_information(self.pvmodule_module['model'])
+            if str(config['MODULE']['module']) != 'None':
+                self.pvmodule_module = json.loads(config['MODULE']['module'])
+                self.Module_List_Brand_menu.set(self.pvmodule_module['brand'])
+                self.Module_List_Model_menu.set(self.pvmodule_module['model'])
+                self.Module_Amount_Input_string.configure(state="normal")
+                self.modules_amount_string.set(f"Modules: {self.pvmodule_module['modules_per_string']}")
+                self.modules_amount_array.set(f"Modules: {self.pvmodule_module['number_of_strings']}")
+                self.Module_Amount_Input_array.configure(state="normal")
+                self.Module_Amount_Input_string.configure(fg_color="#3b8ed0")
+                self.Module_losses_Input_array.configure(fg_color="#3b8ed0")
+                self.Module_Amount_Input_array.configure(fg_color="#3b8ed0")
+                self.module_losses.set(f"Losses: {self.pvmodule_module['losses']}%")
+                self.fill_module_information(self.pvmodule_module['model'])
         except:
             pass
         try:
-            self.pvmodule_inverter = json.loads(config['INVERTER']['inverter'])
-            self.Inverter_List_Brand_menu.set(self.pvmodule_inverter['Manufacturer'])
-            self.Inverter_List_Model_menu.set(self.pvmodule_inverter['Model Number'])
-            self.fill_inverter_information(self.pvmodule_inverter['Model Number'])
+            if str(config['INVERTER']['inverter']) != 'None':
+                self.pvmodule_inverter = json.loads(config['INVERTER']['inverter'])
+                self.Inverter_List_Brand_menu.set(self.pvmodule_inverter['Manufacturer'])
+                self.Inverter_List_Model_menu.set(self.pvmodule_inverter['Model Number'])
+                self.fill_inverter_information(self.pvmodule_inverter['Model Number'])
         except:
             pass
         try:
-            latitude = config['LOCATION']['latitude']
-            longitude = config['LOCATION']['longitude']
-            self.pvmodule_location = LOCATION.Location().set_location(latitude=float(latitude), longitude=float(longitude))
-            self.tabview_information_pvgis_info.grid(row=1, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew")                                                                                  
-            self.Latitude_entry_var.set("Latitude: " + str(latitude))                                                                  
-            self.Longitude_entry_var.set("Longitude: "+ str(longitude)) 
+            if str(config['LOCATION']['latitude']) != 'None' and str(config['LOCATION']['longitude']) !='None':
+                latitude = config['LOCATION']['latitude']
+                longitude = config['LOCATION']['longitude']
+                self.pvmodule_location = LOCATION.Location().set_location(latitude=float(latitude), longitude=float(longitude))
+                self.tabview_information_pvgis_info.grid(row=1, column=2, padx=(10, 10), pady=(10, 10), sticky="nsew")                                                                                  
+                self.Latitude_entry_var.set("Latitude: " + str(latitude))                                                                  
+                self.Longitude_entry_var.set("Longitude: "+ str(longitude)) 
         except:
             pass
         try:

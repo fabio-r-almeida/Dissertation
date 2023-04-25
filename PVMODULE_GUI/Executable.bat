@@ -38,6 +38,9 @@ set verstr=%year%.%month%.
 copy VERSION.txt version.py
 copy VERSION_ini.txt version.ini
 
+copy config_standard.ini config.ini
+
+
 rd /q /s "build" 2>nul
 rd /q /s "dist" 2>nul
 
