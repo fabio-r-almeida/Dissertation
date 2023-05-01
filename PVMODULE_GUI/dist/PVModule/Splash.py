@@ -36,7 +36,7 @@ class Splash(tkinter.Toplevel):
 
         self.bg_image = customtkinter.CTkImage(Image.open(current_path + "/images/bg_gradient.jpg"),
                                                size=(self.width, self.height))
-        self.bg_image_label = customtkinter.CTkLabel(self, image=self.bg_image, textvariable=self.splash_text)
+        self.bg_image_label = customtkinter.CTkLabel(self, image=self.bg_image, textvariable=self.splash_text, fg_color='white')
 
         self.bg_image_label.grid(row=0, column=0, )
 

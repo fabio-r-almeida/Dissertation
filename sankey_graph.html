@@ -1,0 +1,82 @@
+<html>
+<body>
+ <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<div id="sankey_multiple" style="width: 900px; height: 300px;"></div>
+
+<script type="text/javascript">
+ google.charts.load("current", {packages:["sankey"]});
+ google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+  var data = new google.visualization.DataTable();
+  data.addColumn('string', 'From');
+  data.addColumn('string', 'To');
+  data.addColumn('number', 'Weight');
+  data.addRows([
+    [ 'Energy 76.759,59 €', 'Revenue', 70254.59 ],
+    [ 'Energy 76.759,59 €', 'Revenue', 6505 ],
+    [ 'Revenue', 'Profit 146.577,09 €', 70254.59 ],
+    [ 'Revenue', 'Loss 42.005,00 €', 6505 ],
+    [ 'Loss 42.005,00 €', 'Operations & Maintenance Energy 6.505,00 €',6505 ],
+    [ 'Profit 146.577,09 €', 'Sold Energy 70.254,59 €', 70254.59 ],
+
+    [ 'Agriculture 111.822,50 €', 'Revenue', 56400 ],
+    [ 'Agriculture 111.822,50 €', 'Revenue', 20000 ],
+    [ 'Revenue', 'Profit 146.577,09 €', 56400 ],
+    [ 'Revenue', 'Loss 42.005,00 €', 20000 ],
+    [ 'Profit 146.577,09 €', 'Sold Strawberries 56.400,00 €', 56400 ],
+    [ 'Loss 42.005,00 €', 'Operations Strawberries 20.000,00 €', 20000 ],
+
+    [ 'Agriculture 111.822,50 €', 'Revenue', 8842.5 ],
+    [ 'Agriculture 111.822,50 €', 'Revenue', 6250 ],
+    [ 'Revenue', 'Profit 146.577,09 €', 8842.5 ],
+    [ 'Revenue', 'Loss 42.005,00 €', 6250 ],
+    [ 'Profit 146.577,09 €', 'Sold Blueberries 8.842,50 €', 8842.5 ],
+    [ 'Loss 42.005,00 €', 'Operations Blueberries 6.250,00 €', 6250 ],
+
+    [ 'Agriculture 111.822,50 €', 'Revenue', 9100 ],
+    [ 'Agriculture 111.822,50 €', 'Revenue', 7800 ],
+    [ 'Revenue', 'Profit 146.577,09 €', 9100 ],
+    [ 'Revenue', 'Loss 42.005,00 €', 7800 ],
+    [ 'Profit 146.577,09 €', 'Sold Tomatoes 9.100,00 €', 9100 ],
+    [ 'Loss 42.005,00 €', 'Operations Tomatoes 7.800,00 €', 7800 ],
+
+    [ 'Agriculture 111.822,50 €', 'Revenue', 1980 ],
+    [ 'Agriculture 111.822,50 €', 'Revenue', 1450 ],
+    [ 'Revenue', 'Profit 146.577,09 €', 1980 ],
+    [ 'Revenue', 'Loss 42.005,00 €', 1450 ],
+    [ 'Profit 146.577,09 €', 'Sold Peas 1.980,00 €', 1980 ],
+    [ 'Loss 42.005,00 €', 'Operations Peas 1.450,00 €', 1450 ],
+    
+  ]);
+
+    var options = {
+   width: window.innerWidth*0.75,
+   height: window.innerHeight*0.75,
+
+   sankey: {
+    link: {
+     colorMode: 'gradient',
+    },
+	 node: {
+   nodePadding: 20,
+            label: {
+  
+                         fontSize: 16,
+                         bold: true,
+                         italic: true },
+
+ },
+//    #ff5271
+//   #57f75f
+   },
+
+  };
+
+  // Instantiate and draw our chart, passing in some options.
+  var chart = new google.visualization.Sankey(document.getElementById('sankey_multiple'));
+  chart.draw(data, options);
+  }
+</script>
+</body>
+</html>

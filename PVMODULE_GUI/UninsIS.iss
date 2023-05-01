@@ -18,6 +18,7 @@
 #define AppGUID "{F10724FE-D2F7-4E17-98AA-F4445F6F9496}"
 
 [Setup]
+;SignTool=signtool
 AppId={{#AppGUID}
 AppName={#MyAppName}
 AppVersion={#AppVersion}
