@@ -43,20 +43,20 @@ class PPFD_Plot():
         else:
             self.ax_ppfd.set_facecolor("#dbdbdb")
             self.fig_ppfd.set_facecolor("#ebebeb")
-        cm = plt.get_cmap('brg')
-        self.ax_ppfd.set_prop_cycle(color=[cm(1.*i/12) for i in range(12)])
-
+        
+        #cm = plt.get_cmap('brg')
+        #color=[cm(1.*i/13) for i in range(13)]
+        markers = [".",",","v","^","<",">","1","2","3","4","8","s","p","P","*","h","H","+","x","X","D","d"]
         for i in range(1, 13):
             data = SYSAgro_data.loc[SYSAgro_data['month'] == i]
-            self.line1_ppfd, = self.ax_ppfd.plot(data.index, data['PPFD'], color='red', marker='v',linewidth='0.5',linestyle = 'dotted', markersize=2)
+            self.line1_ppfd, = self.ax_ppfd.plot(data.index, data['PPFD'], marker=markers[i],linewidth='0.5',linestyle = 'dotted', markersize=3)
         self.line1_ppfd.axes.set_title("Photosynthetic Photon Flux Density")
 
        
         if customtkinter.get_appearance_mode() == "Dark":
-            self.ax_ppfd.legend(['Monthly Average PPFD'],frameon=False, labelcolor="white")
-
+            self.ax_ppfd.legend(['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December'],frameon=False, labelcolor="white")
         else:
-            self.ax_ppfd.legend(['Monthly Average PPFD'],frameon=False, labelcolor="black")
+            self.ax_ppfd.legend(['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December'],frameon=False, labelcolor="black")
         
         self.fig_ppfd.autofmt_xdate()
         self.canvas_ppfd = FigureCanvasTkAgg(self.fig_ppfd,master=self.fourth_frame)
@@ -75,7 +75,8 @@ class PPFD_Plot():
         self.fourth_frame.grid(row=0, column=1, padx=5, pady=5)
         self.home_frame.grid_forget()
         self.third_frame.grid_forget()
-        self.fourth_frame.grid_forget()
+        if self.checkbox_power_estimate.get() == 1:
+            self.fourth_frame.grid_forget()
 
 
     #def change_plotting_month(self, event):
