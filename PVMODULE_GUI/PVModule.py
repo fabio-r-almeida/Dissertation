@@ -221,9 +221,10 @@ class App(customtkinter.CTk):
         self.albedo_values  = self.albedo_values['Surface'] 
         self.albedo_values  = list(dict.fromkeys(self.albedo_values .tolist())) 
 
+        self.PVGIS_Panel_Tilt_inputtextvariable = tkinter.StringVar(value = '35') 
         self.PVGIS_Panel_Tilt = customtkinter.CTkLabel(self.tabview_PVGIS.tab("PVGIS Selection"), text="Module Tilt:")
         self.PVGIS_Panel_Tilt.grid(row=0, column=0, padx=10, pady=(10, 0))
-        self.PVGIS_Panel_Tilt_input = customtkinter.CTkEntry(self.tabview_PVGIS.tab("PVGIS Selection"), placeholder_text="default: 35")
+        self.PVGIS_Panel_Tilt_input = customtkinter.CTkEntry(self.tabview_PVGIS.tab("PVGIS Selection"), placeholder_text="default: 35",textvariable=self.PVGIS_Panel_Tilt_inputtextvariable)
         self.PVGIS_Panel_Tilt_input.grid(row=0, column=1, padx=10, pady=(10, 10))
 
 
@@ -232,9 +233,10 @@ class App(customtkinter.CTk):
         self.PVGIS_Ground_Albedo_menu = customtkinter.CTkOptionMenu(self.tabview_PVGIS.tab("PVGIS Selection"), dynamic_resizing=False,values=self.albedo_values)
         self.PVGIS_Ground_Albedo_menu.grid(row=1, column=1, padx=10, pady=(10, 10))
 
+        self.Module_azimuth_arraytextvariable = tkinter.StringVar(value = '0') 
         self.PVGIS_Module_azimuth = customtkinter.CTkLabel(self.tabview_PVGIS.tab("PVGIS Selection"), text="Azimuth:")
         self.PVGIS_Module_azimuth.grid(row=2, column=0, padx=10, pady=(10, 0))
-        self.Module_azimuth_array = customtkinter.CTkEntry(self.tabview_PVGIS.tab("PVGIS Selection"), placeholder_text="-180 to 180, default: 0")
+        self.Module_azimuth_array = customtkinter.CTkEntry(self.tabview_PVGIS.tab("PVGIS Selection"), placeholder_text="-180 to 180, default: 0",textvariable=self.Module_azimuth_arraytextvariable)
         self.Module_azimuth_array.grid(row=2, column=1, padx=10, pady=(10, 10))
 
         self.PVGIS_Panel_Spacing = customtkinter.CTkLabel(self.tabview_PVGIS.tab("PVGIS Selection"), text="Module Spacing:")
@@ -246,7 +248,7 @@ class App(customtkinter.CTk):
         self.sidebar_button_1 = customtkinter.CTkButton(self.tabview_PVGIS.tab("PVGIS Selection"), command=self.sidebar_button_event)
         self.sidebar_button_1.grid(row=4, columnspan=2, padx=10, pady=10)
         self.sidebar_button_1.configure(state="enabled", text="Select on Map", text_color="white")
-        ToolTip(self.sidebar_button_1, msg="Opens a map widget where the user can click and it will automatically transfer the coordinates into the correct input.", delay=1)   # True by default
+        ToolTip(self.sidebar_button_1, msg="Opens a map widget where the user can click and it will automatically transfer the coordinates into the correct input.", delay=0.5)   # True by default
 
 
 
@@ -275,14 +277,14 @@ class App(customtkinter.CTk):
         self.modules_amount_string = tkinter.StringVar(value = "Modules: 1") 
         self.Module_Amount_Output_string = customtkinter.CTkLabel(self.tabview_module.tab("Modules Selection"), textvariable=self.modules_amount_string)
         self.Module_Amount_Output_string.grid(row=2, column=1, padx=10, pady=(10, 0))
-        ToolTip(self.Module_Amount_Input_string, msg="The value represents the amount of modules are mounted in series (modules per string).", delay=1.0)   # True by default
+        ToolTip(self.Module_Amount_Input_string, msg="The value represents the amount of modules are mounted in series (modules per string).", delay=0.5)   # True by default
 
         self.Module_Amount_Input_array = customtkinter.CTkButton(self.tabview_module.tab("Modules Selection"),fg_color="grey", state="disabled", text="Nº / Array",command=self.open_input_dialog_amount_array)
         self.Module_Amount_Input_array.grid(row=3, column=0, padx=10, pady=(10, 10))
         self.modules_amount_array = tkinter.StringVar(value = "Modules: 1") 
         self.Module_Amount_Output_array = customtkinter.CTkLabel(self.tabview_module.tab("Modules Selection"), textvariable=self.modules_amount_array)
         self.Module_Amount_Output_array.grid(row=3, column=1, padx=10, pady=(10, 0))
-        ToolTip(self.Module_Amount_Input_array, msg="The value represents the amount of modules/string are mounted in paralel.", delay=1.0)   # True by default
+        ToolTip(self.Module_Amount_Input_array, msg="The value represents the amount of modules/string are mounted in paralel.", delay=0.5)   # True by default
 
         self.module_losses = tkinter.StringVar(value = "Losses: 0%") 
         self.Module_losses_Input_array = customtkinter.CTkLabel(self.tabview_module.tab("Modules Selection"), textvariable=self.module_losses)
@@ -290,7 +292,7 @@ class App(customtkinter.CTk):
         self.Module_losses_Input_array = customtkinter.CTkSlider(self.tabview_module.tab("Modules Selection"),state="disabled", fg_color="grey", from_=0, to=15, width=100 , command = self.slider_event)
         self.Module_losses_Input_array.grid(row=4, column=1, padx=10, pady=(10, 10))
 
-        ToolTip(self.Module_losses_Input_array, msg="The percentage of losses the module has due to: \n-Dust\n-Damage\n-Partial Shading\n- ...", delay=1.0)   # True by default
+        ToolTip(self.Module_losses_Input_array, msg="The percentage of losses the module has due to: \n-Dust\n-Damage\n-Partial Shading\n- ...", delay=0.5)   # True by default
 
                                                                                                          
 
@@ -314,7 +316,7 @@ class App(customtkinter.CTk):
         self.Auto_Select_Inverter_Button = customtkinter.CTkButton(self.tabview_inverter.tab("Inverters Selection"), fg_color="grey", state="disabled", command= self.PVMODULE_auto_select_inverter)
         self.Auto_Select_Inverter_Button.grid(row=2, column=0, padx=10, pady=10)
         self.Auto_Select_Inverter_Button.configure(text="Auto-select", text_color="white")
-        ToolTip(self.Auto_Select_Inverter_Button, msg="Auto-select chooses a suitable inverter (not necessarily the best option available).", delay=1.0)   # True by default
+        ToolTip(self.Auto_Select_Inverter_Button, msg="Auto-select chooses a suitable inverter (not necessarily the best option available).", delay=0.5)   # True by default
 
 
         
@@ -377,21 +379,28 @@ class App(customtkinter.CTk):
         self.sidebar_button_2.grid(row=2, column=0, padx=50, pady=(0, 5), sticky="news")
         self.Latitude_entry_var = tkinter.StringVar(value = "Latitude: 00.0000")   
         self.sidebar_button_2.configure(state="disabled", textvariable=self.Latitude_entry_var, text_color_disabled="white")
-        ToolTip(self.sidebar_button_2, msg="Latitude coordinates", delay=1.0)   # True by default
+        ToolTip(self.sidebar_button_2, msg="Latitude coordinates", delay=0.5)   # True by default
 
         self.sidebar_button_3 = customtkinter.CTkButton(self.tabview_information_pvgis_info.tab("PVGIS Info"))
         self.sidebar_button_3.grid(row=3, column=0, padx=50, pady=(0, 5), sticky="news")
         self.Longitude_entry_var = tkinter.StringVar(value = "Longitude: 00.0000")                                                
         self.sidebar_button_3.configure(state="disabled", textvariable=self.Longitude_entry_var, text_color_disabled="white")
-        ToolTip(self.sidebar_button_3, msg="Longitude coordinates", delay=1.0)   # True by default
+        ToolTip(self.sidebar_button_3, msg="Longitude coordinates", delay=0.5)   # True by default
+
+        self.selling_price_input = customtkinter.CTkEntry(self.tabview_information_pvgis_info.tab("PVGIS Info"), placeholder_text="Selling Price: 0.07 €")
+        self.selling_price_input.grid(row=4, column=0, padx=10, pady=(10, 10))
+        print(self.selling_price_input.get())
         
         self.simulate_button = customtkinter.CTkButton(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), border_width=1, fg_color='#66ff99', text_color="black",text_color_disabled='black', text="Simulate", command=self.check_if_can_simulate)
-        self.simulate_button.grid(row=4, column=0, padx=(50, 50), pady=(50, 5), sticky="nsew")
+        self.simulate_button.grid(row=5, column=0, padx=(50, 50), pady=(10, 5), sticky="nsew")
         
         self.checkbox_power_estimate = customtkinter.CTkCheckBox(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), text="Power Estimation", onvalue=1, offvalue=0, command=self.set_checkbox_power)
-        self.checkbox_power_estimate.grid(row=5, column=0, padx=(25, 50), pady=(10, 5), sticky="nsew")
+        self.checkbox_power_estimate.grid(row=6, column=0, padx=(25, 50), pady=(10, 5), sticky="nsew")
         self.checkbox_ppfd_dli = customtkinter.CTkCheckBox(master=self.tabview_information_pvgis_info.tab("PVGIS Info"), text="PPFD & DLI", onvalue=1, offvalue=0, command=self.set_checkbox_ppfd)
-        self.checkbox_ppfd_dli.grid(row=6, column=0, padx=(25, 50), pady=(5, 5), sticky="nsew")
+        self.checkbox_ppfd_dli.grid(row=7, column=0, padx=(25, 50), pady=(5, 5), sticky="nsew")
+        ToolTip(self.checkbox_power_estimate, msg="Checking this box will enable the calculation of monthly energy production.", delay=0.5)   # True by default
+        ToolTip(self.checkbox_ppfd_dli, msg="Checking this box will enable the calculation of monthly Photosynthetic Photon Flux Density and Daily Light Integral reaching the ground.", delay=0.5)   # True by default
+
         
         splash.current_loadings.append("Importing Assets")          #<<<<<<<<--------------------
         splash.bar()                                                #<<<<<<<<--------------------
@@ -463,8 +472,25 @@ class App(customtkinter.CTk):
         try:
             if int(config['SIMULATE']['power']) == 1:
                 self.checkbox_power_estimate.select()
+        except:
+            pass
+        try:
             if int(config['SIMULATE']['ppfd']) == 1:
                 self.checkbox_ppfd_dli.select()
+        except:
+            pass
+
+        try:
+            if int(config['MODULE']['tilt']) != 'None':
+                self.PVGIS_Panel_Tilt_input.configure(placeholder_text=config['MODULE']['tilt'])
+                self.PVGIS_Panel_Tilt_inputtextvariable = tkinter.StringVar(value = config['MODULE']['azimuth'])
+        except:
+            pass
+
+        try:
+            if int(config['MODULE']['azimuth']) != 'None':
+                self.Module_azimuth_array.configure(placeholder_text=config['MODULE']['azimuth'])
+                self.Module_azimuth_arraytextvariable = tkinter.StringVar(value = config['MODULE']['azimuth']) 
         except:
             pass
     
@@ -570,8 +596,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
                             widgets.destroy()
                     except:
                         pass
-                 
-                    #In order to not block the progress bars           
+                    self.pvmodule_module['number_of_modules'] = self.pvmodule_module['modules_per_string']*self.pvmodule_module['number_of_strings']
+
+                    if self.PVGIS_Panel_Tilt_input.get() != '':
+                        config_ini_parser().set_module_azimuth(self.PVGIS_Panel_Tilt_input.get())
+
+                    if self.Module_azimuth_array.get() !='':
+                        config_ini_parser().set_module_tilt(self.Module_azimuth_array.get())
+
+
+                    #In order to not block the progress bars        
                     timer = threading.Timer(1.0, self.start_threads)
                     self.threads.append(timer)
                     timer.start()  # after 60 seconds, 'callback' will be called

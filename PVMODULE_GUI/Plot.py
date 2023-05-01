@@ -5,7 +5,7 @@ import pandas as pd
 from numpy import trapz as calculate_area_under_curve
 import tkinter
 from tabulate import tabulate
-
+import tkinter.messagebox
 
 class Plot():
     def __init__(self):
@@ -50,10 +50,30 @@ class Plot():
                                             'Total AC':'[kW]',
                                             })
         
-        yearly_info = [yearly_kwh,yearly_in_plane_irr,sys_eff,capacity_factor,perfom_ratio]
-        header = ['Total AC Energy','Irradiance','System Efficiency','Capacity Factor','Performance Factor']
+        if self.selling_price_input.get() != '':
+            try:
+                price = self.selling_price_input.get().replace(',','.')
+                price = yearly_kwh*float(price)
+            except:
+                tkinter.messagebox.showerror(title="Error", message=f"{self.selling_price_input.get()} is not a valid price")
+                price = 0  
+
+        else:
+            price = 0
+        if yearly_kwh > 1000:
+            yearly_info = [yearly_kwh/1000,yearly_in_plane_irr,sys_eff,capacity_factor,perfom_ratio,price]
+            units = ['[MWh]','[W/m2]','[%]','[%]','[%]','[€]'] 
+            if yearly_kwh > 1000:
+                yearly_info = [yearly_kwh/1000,yearly_in_plane_irr,sys_eff,capacity_factor,perfom_ratio,price]
+                units = ['[GWh]','[W/m2]','[%]','[%]','[%]','[€]'] 
+                if yearly_kwh > 1000:
+                    yearly_info = [yearly_kwh/1000,yearly_in_plane_irr,sys_eff,capacity_factor,perfom_ratio,price]
+                    units = ['[TWh]','[W/m2]','[%]','[%]','[%]','[€]'] 
+        else:
+            yearly_info = [yearly_kwh,yearly_in_plane_irr,sys_eff,capacity_factor,perfom_ratio,price]
+            units = ['[kWh]','[W/m2]','[%]','[%]','[%]','[€]']
+        header = ['Total AC Energy','Irradiance','System Efficiency','Capacity Factor','Performance Factor','Revenue']
         yearly_data = pd.DataFrame(columns=['Values','Units'], index = header)
-        units = ['[kWh]','[W/m2]','[%]','[%]','[%]']
         for i in range(len(yearly_info)):
             yearly_data.loc[header[i]] = pd.Series({ 'Values': round(yearly_info[i],2),
                                                      'Units': units[i]
@@ -63,7 +83,7 @@ class Plot():
 
         monthly_statistics_title = customtkinter.CTkLabel(self.third_frame, text="Monthly Statistics",
                                                   font=customtkinter.CTkFont(size=20, weight="bold"))
-        monthly_statistics_title.grid(row=0, column=0, padx=self.third_frame.winfo_width()/2, pady=(5, 5))
+        monthly_statistics_title.grid(row=0, column=0, padx=50, pady=(5, 5))
 
 
         table_monthly_data = tkinter.StringVar(value = monthly_data) 

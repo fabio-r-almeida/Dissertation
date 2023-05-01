@@ -2,7 +2,9 @@ import customtkinter
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import matplotlib.pyplot as plt
-import matplotlib
+from tabulate import tabulate
+import tkinter
+
 
 
 
@@ -19,6 +21,7 @@ class PPFD_Plot():
         #self.change_month = customtkinter.CTkOptionMenu(self.fourth_frame, dynamic_resizing=False,values=months, command= self.ppfd_change_plotting_month)
         #self.change_month.grid(row=0, column=7, padx=10, pady=(10, 10))
         #self.change_month.set('January')
+
         self.fig_ppfd = Figure(facecolor='#242424')  
         self.ax_ppfd = self.fig_ppfd.add_subplot(111)
         self.fig_ppfd.tight_layout()
@@ -58,6 +61,17 @@ class PPFD_Plot():
         self.fig_ppfd.autofmt_xdate()
         self.canvas_ppfd = FigureCanvasTkAgg(self.fig_ppfd,master=self.fourth_frame)
         self.canvas_ppfd.get_tk_widget().grid(row=2, columnspan=5, padx=5, pady=5)
+
+        monthly_ppfd = tabulate(SYSppfd_dli, headers=['PPFD','DLI'], tablefmt="fancy_outline", showindex=False)
+        monthly_statistics_title = customtkinter.CTkLabel(self.fourth_frame, text="Monthly Statistics",
+                                                  font=customtkinter.CTkFont(size=20, weight="bold"))
+        monthly_statistics_title.grid(row=1, column=6, padx=50, pady=(5, 5))
+        table_monthly_data = tkinter.StringVar(value = monthly_ppfd) 
+        Table_monthly_data = customtkinter.CTkLabel(self.fourth_frame,  textvariable=table_monthly_data
+                                                   ,font=customtkinter.CTkFont(family='Consolas',size=14))
+        Table_monthly_data.grid(row=2, column=6, padx=50, pady=(5, 5))
+        
+
         self.fourth_frame.grid(row=0, column=1, padx=5, pady=5)
         self.home_frame.grid_forget()
         self.third_frame.grid_forget()

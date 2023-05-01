@@ -55,3 +55,17 @@ class config_ini_parser():
             parser.set('SIMULATE', 'ppfd', str(ppfd))
             with open("config.ini", "w+") as configfile:
                 parser.write(configfile)
+
+    def set_module_tilt(self, tilt):
+        parser = configparser.ConfigParser()
+        parser.read('config.ini')
+        parser.set('MODULE', 'tilt', str(tilt))
+        with open("config.ini", "w+") as configfile:
+            parser.write(configfile)
+
+    def set_module_azimuth(self, azimuth):
+        parser = configparser.ConfigParser()
+        parser.read('config.ini')
+        parser.set('MODULE', 'azimuth', str(azimuth))
+        with open("config.ini", "w+") as configfile:
+            parser.write(configfile)
