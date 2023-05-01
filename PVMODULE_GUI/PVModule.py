@@ -678,10 +678,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
         if self.checkbox_ppfd_dli.get() == 1: 
             queue_agro = Queue()
+            if self.checkbox_power_estimate.get() == 0:
+                self.select_frame_by_name("PPFD & DLI")
+                self.frame_4_button.grid(row=4, column=0, sticky="ew")
+                
             p2 = Process(target=self.THREADS.PVMODULE_GET_PPDF_DLI, args=(queue_agro, self.pvmodule_location, ))
             progress_bar, label = self.create_loading_progressbar(self.fourth_frame)
             p2.start()  
             self.SYSAgro_data, self.SYSppfd_dli = queue_agro.get()
+
+
             if self.checkbox_power_estimate.get() == 1:
                 self.stop_blinking_event = False
                 self.blinking_button = threading.Thread(target=self.run_threaded, args=(self.frame_4_button,))
