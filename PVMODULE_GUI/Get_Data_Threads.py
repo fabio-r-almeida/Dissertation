@@ -2,6 +2,7 @@
 #from pvmodule import System
 from multiprocessing import Process, Queue
 import httpimport
+import asyncio
 with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
     import pvgis
     import system
@@ -61,8 +62,8 @@ class Get_Data_Threads():
     
 
 
-    def bi_worker(self, queue, location, module, inverter, azimuth):
-        _, data , _ = pvgis.PVGIS().retrieve_all_year_bifacial(location, azimuth = azimuth)
+    async def bi_worker(self, queue, location, module, inverter, azimuth):
+        _, data , _ = await pvgis.PVGIS().retrieve_all_year_bifacial_faster(location, azimuth = azimuth)
         dc = system.System().dc_production(module, data, "Global irradiance on a fixed plane", "2m Air Temperature", "10m Wind speed")
         ac = system.System().ac_production(dc, inverter, module)
         self.ac_data = ac
@@ -76,13 +77,13 @@ class Get_Data_Threads():
         
     def bi_PVMODULE_GET_DATA_THREAD_PER_MONTH(self,QUEUE, location, module, inverter, azimuth):
         queue = Queue()
-        p1 = Process(target=self.worker, args=(queue, location, module, inverter, azimuth))
+        p1 = Process(target=asyncio.run(self.bi_worker(queue, location, module, inverter, azimuth)), args=(queue, location, module, inverter, azimuth))
         p1.start()  
         QUEUE.put(queue.get())   
         return queue.get()
     
-    def worker(self, queue, location, module, inverter, azimuth, panel_tilt):
-        _, data , _ = pvgis.PVGIS().retrieve_all_year(location, azimuth = azimuth, panel_tilt=panel_tilt)
+    async def worker(self, queue, location, module, inverter, azimuth, panel_tilt):
+        _, data , _ = await pvgis.PVGIS().retrieve_all_year_faster(location, azimuth = azimuth, panel_tilt=panel_tilt)
         dc = system.System().dc_production(module, data, "Global irradiance on a fixed plane", "2m Air Temperature", "10m Wind speed")
         ac = system.System().ac_production(dc, inverter, module)
         self.ac_data = ac
@@ -96,19 +97,19 @@ class Get_Data_Threads():
         
     def PVMODULE_GET_DATA_THREAD_PER_MONTH(self,QUEUE, location, module, inverter, azimuth, panel_tilt):
         queue = Queue()
-        p1 = Process(target=self.worker, args=(queue, location, module, inverter, azimuth, panel_tilt))
+        p1 = Process(target=asyncio.run(self.worker(queue, location, module, inverter, azimuth, panel_tilt)), args=(queue, location, module, inverter, azimuth, panel_tilt))
         p1.start()  
         QUEUE.put(queue.get())   
         return queue.get()
     
-    def agro_worker(self, queue, location):
-        _, data , _ = pvgis.PVGIS().retrieve_all_year(location, azimuth = 0, panel_tilt=0)
+    async def agro_worker(self, queue, location):
+        _, data , _ = await pvgis.PVGIS().retrieve_all_year_faster(location, azimuth = 0, panel_tilt = 0)
         data, agro_data = agro_indicators.Agro_Indicators().PPFD_DLI(location, data)
         queue.put([data, agro_data])
         
     def PVMODULE_GET_PPDF_DLI(self,QUEUE, location):
         queue = Queue()
-        p1 = Process(target=self.agro_worker, args=(queue, location))
+        p1 = Process(target=asyncio.run(self.agro_worker(queue, location)), args=(queue, location))
         p1.start()  
         QUEUE.put(queue.get())   
         return queue.get()

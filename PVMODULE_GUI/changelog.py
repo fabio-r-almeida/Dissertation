@@ -1,7 +1,7 @@
 
 Added
-- PPFD and DLI calculation and graphing.
+- Asynchronous threading support
+Improved
+-Faster loading speeds
 Fixed
-- Better installation setup.
-Removed
-- Unnecessary files.
+- Yearly and monthly data appresentation.

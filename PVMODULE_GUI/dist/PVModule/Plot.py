@@ -4,7 +4,6 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import pandas as pd
 from numpy import trapz as calculate_area_under_curve
 import tkinter
-from tkinter import ttk
 from tabulate import tabulate
 
 
@@ -21,7 +20,6 @@ class Plot():
         except:
             pass
         months = ['Units','January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
-        months_days = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
         data = pd.DataFrame(columns=['Month','Total DC','Irradiance','T cell','Efficiency','Total AC'], index = months)
         for i in range(len(months)-1):
@@ -30,9 +28,9 @@ class Plot():
             Irradiance = yearly_irradiance.loc[yearly_irradiance['Month'] == int(i+1)]
             Irradiance = Irradiance['Irradiance w/m2'].sum()
             T_cell = yearly_irradiance.loc[yearly_irradiance['Month'] == int(i+1)]
-            T_cell = float(T_cell['T cell'].sum())/float(months_days[i+1])
+            T_cell = float(T_cell['T cell'].sum())/float(24)
             Efficiency = yearly_irradiance.loc[yearly_irradiance['Month'] == int(i+1)]
-            Efficiency = float(Efficiency['Efficiency'].sum())/float(months_days[i+1])
+            Efficiency = float(Efficiency['Efficiency'].sum())/float(24)
             Total_AC_Power = yearly_irradiance.loc[yearly_irradiance['Month'] == int(i+1)]
             Total_AC_Power = Total_AC_Power['Total AC Power'].sum()
 
@@ -51,22 +49,41 @@ class Plot():
                                             'Efficiency':'[%]',
                                             'Total AC':'[kW]',
                                             })
-               
-        text = tabulate(data, headers=['Month','Total DC','Irradiance','Temperature','Efficiency','Total AC'], tablefmt="heavy_outline", showindex=False)
+        
+        yearly_info = [yearly_kwh,yearly_in_plane_irr,sys_eff,capacity_factor,perfom_ratio]
+        header = ['Total AC','Irradiance','Sys. Efficiency','Capacity Factor','Performance Factor']
+        yearly_data = pd.DataFrame(columns=['Values','Units'], index = header)
+        units = ['[kWh]','[W/m2]','[%]','[%]','[%]']
+        for i in range(len(yearly_info)):
+            yearly_data.loc[header[i]] = pd.Series({ 'Values': round(yearly_info[i],2),
+                                                     'Units': units[i]
+                                                    })
+                    
+        monthly_data = tabulate(data, headers=['Total DC','Irradiance','Temperature','Efficiency','Total AC'], tablefmt="fancy_outline", showindex=False)
 
         monthly_statistics_title = customtkinter.CTkLabel(self.third_frame, text="Monthly Statistics",
                                                   font=customtkinter.CTkFont(size=20, weight="bold"))
-        monthly_statistics_title.grid(row=0, column=0, padx=75, pady=(10, 15))
+        monthly_statistics_title.grid(row=0, column=0, padx=self.third_frame.winfo_width()/2, pady=(5, 5))
 
 
-        table_monthly_data = tkinter.StringVar(value = text) 
+        table_monthly_data = tkinter.StringVar(value = monthly_data) 
         Table_monthly_data = customtkinter.CTkLabel(self.third_frame,  textvariable=table_monthly_data
-                                             ,font=customtkinter.CTkFont(family='Consolas',size=14))
-        Table_monthly_data.grid(row=1, column=0, padx=50, pady=(self.third_frame.winfo_height()/10, 5))
+                                                   ,font=customtkinter.CTkFont(family='Consolas',size=14))
+        Table_monthly_data.grid(row=1, column=0, padx=50, pady=(5, 5))
 
-        yearly_statistics_title = customtkinter.CTkLabel(self.third_frame, text="CORRIGIR MÉDIA DA EFICIENCIA EM CIMA Statistics",
+        yearly_statistics_title = customtkinter.CTkLabel(self.third_frame, text="Yearly Statistics",
                                                   font=customtkinter.CTkFont(size=20, weight="bold"))
-        yearly_statistics_title.grid(row=2, column=0, padx=75, pady=(10, 15))
+        yearly_statistics_title.grid(row=2, column=0, padx=75, pady=(10, 5))
+
+
+
+        table_yearly_data = tabulate(yearly_data, headers=['','Values','Units'], tablefmt="fancy_outline", showindex=False)
+        table_yearly_data = tkinter.StringVar(value = table_yearly_data) 
+        Table_yearly_data = customtkinter.CTkLabel(self.third_frame,  textvariable=table_yearly_data
+                                                   ,font=customtkinter.CTkFont(family='Consolas',size=14))
+        Table_yearly_data.grid(row=3, column=0, padx=50, pady=(5, 5))
+        months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November','December']
+
         
         #yearly_kwh_wp = tkinter.StringVar(value = f"Yearly Energy per Peak: {round(yearly_kwh_wp,2)} [kWh/Wp]") 
         #Yearly_kwh_wp = customtkinter.CTkLabel(self.third_frame,  textvariable=yearly_kwh_wp

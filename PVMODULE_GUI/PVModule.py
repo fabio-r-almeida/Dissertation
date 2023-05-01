@@ -424,6 +424,8 @@ class App(customtkinter.CTk):
         self.map_window_frame = None
         self.about_me_Toplevel = None
         self.appearance_mode_menu.set(config_dot_ini_theme)
+        config = configparser.ConfigParser()
+        config.read('config.ini')
         try:
             if str(config['MODULE']['module']) != 'None':
                 self.pvmodule_module = json.loads(config['MODULE']['module'])
@@ -615,7 +617,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.frame_2_button.grid(row=2, column=0, sticky="ew") 
             progress_bar, label = self.create_loading_progressbar(self.second_frame)
             queue = Queue()
-            if self.pvmodule_module['BIPV'] == 'Y' and self.pvmodule_panel_tilt == 90:
+            
+            if self.pvmodule_module['BIPV'] == 'Y' and int(self.pvmodule_panel_tilt) == 90:
                 p1 = Process(target=self.THREADS.bi_PVMODULE_GET_DATA_THREAD_PER_MONTH, args=(queue, self.pvmodule_location, self.pvmodule_module, self.pvmodule_inverter, self.pvmodule_azimuth))
             else:
                 p1 = Process(target=self.THREADS.PVMODULE_GET_DATA_THREAD_PER_MONTH, args=(queue, self.pvmodule_location, self.pvmodule_module, self.pvmodule_inverter, self.pvmodule_azimuth, self.pvmodule_panel_tilt))
