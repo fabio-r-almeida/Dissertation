@@ -44,7 +44,7 @@ class Plot():
             
         data.loc['Units'] = pd.Series({   'Month':'',
                                             'Total DC':'[kW]',
-                                            'Irradiance':'[W/m2]',
+                                            'Irradiance':'[W/m\u00b2]',
                                             'T cell':'[°C]',
                                             'Efficiency':'[%]',
                                             'Total AC':'[kW]',
@@ -62,16 +62,16 @@ class Plot():
             price = 0
         if yearly_kwh > 1000:
             yearly_info = [yearly_kwh/1000,yearly_in_plane_irr,sys_eff,capacity_factor,perfom_ratio,price]
-            units = ['[MWh]','[W/m2]','[%]','[%]','[%]','[€]'] 
+            units = ['[MWh]','[W/m\u00b2]','[%]','[%]','[%]','[€]'] 
             if yearly_kwh > 1000:
                 yearly_info = [yearly_kwh/1000,yearly_in_plane_irr,sys_eff,capacity_factor,perfom_ratio,price]
-                units = ['[GWh]','[W/m2]','[%]','[%]','[%]','[€]'] 
+                units = ['[GWh]','[W/m\u00b2]','[%]','[%]','[%]','[€]'] 
                 if yearly_kwh > 1000:
                     yearly_info = [yearly_kwh/1000,yearly_in_plane_irr,sys_eff,capacity_factor,perfom_ratio,price]
-                    units = ['[TWh]','[W/m2]','[%]','[%]','[%]','[€]'] 
+                    units = ['[TWh]','[W/m\u00b2]','[%]','[%]','[%]','[€]'] 
         else:
             yearly_info = [yearly_kwh,yearly_in_plane_irr,sys_eff,capacity_factor,perfom_ratio,price]
-            units = ['[kWh]','[W/m2]','[%]','[%]','[%]','[€]']
+            units = ['[kWh]','[W/m\u00b2]','[%]','[%]','[%]','[€]']
         header = ['Total AC Energy','Irradiance','System Efficiency','Capacity Factor','Performance Factor','Revenue']
         yearly_data = pd.DataFrame(columns=['Values','Units'], index = header)
         for i in range(len(yearly_info)):
@@ -186,11 +186,11 @@ class Plot():
 
        
         if customtkinter.get_appearance_mode() == "Dark":
-            self.ax.legend(['Global Irradiance','Irradiance W/m2'],frameon=False, labelcolor="white")
+            self.ax.legend(['Global Irradiance','Irradiance W/m\u00b2'],frameon=False, labelcolor="white")
             self.bx.legend(['Total DC Power (kW)','Total AC Power (kW)'],frameon=False, labelcolor="white")
 
         else:
-            self.ax.legend(['Global Irradiance','Irradiance W/m2'],frameon=False, labelcolor="black")
+            self.ax.legend(['Global Irradiance','Irradiance W/m\u00b2'],frameon=False, labelcolor="black")
             self.bx.legend(['Total DC Power (kW)','Total AC Power (kW)'],frameon=False, labelcolor="black")
 
         self.canvas = FigureCanvasTkAgg(self.fig,master=self.second_frame)
@@ -224,11 +224,11 @@ class Plot():
         self.bx.set_xlim(data_irr.index.min(),data_irr.index.max())
         self.bx.set_ylim(data_irr['Total DC Power'].min(),data_irr['Total DC Power'].max()+ data_irr['Total DC Power'].max()*0.1)
         if customtkinter.get_appearance_mode() == "Dark":
-            self.ax.legend(['Global Irradiance','Irradiance W/m2'],frameon=False, labelcolor="white")
+            self.ax.legend(['Global Irradiance','Irradiance W/m\u00b2'],frameon=False, labelcolor="white")
             self.bx.legend(['Total DC Power (kW)','Total AC Power (kW)'],frameon=False, labelcolor="white")
 
         else:
-            self.ax.legend(['Global Irradiance','Irradiance W/m2'],frameon=False, labelcolor="black")
+            self.ax.legend(['Global Irradiance','Irradiance W/m\u00b2'],frameon=False, labelcolor="black")
             self.bx.legend(['Total DC Power (kW)','Total AC Power (kW)'],frameon=False, labelcolor="black")
             self.ax.set_xticklabels(self.ax.get_xticklabels(), rotation=45)
             self.bx.set_xticklabels(self.bx.get_xticklabels(), rotation=45)

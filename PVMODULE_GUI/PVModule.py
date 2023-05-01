@@ -676,8 +676,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             self.fourth_frame.grid_forget()
             self.third_frame.grid_forget()
 
-        if self.checkbox_ppfd_dli.get() == 1:
-            self.frame_4_button.grid(row=4, column=0, sticky="ew") 
+        if self.checkbox_ppfd_dli.get() == 1: 
             queue_agro = Queue()
             p2 = Process(target=self.THREADS.PVMODULE_GET_PPDF_DLI, args=(queue_agro, self.pvmodule_location, ))
             progress_bar, label = self.create_loading_progressbar(self.fourth_frame)
@@ -698,6 +697,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
             ppfd_dli_plot = threading.Thread(target=PPFD_Plot.plot_ppfd, args=(self, self.SYSAgro_data, self.SYSppfd_dli ,))
             self.threads.append(ppfd_dli_plot)
             ppfd_dli_plot.start()
+            self.frame_4_button.grid(row=4, column=0, sticky="ew")
             if self.checkbox_power_estimate.get() == 0:
                 self.select_frame_by_name("PPFD & DLI")
 

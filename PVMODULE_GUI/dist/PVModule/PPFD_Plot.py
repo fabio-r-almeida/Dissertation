@@ -62,7 +62,7 @@ class PPFD_Plot():
         self.canvas_ppfd = FigureCanvasTkAgg(self.fig_ppfd,master=self.fourth_frame)
         self.canvas_ppfd.get_tk_widget().grid(row=2, columnspan=5, padx=5, pady=5)
 
-        monthly_ppfd = tabulate(SYSppfd_dli, headers=['PPFD','DLI'], tablefmt="fancy_outline", showindex=False)
+        monthly_ppfd = tabulate(SYSppfd_dli, headers=['PPFD','DLI'], tablefmt="fancy_grid", showindex=False)
         monthly_statistics_title = customtkinter.CTkLabel(self.fourth_frame, text="Monthly Statistics",
                                                   font=customtkinter.CTkFont(size=20, weight="bold"))
         monthly_statistics_title.grid(row=1, column=6, padx=50, pady=(5, 5))
