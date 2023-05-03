@@ -20,6 +20,7 @@ import webbrowser
 import httpimport
 import time
 import json
+import aiohttp
 with httpimport.github_repo('fabio-r-almeida', 'pvmodule', ref='main'):
     import irradiance as IRRADIANCE
     import module as MODULE
