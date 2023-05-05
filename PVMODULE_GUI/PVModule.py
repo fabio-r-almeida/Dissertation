@@ -1,8 +1,5 @@
 import customtkinter
 import os
-import sys
-if getattr(sys, 'frozen', False):
-    import pyi_splash
 import tkinter.messagebox
 from tkinter import *
 from tktooltip import ToolTip
@@ -60,8 +57,6 @@ class App(customtkinter.CTk):
         self.image_list_to_destroy = []
         super().__init__()
         splash = Splash()
-        #if getattr(sys, 'frozen', False):
-        #    import pyi_splash
 
         #splash.current_loadings.append("")        #<<<<<<<<--------------------
         #splash.bar()                              #<<<<<<<<--------------------
@@ -416,13 +411,6 @@ class App(customtkinter.CTk):
 
         # create fourth frame
         self.fourth_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
-
-
-        #if getattr(sys, 'frozen', False):
-        #    pyi_splash.close()
-        # select default frame
-        #if getattr(sys, 'frozen', False):
-        #    pyi_splash.close()
 
         splash.current_loadings.append("Initializing Assets")        #<<<<<<<<--------------------
         splash.bar()                              #<<<<<<<<--------------------
@@ -1003,9 +991,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 if __name__ == '__main__':
     multiprocessing.freeze_support()
     app = App()
-    import sys
-    if getattr(sys, 'frozen', False):
-        pyi_splash.close()
     app.mainloop()
 
 
